@@ -91,6 +91,84 @@ body, body *:not(#dna-canvas) {
     box-shadow 0.3s ease;
 }
 
+/* ══════════════════ FOCUS MODE ══════════════════ */
+
+/* Exit bar — hidden by default */
+.focus-exit-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  height: 36px;
+  background: var(--gold-glow);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.focus-exit-bar span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.focus-exit-btn {
+  padding: 4px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+}
+.focus-exit-btn:hover {
+  background: var(--gold-glow);
+  border-color: var(--gold);
+}
+
+/* Focus Mode active state */
+body.focus-mode .focus-exit-bar { display: flex; }
+body.focus-mode .navbar          { display: none; }
+body.focus-mode .hero            { display: none; }
+body.focus-mode .stats-bar       { display: none; }
+body.focus-mode .main-interface  { padding-top: 52px; }
+body.focus-mode .section         { display: none; }
+body.focus-mode .ecosystem-section { display: none; }
+body.focus-mode .footer          { display: none; }
+body.focus-mode .copy-feedback   { bottom: 1rem; }
+
+/* Focus button active state */
+.btn-focus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.btn-focus:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-focus.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-glow);
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 html { scroll-behavior: smooth; }
@@ -1820,6 +1898,12 @@ body {
 
 <div class="copy-feedback" id="copy-feedback">COPIED ✓</div>
 
+<!-- ══ FOCUS EXIT BAR ══ -->
+<div class="focus-exit-bar" id="focus-exit-bar">
+  <span>⊞ FOCUS MODE — INTELLIGENCE INTERFACE ONLY</span>
+  <button class="focus-exit-btn" onclick="toggleFocus()">✕ Exit Focus</button>
+</div>
+
 <div class="page-wrap">
 
 <!-- ══ NAVBAR ══ -->
@@ -1847,6 +1931,7 @@ body {
       <span class="theme-toggle-icon" id="theme-icon">☀</span>
       <span id="theme-label">Light</span>
     </button>
+    <button class="btn-focus" id="focus-btn" onclick="toggleFocus()">⊞ Focus</button>
     <button class="btn-signin" onclick="openAuth('login')">✦ Sign In</button>
     <div class="user-pill" id="user-pill" onclick="openAuth('login')">
       <div class="user-avatar" id="user-avatar"></div>
@@ -2806,8 +2891,18 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ══════════════════════════════════════════
-// THEME TOGGLE — DARK / LIGHT MODE
+// FOCUS MODE
 // ══════════════════════════════════════════
+function toggleFocus() {
+  const isActive = document.body.classList.toggle('focus-mode');
+  const btn = document.getElementById('focus-btn');
+  btn.classList.toggle('active', isActive);
+  btn.textContent = isActive ? '✕ Exit' : '⊞ Focus';
+  // Scroll to interface when entering focus mode
+  if (isActive) {
+    document.getElementById('interface').scrollIntoView({ behavior: 'smooth' });
+  }
+}
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-mode');
   document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀';
