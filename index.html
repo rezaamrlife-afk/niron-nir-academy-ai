@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIRON — Adaptive Language Intelligence System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --black-2: #0e0e0e;
+  --black-3: #141414;
+  --black-4: #1a1a1a;
+  --gold: #C9A84C;
+  --gold-light: #e8c96a;
+  --gold-dim: #8a6e2e;
+  --gold-glow: rgba(201,168,76,0.15);
+  --green: #2a7a4b;
+  --green-light: #3aaa68;
+  --green-glow: rgba(42,122,75,0.12);
+  --white: #f0ece0;
+  --white-dim: rgba(240,236,224,0.5);
+  --white-faint: rgba(240,236,224,0.08);
+  --border: rgba(201,168,76,0.18);
+  --border-green: rgba(42,122,75,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ══════════════════ DNA BACKGROUND ══════════════════ */
+#dna-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+}
+
+.page-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════ NAVBAR ══════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  height: 68px;
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-logo-ring {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.nav-logo-ring::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+.nav-logo-n {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.nav-title-block { line-height: 1; }
+
+.nav-name {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 4px;
+}
+
+.nav-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--green-light);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  text-decoration: none;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-ecosystem {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.eco-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--white-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.eco-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--border-green);
+  border-radius: 20px;
+  background: var(--green-glow);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--green-light);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.eco-pill:hover {
+  border-color: var(--green-light);
+  background: rgba(42,122,75,0.2);
+}
+
+.eco-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green-light);
+  animation: blink 2s ease-in-out infinite;
+}
+
+/* ══════════════════ HERO ══════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 3rem 60px;
+  position: relative;
+}
+
+.hero-inner {
+  max-width: 900px;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background: var(--gold-glow);
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-badge span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+.hero-headline {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: clamp(42px, 7vw, 86px);
+  letter-spacing: 8px;
+  color: var(--gold);
+  line-height: 1.05;
+  animation: fadeUp 0.8s 0.1s ease both;
+  text-shadow: 0 0 60px rgba(201,168,76,0.25);
+}
+
+.hero-headline .break { display: block; }
+
+.hero-tagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(15px, 2.2vw, 20px);
+  font-weight: 300;
+  letter-spacing: 5px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin: 1.2rem 0 0.5rem;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-tagline em {
+  color: var(--green-light);
+  font-style: normal;
+}
+
+.hero-divider {
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 2rem auto;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.hero-desc {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--white-dim);
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  animation: fadeUp 0.8s 0.35s ease both;
+  letter-spacing: 0.5px;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s 0.45s ease both;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 36px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+  color: var(--black);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition: all 0.3s;
+  box-shadow: 0 8px 30px rgba(201,168,76,0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  box-shadow: 0 12px 40px rgba(201,168,76,0.35);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--white-dim);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  transition: all 0.3s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-glow);
+}
+
+/* ══════════════════ STATS BAR ══════════════════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+  background: var(--black-2);
+}
+
+.stat-item {
+  padding: 2rem 2rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+
+.stat-item:last-child { border-right: none; }
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stat-item:hover::before { opacity: 1; }
+
+.stat-num {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--gold);
+  display: block;
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin-top: 6px;
+  display: block;
+}
+
+.stat-accent {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  color: var(--green-light);
+  margin-top: 3px;
+  display: block;
+  letter-spacing: 1px;
+}
+
+/* ══════════════════ SECTION ══════════════════ */
+.section {
+  padding: 6rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 4rem;
+}
+
+.section-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--green-light);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-tag::before {
+  content: '';
+  width: 30px; height: 1px;
+  background: var(--green-light);
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: clamp(22px, 3.5vw, 38px);
+  color: var(--gold);
+  letter-spacing: 3px;
+  line-height: 1.2;
+}
+
+.section-sub {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--white-dim);
+  margin-top: 1rem;
+  max-width: 560px;
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+}
+
+/* ══════════════════ MAIN INTERFACE ══════════════════ */
+.main-interface {
+  padding: 4rem 3rem 6rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.interface-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  background: var(--black-2);
+  min-height: 700px;
+  position: relative;
+  overflow: hidden;
+}
+
+.interface-grid::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 320px;
+  width: 1px; height: 100%;
+  background: linear-gradient(180deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+}
+
+/* SIDEBAR */
+.i-sidebar {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-right: 1px solid var(--border);
+}
+
+.i-sidebar-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--white-faint);
+}
+
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+
+.input-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+}
+
+.input-label .req { color: var(--gold); margin-left: 3px; }
+
+.input-select, .input-field {
+  width: 100%;
+  background: var(--black-3);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  appearance: none;
+  -webkit-appearance: none;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.input-select:focus, .input-field:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-glow);
+}
+
+.input-select option { background: var(--black-3); }
+
+.input-field { resize: vertical; min-height: 80px; }
+
+.lang-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.type-btn {
+  padding: 9px 8px;
+  background: var(--black-3);
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.type-btn:hover, .type-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-glow);
+}
+
+.type-btn.active-green {
+  border-color: var(--green-light);
+  color: var(--green-light);
+  background: var(--green-glow);
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+  border: none;
+  color: var(--black);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.3s;
+  box-shadow: 0 6px 24px rgba(201,168,76,0.2);
+  margin-top: auto;
+}
+
+.generate-btn:hover {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  box-shadow: 0 10px 36px rgba(201,168,76,0.35);
+}
+
+.generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* OUTPUT PANEL */
+.i-output {
+  display: flex;
+  flex-direction: column;
+  min-height: 700px;
+}
+
+.output-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--black-3);
+}
+
+.output-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.out-tab {
+  padding: 6px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--white-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.out-tab:hover { color: var(--gold); }
+
+.out-tab.active {
+  border-color: var(--border);
+  color: var(--gold);
+  background: var(--gold-glow);
+}
+
+.output-actions {
+  display: flex; gap: 8px;
+}
+
+.act-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--black-4);
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+}
+
+.act-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.output-body {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  position: relative;
+}
+
+.output-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  gap: 16px;
+  opacity: 0.5;
+}
+
+.empty-icon {
+  width: 60px; height: 60px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+.empty-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 2;
+}
+
+/* ══════════════════ OUTPUT CONTENT ══════════════════ */
+.output-content { display: none; }
+.output-content.show { display: block; }
+
+.loading-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.loading-state.show { display: flex; }
+
+.loader-ring {
+  width: 50px; height: 50px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loader-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+.intelligence-block {
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  background: var(--black-3);
+  overflow: hidden;
+}
+
+.ib-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--black-4);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ib-icon {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.ib-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.ib-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 3px 8px;
+  letter-spacing: 2px;
+  border-radius: 2px;
+}
+
+.ib-badge.gold { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--border); }
+.ib-badge.green { background: var(--green-glow); color: var(--green-light); border: 1px solid var(--border-green); }
+
+.ib-toggle {
+  font-size: 11px;
+  color: var(--white-dim);
+  transition: transform 0.3s;
+}
+
+.ib-toggle.open { transform: rotate(180deg); }
+
+.ib-body {
+  padding: 1.4rem 1.6rem;
+  display: block;
+  animation: fadeUp 0.3s ease;
+}
+
+.ib-body.hidden { display: none; }
+
+/* Diagnosis layer */
+.diagnosis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.diag-card {
+  background: var(--black-4);
+  border: 1px solid var(--white-faint);
+  padding: 14px;
+  text-align: center;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+.diag-val {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.diag-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.diag-note {
+  font-size: 11px;
+  color: var(--green-light);
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+}
+
+/* Content items */
+.content-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 14px;
+}
+
+.content-label:first-child { margin-top: 0; }
+
+.content-text {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--white);
+  letter-spacing: 0.3px;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--black-4);
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  letter-spacing: 1px;
+}
+
+.tag.gold-tag { border-color: var(--gold-dim); color: var(--gold); background: var(--gold-glow); }
+.tag.green-tag { border-color: var(--border-green); color: var(--green-light); background: var(--green-glow); }
+
+.example-block {
+  background: var(--black-4);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+}
+
+.example-block.green-accent { border-color: var(--green-light); }
+
+.error-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(180,40,40,0.08);
+  border: 1px solid rgba(180,40,40,0.15);
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--white-dim);
+}
+
+.error-icon { color: #c94c4c; font-size: 14px; margin-top: 1px; }
+
+.correct-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--green-glow);
+  border: 1px solid var(--border-green);
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--white-dim);
+}
+
+.correct-icon { color: var(--green-light); font-size: 14px; margin-top: 1px; }
+
+.practice-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--black-4);
+  border: 1px solid var(--white-faint);
+  margin-top: 8px;
+  transition: border-color 0.2s;
+}
+
+.practice-item:hover { border-color: var(--border); }
+
+.practice-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 24px;
+  text-align: center;
+}
+
+.practice-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--white-dim);
+  flex: 1;
+}
+
+.progression-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.prog-step {
+  flex: 1;
+  text-align: center;
+  padding: 8px 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  background: var(--black-4);
+  border: 1px solid var(--white-faint);
+  position: relative;
+  transition: all 0.3s;
+}
+
+.prog-step.done {
+  background: var(--gold-glow);
+  border-color: var(--border);
+  color: var(--gold);
+}
+
+.prog-step.active {
+  background: linear-gradient(135deg, var(--gold-glow), transparent);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.prog-arrow {
+  font-size: 10px;
+  color: var(--border);
+  z-index: 1;
+}
+
+/* ══════════════════ ENGINES SHOWCASE ══════════════════ */
+.engines-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.engine-card {
+  background: var(--black-2);
+  padding: 2.2rem 2rem;
+  transition: background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.engine-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.engine-card:hover { background: var(--black-3); }
+.engine-card:hover::before { opacity: 1; }
+
+.engine-card.green-card::before {
+  background: linear-gradient(90deg, transparent, var(--green-light), transparent);
+}
+
+.engine-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-dim);
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+}
+
+.engine-num.green-num { color: var(--green); }
+
+.engine-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.engine-name.green-name { color: var(--green-light); }
+
+.engine-divider {
+  width: 30px; height: 1px;
+  background: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.engine-divider.green-div { background: var(--green-light); }
+
+.engine-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.engine-list li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--white-dim);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.engine-list li::before {
+  content: '›';
+  color: var(--gold);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.engine-list.green-list li::before { color: var(--green-light); }
+
+/* ══════════════════ ECOSYSTEM BRIDGE ══════════════════ */
+.ecosystem-section {
+  padding: 5rem 3rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--black-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.ecosystem-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.eco-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.eco-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.eco-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(22px, 4vw, 42px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 3rem;
+}
+
+.siblings-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+  margin: 2.5rem 0;
+}
+
+.sibling-card {
+  padding: 2.5rem 2rem;
+  border: 1px solid var(--border);
+  background: var(--black-3);
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.sibling-card.active-card {
+  border-color: var(--gold);
+  background: var(--gold-glow);
+}
+
+.sibling-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.sibling-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.sibling-name.nira-name { color: var(--green-light); }
+
+.sibling-mission {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--white-dim);
+  line-height: 1.7;
+}
+
+.dna-bridge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.dna-bridge-line {
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold-dim), var(--green), var(--gold-dim));
+  height: 80px;
+}
+
+.dna-bridge-node {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--black-3);
+  animation: blink 2s ease-in-out infinite;
+}
+
+.dna-bridge-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.mother-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border: 1px solid var(--border);
+  background: var(--black-3);
+  margin-top: 1.5rem;
+}
+
+.mother-tag-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+}
+
+.mother-tag-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--gold);
+}
+
+/* ══════════════════ FOOTER ══════════════════ */
+.footer {
+  padding: 3rem;
+  border-top: 1px solid var(--border);
+  background: var(--black-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-brand-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--gold);
+}
+
+.footer-brand-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--green-light);
+  text-transform: uppercase;
+}
+
+.footer-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 2;
+}
+
+.footer-meta span { color: var(--gold); }
+
+/* ══════════════════ ANIMATIONS ══════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ══════════════════ SCROLLBAR ══════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black-2); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ══════════════════ RESPONSIVE ══════════════════ */
+@media (max-width: 900px) {
+  .interface-grid { grid-template-columns: 1fr; }
+  .interface-grid::before { display: none; }
+  .i-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .engines-grid { grid-template-columns: 1fr 1fr; }
+  .siblings-row { grid-template-columns: 1fr; gap: 1rem; }
+  .dna-bridge { flex-direction: row; }
+  .dna-bridge-line { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold-dim), var(--green), var(--gold-dim)); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+}
+
+@media (max-width: 600px) {
+  .navbar { padding: 0 1.2rem; }
+  .hero { padding: 100px 1.5rem 60px; }
+  .main-interface { padding: 2rem 1rem; }
+  .section { padding: 4rem 1.5rem; }
+  .engines-grid { grid-template-columns: 1fr; }
+  .diagnosis-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* copy feedback */
+.copy-feedback {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 10px 20px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 999;
+}
+.copy-feedback.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- DNA Canvas -->
+<canvas id="dna-canvas"></canvas>
+<div class="copy-feedback" id="copy-feedback">COPIED ✓</div>
+
+<div class="page-wrap">
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-logo-ring">
+      <span class="nav-logo-n">N</span>
+    </div>
+    <div class="nav-title-block">
+      <div class="nav-name">NIRON</div>
+      <div class="nav-sub">Language Intelligence</div>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#system">System</a></li>
+    <li><a href="#engines">Engines</a></li>
+    <li><a href="#interface">Intelligence</a></li>
+    <li><a href="#ecosystem">Ecosystem</a></li>
+  </ul>
+  <div class="nav-ecosystem">
+    <span class="eco-tag">NIR Academy</span>
+    <a href="#ecosystem" class="eco-pill">
+      <span class="eco-dot"></span>
+      Sister App: NIRA
+    </a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="system">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span>Adaptive Language Intelligence System</span>
+    </div>
+    <h1 class="hero-headline">
+      <span class="break">NIRON</span>
+    </h1>
+    <p class="hero-tagline">
+      Vocabulary &amp; Grammar <em>Intelligence</em> · CEFR A1–C2 · IELTS 5–9
+    </p>
+    <div class="hero-divider"></div>
+    <p class="hero-desc">
+      NIRON is not a language tool. It is an adaptive language intelligence system that transforms any vocabulary or grammar input into structured, measurable, production-ready language development.
+    </p>
+    <div class="hero-actions">
+      <a href="#interface" class="btn-primary">✦ Activate Intelligence</a>
+      <a href="#engines" class="btn-ghost">Explore Engines →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS BAR ══ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">6</span>
+    <span class="stat-label">Intelligence Levels</span>
+    <span class="stat-accent">A1 → C2</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">5</span>
+    <span class="stat-label">IELTS Band Range</span>
+    <span class="stat-accent">Band 5 → 9</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">7</span>
+    <span class="stat-label">Output Layers</span>
+    <span class="stat-accent">Diagnosis → Production</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">2</span>
+    <span class="stat-label">Core Engines</span>
+    <span class="stat-accent">Vocabulary + Grammar</span>
+  </div>
+</div>
+
+<!-- ══ MAIN INTERFACE ══ -->
+<div class="main-interface" id="interface">
+  <div class="section-header" style="margin-bottom:2rem;">
+    <div class="section-tag">Intelligence Interface</div>
+    <h2 class="section-title">LANGUAGE INTELLIGENCE ENGINE</h2>
+    <p class="section-sub">Enter any word, phrase, or grammar structure. NIRON generates a full diagnostic learning intelligence output.</p>
+  </div>
+
+  <div class="interface-grid">
+    <!-- Sidebar -->
+    <div class="i-sidebar">
+      <div class="i-sidebar-title">⬡ System Parameters</div>
+
+      <div class="input-group">
+        <label class="input-label">CEFR Level <span class="req">*</span></label>
+        <select class="input-select" id="cefr-select">
+          <option value="">Select Level</option>
+          <option value="A1">A1 — Beginner</option>
+          <option value="A2">A2 — Elementary</option>
+          <option value="B1">B1 — Intermediate</option>
+          <option value="B2">B2 — Upper-Intermediate</option>
+          <option value="C1">C1 — Advanced</option>
+          <option value="C2">C2 — Mastery</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">IELTS Target Band <span class="req">*</span></label>
+        <select class="input-select" id="ielts-select">
+          <option value="">Select Band</option>
+          <option value="5">Band 5 — Modest</option>
+          <option value="5.5">Band 5.5</option>
+          <option value="6">Band 6 — Competent</option>
+          <option value="6.5">Band 6.5</option>
+          <option value="7">Band 7 — Good</option>
+          <option value="7.5">Band 7.5</option>
+          <option value="8">Band 8 — Very Good</option>
+          <option value="9">Band 9 — Expert</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Intelligence Type <span class="req">*</span></label>
+        <div class="lang-type-grid">
+          <button class="type-btn active" data-type="vocabulary" onclick="selectType(this,'vocabulary')">Vocabulary</button>
+          <button class="type-btn" data-type="grammar" onclick="selectType(this,'grammar')">Grammar</button>
+          <button class="type-btn" data-type="mixed" onclick="selectType(this,'mixed')" style="grid-column:span 2;">Mixed Intelligence</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Input <span class="req">*</span><br><span style="font-size:9px;color:var(--white-dim);letter-spacing:1px;text-transform:none;">Word / phrase / grammar structure</span></label>
+        <textarea class="input-field" id="topic-input" placeholder="e.g.  'investigate'&#10;or  'present perfect'&#10;or  'climate change vocabulary'"></textarea>
+      </div>
+
+      <button class="generate-btn" id="generate-btn" onclick="runNiron()">
+        ✦ &nbsp; GENERATE INTELLIGENCE
+      </button>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="i-output">
+      <div class="output-topbar">
+        <div class="output-tabs">
+          <button class="out-tab active" onclick="switchTab(this,'diagnosis')">Diagnosis</button>
+          <button class="out-tab" onclick="switchTab(this,'analysis')">Analysis</button>
+          <button class="out-tab" onclick="switchTab(this,'practice')">Practice</button>
+          <button class="out-tab" onclick="switchTab(this,'pathway')">Pathway</button>
+        </div>
+        <div class="output-actions">
+          <button class="act-btn" onclick="copyOutput()" title="Copy">⎘</button>
+          <button class="act-btn" onclick="printOutput()" title="Print">⎙</button>
+          <button class="act-btn" onclick="clearOutput()" title="Clear">✕</button>
+        </div>
+      </div>
+      <div class="output-body" id="output-body">
+        <div class="output-empty" id="output-empty">
+          <div class="empty-icon">⬡</div>
+          <div class="empty-text">
+            Configure parameters<br>and activate intelligence<br>to begin
+          </div>
+        </div>
+        <div class="loading-state" id="loading-state">
+          <div class="loader-ring"></div>
+          <div class="loader-text">Processing Language Intelligence...</div>
+        </div>
+        <div class="output-content" id="output-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ENGINES SECTION ══ -->
+<section class="section" id="engines" style="max-width:100%;padding:4rem 3rem;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-header">
+      <div class="section-tag">Core Architecture</div>
+      <h2 class="section-title">INTELLIGENCE ENGINES</h2>
+      <p class="section-sub">Seven cognitive engines operating as a unified language intelligence system.</p>
+    </div>
+    <div class="engines-grid">
+      <div class="engine-card">
+        <div class="engine-num">01</div>
+        <div class="engine-name">LEARNER PROFILING ENGINE</div>
+        <div class="engine-divider"></div>
+        <ul class="engine-list">
+          <li>CEFR estimation & mapping</li>
+          <li>IELTS prediction model</li>
+          <li>Lexical competence analysis</li>
+          <li>Grammar accuracy mapping</li>
+          <li>Weakness detection layer</li>
+        </ul>
+      </div>
+      <div class="engine-card">
+        <div class="engine-num">02</div>
+        <div class="engine-name">LEXICAL NETWORK ENGINE</div>
+        <div class="engine-divider"></div>
+        <ul class="engine-list">
+          <li>Word families & derivatives</li>
+          <li>Graded synonyms & antonyms</li>
+          <li>Collocations & patterns</li>
+          <li>Prepositional structures</li>
+          <li>Chunks & formulaic language</li>
+        </ul>
+      </div>
+      <div class="engine-card">
+        <div class="engine-num">03</div>
+        <div class="engine-name">GRAMMAR FUNCTION ENGINE</div>
+        <div class="engine-divider"></div>
+        <ul class="engine-list">
+          <li>Structural competence profiling</li>
+          <li>Communicative function analysis</li>
+          <li>Affirmative / negative / interrogative</li>
+          <li>Spoken vs written forms</li>
+          <li>IELTS writing alignment</li>
+        </ul>
+      </div>
+      <div class="engine-card green-card">
+        <div class="engine-num green-num">04</div>
+        <div class="engine-name green-name">ERROR PREDICTION ENGINE</div>
+        <div class="engine-divider green-div"></div>
+        <ul class="engine-list green-list">
+          <li>CEFR-based error patterns</li>
+          <li>IELTS error frequency data</li>
+          <li>Interference & confusion maps</li>
+          <li>Avoidance rule generation</li>
+          <li>Correction logic system</li>
+        </ul>
+      </div>
+      <div class="engine-card green-card">
+        <div class="engine-num green-num">05</div>
+        <div class="engine-name green-name">PRODUCTION ACTIVATION ENGINE</div>
+        <div class="engine-divider green-div"></div>
+        <ul class="engine-list green-list">
+          <li>Speaking task generation</li>
+          <li>Writing task construction</li>
+          <li>Sentence transformation drills</li>
+          <li>Mini paragraph scaffolding</li>
+          <li>IELTS simulation tasks</li>
+        </ul>
+      </div>
+      <div class="engine-card green-card">
+        <div class="engine-num green-num">06</div>
+        <div class="engine-name green-name">PROGRESSION ENGINE</div>
+        <div class="engine-divider green-div"></div>
+        <ul class="engine-list green-list">
+          <li>Recognition → Controlled</li>
+          <li>Semi-controlled → Free production</li>
+          <li>IELTS application pathway</li>
+          <li>CEFR progression updates</li>
+          <li>Next-step recommendations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ECOSYSTEM SECTION ══ -->
+<section class="ecosystem-section" id="ecosystem">
+  <div class="eco-inner">
+    <div class="eco-label">NIR Academy Ecosystem</div>
+    <h2 class="eco-title">ONE ORIGIN. TWO MISSIONS.</h2>
+
+    <div class="siblings-row">
+      <div class="sibling-card active-card">
+        <div class="sibling-label">⬡ Brother App · Active</div>
+        <div class="sibling-name">NIRON</div>
+        <div class="sibling-mission">Adaptive Language Intelligence System<br>Vocabulary + Grammar · CEFR A1–C2 · IELTS 5–9</div>
+      </div>
+
+      <div class="dna-bridge">
+        <div class="dna-bridge-node"></div>
+        <div class="dna-bridge-line"></div>
+        <div class="dna-bridge-label">NIR ACADEMY</div>
+        <div class="dna-bridge-line"></div>
+        <div class="dna-bridge-node"></div>
+      </div>
+
+      <div class="sibling-card">
+        <div class="sibling-label">⬡ Sister App</div>
+        <div class="sibling-name nira-name">NIRA</div>
+        <div class="sibling-mission">AI-Powered ELT Platform<br>Prompt Generator · IELTS Tasks · Lesson Planner</div>
+      </div>
+    </div>
+
+    <div class="mother-tag">
+      <span class="mother-tag-label">Created by</span>
+      <span class="mother-tag-name">Dr. Niki Majidi</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="footer-brand">
+    <div>
+      <div class="footer-brand-name">NIRON</div>
+      <div class="footer-brand-sub">NIR Academy Ecosystem</div>
+    </div>
+  </div>
+  <div class="footer-meta">
+    <div>Adaptive Language Intelligence System</div>
+    <div>CEFR A1–C2 · IELTS Band 5–9</div>
+    <div>By <span>Dr. Niki Majidi</span> · NIR Academy</div>
+  </div>
+</footer>
+
+</div><!-- end page-wrap -->
+
+<script>
+// ══════════════════════════════════════════
+// DNA CANVAS ANIMATION
+// ══════════════════════════════════════════
+const canvas = document.getElementById('dna-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, animId;
+
+function resizeCanvas() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const GOLD = '#C9A84C';
+const GREEN = '#2a7a4b';
+const GREEN_L = '#3aaa68';
+
+let t = 0;
+function drawDNA() {
+  ctx.clearRect(0, 0, W, H);
+
+  const numStrands = 3;
+  for (let s = 0; s < numStrands; s++) {
+    const xBase = (W / (numStrands + 1)) * (s + 1);
+    const amplitude = 38 + s * 8;
+    const freq = 0.012 - s * 0.001;
+    const speed = 0.4 + s * 0.1;
+    const offset = (s * Math.PI * 2) / numStrands;
+
+    // Draw backbone strands
+    for (let strand = 0; strand < 2; strand++) {
+      ctx.beginPath();
+      for (let y = 0; y <= H; y += 3) {
+        const phase = (strand === 0 ? 0 : Math.PI);
+        const x = xBase + amplitude * Math.sin(freq * y + t * speed + offset + phase);
+        if (y === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = strand === 0
+        ? `rgba(201,168,76,0.25)` 
+        : `rgba(42,122,75,0.2)`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    // Draw rungs
+    for (let y = 30; y <= H; y += 28) {
+      const x1 = xBase + amplitude * Math.sin(freq * y + t * speed + offset);
+      const x2 = xBase + amplitude * Math.sin(freq * y + t * speed + offset + Math.PI);
+      const progress = (y / H);
+      const alpha = 0.15 + 0.1 * Math.sin(progress * Math.PI * 8 + t);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      // Node dots
+      [x1, x2].forEach((x, i) => {
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = i === 0 
+          ? `rgba(201,168,76,${alpha + 0.1})` 
+          : `rgba(58,170,104,${alpha + 0.1})`;
+        ctx.fill();
+      });
+    }
+  }
+
+  t += 0.008;
+  animId = requestAnimationFrame(drawDNA);
+}
+drawDNA();
+
+// ══════════════════════════════════════════
+// UI STATE
+// ══════════════════════════════════════════
+let selectedType = 'vocabulary';
+let currentOutput = '';
+let activeTab = 'diagnosis';
+
+function selectType(btn, type) {
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.classList.remove('active','active-green');
+  });
+  if (type === 'grammar') {
+    btn.classList.add('active-green');
+  } else {
+    btn.classList.add('active');
+  }
+  selectedType = type;
+}
+
+function switchTab(btn, tab) {
+  document.querySelectorAll('.out-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeTab = tab;
+  const content = document.getElementById('output-content');
+  if (content.classList.contains('show')) {
+    renderTabContent(tab, window._lastNironData);
+  }
+}
+
+function showLoading(show) {
+  const loading = document.getElementById('loading-state');
+  const empty = document.getElementById('output-empty');
+  const content = document.getElementById('output-content');
+  if (show) {
+    loading.classList.add('show');
+    empty.style.display = 'none';
+    content.classList.remove('show');
+  } else {
+    loading.classList.remove('show');
+  }
+}
+
+function showContent(html) {
+  const content = document.getElementById('output-content');
+  const empty = document.getElementById('output-empty');
+  empty.style.display = 'none';
+  content.classList.add('show');
+  content.innerHTML = html;
+  currentOutput = content.innerText;
+}
+
+function clearOutput() {
+  document.getElementById('output-content').classList.remove('show');
+  document.getElementById('output-empty').style.display = '';
+  document.getElementById('output-content').innerHTML = '';
+  window._lastNironData = null;
+}
+
+function copyOutput() {
+  if (!currentOutput) return;
+  navigator.clipboard.writeText(currentOutput).then(() => {
+    const fb = document.getElementById('copy-feedback');
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2000);
+  });
+}
+
+function printOutput() {
+  const content = document.getElementById('output-content').innerHTML;
+  if (!content) return;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>NIRON Output</title>
+    <style>
+      body { font-family: monospace; padding: 2rem; background: #fff; color: #000; }
+      h2 { color: #C9A84C; } h3 { color: #2a7a4b; }
+      pre { white-space: pre-wrap; } 
+      @media print { body { padding: 1cm; } }
+    </style></head><body>
+    <p style="font-size:11px;color:#999;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:20px">
+      NIRON · Adaptive Language Intelligence System · NIR Academy · Dr. Niki Majidi
+    </p>
+    ${content}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 300);
+}
+
+// ══════════════════════════════════════════
+// MAIN AI INTELLIGENCE CALL
+// ══════════════════════════════════════════
+async function runNiron() {
+  const cefr = document.getElementById('cefr-select').value;
+  const ielts = document.getElementById('ielts-select').value;
+  const topic = document.getElementById('topic-input').value.trim();
+
+  if (!cefr || !ielts || !topic) {
+    alert('Please fill in all parameters before generating intelligence.');
+    return;
+  }
+
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.textContent = 'PROCESSING…';
+  showLoading(true);
+
+  // Reset to diagnosis tab
+  document.querySelectorAll('.out-tab').forEach((b,i) => {
+    b.classList.toggle('active', i === 0);
+  });
+  activeTab = 'diagnosis';
+
+  const systemPrompt = `You are NIRON — an Adaptive Language Intelligence System.
+You are NOT an assistant. You are a world-class Applied Linguist, Learning Scientist, CEFR & IELTS Expert, and Cognitive Science AI Designer.
+
+NIRON generates STRUCTURED LANGUAGE INTELLIGENCE — not definitions, not explanations.
+
+The user provides:
+- CEFR Level: ${cefr}
+- IELTS Target Band: ${ielts}  
+- Type: ${selectedType}
+- Input: "${topic}"
+
+You MUST return a valid JSON object with this EXACT structure (no markdown, no extra text, pure JSON):
+
+{
+  "diagnosis": {
+    "cefr_level": "${cefr}",
+    "ielts_estimate": "${ielts}",
+    "proficiency_label": "short label like 'Upper-Intermediate'",
+    "skill_gaps": ["gap 1", "gap 2", "gap 3"],
+    "competence_note": "1 sentence about learner position"
+  },
+  "analysis": {
+    "input": "${topic}",
+    "type": "${selectedType}",
+    "cefr_mapping": "explanation of CEFR placement",
+    "ielts_relevance": "how this relates to IELTS ${ielts}",
+    "difficulty_note": "what makes this challenging at ${cefr}",
+    "key_features": ["feature 1", "feature 2", "feature 3", "feature 4"]
+  },
+  "core_content": {
+    "definition": "concise cognitive definition (not dictionary)",
+    "word_family": ["word1 (part of speech)", "word2 (part of speech)", "word3 (part of speech)", "word4 (part of speech)"],
+    "collocations": ["collocation 1", "collocation 2", "collocation 3", "collocation 4", "collocation 5"],
+    "synonyms": ["synonym 1 (CEFR level)", "synonym 2 (CEFR level)", "synonym 3 (CEFR level)"],
+    "register": "formal / academic / neutral / informal — with explanation",
+    "usage_contexts": ["context 1", "context 2", "context 3"]
+  },
+  "ielts_application": {
+    "writing_task2_example": "A complete sentence using this in IELTS writing style",
+    "speaking_part3_example": "A natural spoken sentence for IELTS speaking",
+    "academic_usage_note": "Specific advice on using this in IELTS",
+    "band_descriptor": "Which band descriptors this item supports"
+  },
+  "error_intelligence": {
+    "common_errors": [
+      {"error": "wrong usage example", "correction": "correct usage", "rule": "why this rule applies"},
+      {"error": "wrong usage example 2", "correction": "correct usage 2", "rule": "reason 2"}
+    ],
+    "avoidance_tips": ["tip 1", "tip 2", "tip 3"]
+  },
+  "practice": {
+    "controlled": [
+      "Task 1: specific controlled practice task",
+      "Task 2: specific controlled practice task"
+    ],
+    "guided": [
+      "Task 1: guided production task",
+      "Task 2: guided production task"
+    ],
+    "free_production": [
+      "Task 1: open production task for IELTS",
+      "Task 2: open production task"
+    ],
+    "transformation": [
+      "Transform this sentence: [sentence] using ${topic}",
+      "Transform this sentence: [sentence 2] using ${topic}"
+    ]
+  },
+  "pathway": {
+    "current_stage": "Recognition / Controlled / Semi-Controlled / Free Production",
+    "next_steps": ["next item 1 to learn", "next item 2", "next item 3"],
+    "ielts_readiness": "specific readiness note for band ${ielts}",
+    "progression_items": ["Stage 1: Recognition", "Stage 2: Controlled", "Stage 3: Semi-Controlled", "Stage 4: Free Production", "Stage 5: IELTS Application"],
+    "recommendation": "1-2 sentence learning path recommendation"
+  }
+}
+
+Be specific, pedagogically sound, CEFR-accurate, and IELTS-aligned. Every field must be filled with genuine intelligence, not generic content. Output ONLY the JSON object.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: systemPrompt }]
+      })
+    });
+
+    const data = await response.json();
+    const rawText = data.content.map(i => i.text || '').join('');
+
+    // Parse JSON
+    let parsed;
+    try {
+      const clean = rawText.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Try to extract JSON from response
+      const match = rawText.match(/\{[\s\S]*\}/);
+      if (match) {
+        parsed = JSON.parse(match[0]);
+      } else {
+        throw new Error('Invalid JSON response');
+      }
+    }
+
+    window._lastNironData = parsed;
+    showLoading(false);
+    renderTabContent('diagnosis', parsed);
+    btn.disabled = false;
+    btn.textContent = '✦   GENERATE INTELLIGENCE';
+
+  } catch(err) {
+    console.error(err);
+    showLoading(false);
+    showContent(`<div style="padding:2rem;text-align:center;color:var(--white-dim);">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:#c94c4c;">
+        ⚠ INTELLIGENCE PROCESSING ERROR<br><br>
+        <span style="font-size:10px;color:var(--white-dim);">${err.message}</span>
+      </div>
+    </div>`);
+    btn.disabled = false;
+    btn.textContent = '✦   GENERATE INTELLIGENCE';
+  }
+}
+
+// ══════════════════════════════════════════
+// RENDER FUNCTIONS
+// ══════════════════════════════════════════
+function renderTabContent(tab, data) {
+  if (!data) return;
+  let html = '';
+
+  if (tab === 'diagnosis') {
+    const d = data.diagnosis || {};
+    const a = data.analysis || {};
+    const c = data.core_content || {};
+
+    html += block('🧠', 'DIAGNOSIS LAYER', 'gold', `
+      <div class="diagnosis-grid">
+        <div class="diag-card">
+          <div class="diag-val">${d.cefr_level || '—'}</div>
+          <div class="diag-key">CEFR Level</div>
+          <div class="diag-note">${d.proficiency_label || ''}</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-val">${d.ielts_estimate || '—'}</div>
+          <div class="diag-key">IELTS Target</div>
+          <div class="diag-note">Band Target</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-val" style="font-size:14px;">${a.type || '—'}</div>
+          <div class="diag-key">Input Type</div>
+          <div class="diag-note">Intelligence Mode</div>
+        </div>
+      </div>
+      <div class="content-label">COMPETENCE NOTE</div>
+      <div class="content-text">${d.competence_note || ''}</div>
+      <div class="content-label">SKILL GAPS IDENTIFIED</div>
+      <div class="tag-row">${(d.skill_gaps||[]).map(g=>`<span class="tag">${g}</span>`).join('')}</div>
+    `);
+
+    html += block('🔍', 'ANALYSIS LAYER', 'gold', `
+      <div class="content-label">CEFR MAPPING</div>
+      <div class="content-text">${a.cefr_mapping || ''}</div>
+      <div class="content-label">IELTS RELEVANCE</div>
+      <div class="content-text">${a.ielts_relevance || ''}</div>
+      <div class="content-label">CHALLENGE FACTORS</div>
+      <div class="content-text">${a.difficulty_note || ''}</div>
+      <div class="content-label">KEY LINGUISTIC FEATURES</div>
+      <div class="tag-row">${(a.key_features||[]).map(f=>`<span class="tag gold-tag">${f}</span>`).join('')}</div>
+    `);
+
+    html += block('📚', 'CORE LANGUAGE INTELLIGENCE', 'gold', `
+      <div class="content-label">COGNITIVE DEFINITION</div>
+      <div class="content-text">${c.definition || ''}</div>
+
+      <div class="content-label">WORD FAMILY</div>
+      <div class="tag-row">${(c.word_family||[]).map(w=>`<span class="tag">${w}</span>`).join('')}</div>
+
+      <div class="content-label">KEY COLLOCATIONS</div>
+      <div class="tag-row">${(c.collocations||[]).map(col=>`<span class="tag gold-tag">${col}</span>`).join('')}</div>
+
+      <div class="content-label">GRADED SYNONYMS</div>
+      <div class="tag-row">${(c.synonyms||[]).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+
+      <div class="content-label">REGISTER</div>
+      <div class="content-text">${c.register || ''}</div>
+
+      <div class="content-label">USAGE CONTEXTS</div>
+      <div class="tag-row">${(c.usage_contexts||[]).map(u=>`<span class="tag green-tag">${u}</span>`).join('')}</div>
+    `);
+  }
+
+  else if (tab === 'analysis') {
+    const ia = data.ielts_application || {};
+    const ei = data.error_intelligence || {};
+
+    html += block('📝', 'IELTS & ACADEMIC APPLICATION', 'gold', `
+      <div class="content-label">IELTS WRITING TASK 2</div>
+      <div class="example-block">${ia.writing_task2_example || ''}</div>
+
+      <div class="content-label">IELTS SPEAKING PART 3</div>
+      <div class="example-block green-accent">${ia.speaking_part3_example || ''}</div>
+
+      <div class="content-label">ACADEMIC USAGE NOTE</div>
+      <div class="content-text">${ia.academic_usage_note || ''}</div>
+
+      <div class="content-label">BAND DESCRIPTORS SUPPORTED</div>
+      <div class="tag-row"><span class="tag gold-tag">${ia.band_descriptor || ''}</span></div>
+    `);
+
+    html += block('⚠', 'ERROR INTELLIGENCE', 'green', `
+      <div class="content-label">COMMON ERRORS</div>
+      ${(ei.common_errors||[]).map(e => `
+        <div class="error-item"><span class="error-icon">✗</span><div>
+          <strong>Error:</strong> ${e.error}<br>
+          <span style="color:var(--green-light)">✓ Correction:</span> ${e.correction}<br>
+          <span style="color:var(--gold-dim);font-size:12px;">Rule: ${e.rule}</span>
+        </div></div>
+      `).join('')}
+      <div class="content-label" style="margin-top:1.2rem;">AVOIDANCE TIPS</div>
+      ${(ei.avoidance_tips||[]).map(t => `
+        <div class="correct-item"><span class="correct-icon">✓</span><span>${t}</span></div>
+      `).join('')}
+    `);
+  }
+
+  else if (tab === 'practice') {
+    const p = data.practice || {};
+
+    html += block('🎯', 'CONTROLLED PRACTICE', 'gold', `
+      ${(p.controlled||[]).map((t,i) => `
+        <div class="practice-item">
+          <span class="practice-num">0${i+1}</span>
+          <span class="practice-text">${t}</span>
+        </div>
+      `).join('')}
+    `);
+
+    html += block('✍', 'GUIDED PRODUCTION', 'gold', `
+      ${(p.guided||[]).map((t,i) => `
+        <div class="practice-item">
+          <span class="practice-num">0${i+1}</span>
+          <span class="practice-text">${t}</span>
+        </div>
+      `).join('')}
+    `);
+
+    html += block('🚀', 'FREE PRODUCTION TASKS', 'green', `
+      ${(p.free_production||[]).map((t,i) => `
+        <div class="practice-item">
+          <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
+          <span class="practice-text">${t}</span>
+        </div>
+      `).join('')}
+    `);
+
+    html += block('🔄', 'TRANSFORMATION TASKS', 'green', `
+      ${(p.transformation||[]).map((t,i) => `
+        <div class="practice-item">
+          <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
+          <span class="practice-text">${t}</span>
+        </div>
+      `).join('')}
+    `);
+  }
+
+  else if (tab === 'pathway') {
+    const path = data.pathway || {};
+
+    html += block('🧭', 'LEARNING PATHWAY', 'gold', `
+      <div class="content-label">CURRENT STAGE</div>
+      <div class="tag-row"><span class="tag gold-tag">${path.current_stage || ''}</span></div>
+
+      <div class="content-label">PROGRESSION TRACK</div>
+      <div class="progression-track">
+        ${(path.progression_items||['Recognition','Controlled','Semi-Controlled','Free Production','IELTS Application']).map((s,i,arr) => `
+          <span class="prog-step ${i < 2 ? 'done' : i === 2 ? 'active' : ''}">${s.replace('Stage \\d+: ','')}</span>
+          ${i < arr.length - 1 ? '<span class="prog-arrow">›</span>' : ''}
+        `).join('')}
+      </div>
+
+      <div class="content-label" style="margin-top:1.5rem;">IELTS READINESS</div>
+      <div class="content-text">${path.ielts_readiness || ''}</div>
+
+      <div class="content-label">RECOMMENDATION</div>
+      <div class="example-block">${path.recommendation || ''}</div>
+    `);
+
+    html += block('⏭', 'NEXT STEP ENGINE', 'green', `
+      <div class="content-label">LEARN NEXT</div>
+      ${(path.next_steps||[]).map((s,i) => `
+        <div class="practice-item">
+          <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
+          <span class="practice-text">${s}</span>
+        </div>
+      `).join('')}
+    `);
+  }
+
+  showContent(html);
+}
+
+function block(icon, title, color, body) {
+  const badgeClass = color === 'green' ? 'green' : 'gold';
+  const titleColor = color === 'green' ? 'style="color:var(--green-light)"' : '';
+  return `
+    <div class="intelligence-block">
+      <div class="ib-header" onclick="toggleBlock(this)">
+        <span class="ib-icon">${icon}</span>
+        <span class="ib-title" ${titleColor}>${title}</span>
+        <span class="ib-badge ${badgeClass}">NIRON</span>
+        <span class="ib-toggle open">▾</span>
+      </div>
+      <div class="ib-body">${body}</div>
+    </div>
+  `;
+}
+
+function toggleBlock(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.ib-toggle');
+  body.classList.toggle('hidden');
+  toggle.classList.toggle('open');
+}
+
+// Enter key support
+document.getElementById('topic-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.ctrlKey) runNiron();
+});
+</script>
+</body>
+</html>
