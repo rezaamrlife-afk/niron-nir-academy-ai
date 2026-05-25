@@ -27,6 +27,70 @@
   --border-green: rgba(255,215,0,0.25);
 }
 
+/* ══════════════════ LIGHT MODE ══════════════════ */
+body.light-mode {
+  --black: #f5f0e8;
+  --black-2: #edeae0;
+  --black-3: #e4e0d5;
+  --black-4: #d8d3c7;
+  --gold: #b8860b;
+  --gold-light: #d4a017;
+  --gold-dim: #8a6408;
+  --gold-glow: rgba(184,134,11,0.12);
+  --green: #2a7a4b;
+  --green-light: #2a7a4b;
+  --green-glow: rgba(42,122,75,0.12);
+  --white: #1a1200;
+  --white-dim: rgba(30,20,0,0.68);
+  --white-faint: rgba(30,20,0,0.08);
+  --border: rgba(184,134,11,0.25);
+  --border-green: rgba(42,122,75,0.25);
+}
+
+body.light-mode #dna-canvas { opacity: 0.15; }
+
+body.light-mode .navbar {
+  background: rgba(245,240,232,0.94);
+}
+
+body.light-mode .input-select option {
+  background: #e4e0d5;
+  color: #1a1200;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.theme-toggle:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.theme-toggle-icon { font-size: 12px; transition: transform 0.4s; }
+body.light-mode .theme-toggle-icon { transform: rotate(180deg); }
+
+/* Smooth transition for theme changes */
+body, body *:not(#dna-canvas) {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 html { scroll-behavior: smooth; }
@@ -1779,6 +1843,10 @@ body {
       <span class="eco-dot"></span>
       Sister App: NIRA
     </a>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+      <span class="theme-toggle-icon" id="theme-icon">☀</span>
+      <span id="theme-label">Light</span>
+    </button>
     <button class="btn-signin" onclick="openAuth('login')">✦ Sign In</button>
     <div class="user-pill" id="user-pill" onclick="openAuth('login')">
       <div class="user-avatar" id="user-avatar"></div>
@@ -2736,6 +2804,25 @@ function isValidEmail(email) {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeAuth();
 });
+
+// ══════════════════════════════════════════
+// THEME TOGGLE — DARK / LIGHT MODE
+// ══════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light-mode');
+  document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀';
+  document.getElementById('theme-label').textContent = isLight ? 'Dark' : 'Light';
+  localStorage.setItem('niron-theme', isLight ? 'light' : 'dark');
+}
+
+// Restore saved theme on load
+(function() {
+  if (localStorage.getItem('niron-theme') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('theme-icon').textContent  = '🌙';
+    document.getElementById('theme-label').textContent = 'Dark';
+  }
+})();
 </script>
 </body>
 </html>
