@@ -9,30 +9,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* Base Dark System */
   --black: #020202;
-  --black-2: #050505;
-  --black-3: #0A0A0A;
-  --black-4: #111111;
+  --black-2: #0A0A0A;
+  --black-3: #111111;
+  --black-4: #1A1A1A;
 
-  /* Metallic Gold (Brighter + Reflective) */
-  --gold: #F2C14E;
-  --gold-light: #FFE08A;
-  --gold-dim: #B8891A;
-  --gold-glow: rgba(242,193,78,0.35);
+  /* Gold (Branded + Sharper) */
+  --gold: #E0B84A;
+  --gold-light: #FFD86B;
+  --gold-dim: #A67C1B;
+  --gold-glow: rgba(224,184,74,0.22);
 
-  /* Neon Emerald Green (more visible) */
-  --green: #00E58C;
-  --green-light: #3CFFB5;
-  --green-glow: rgba(0,229,140,0.28);
+  /* Green (Neon Eco Identity) */
+  --green: #00E676;
+  --green-light: #5CFFB0;
+  --green-deep: #00A85A;
+  --green-glow: rgba(0,230,118,0.18);
 
-  /* Text (brighter for contrast) */
-  --white: #F7F5EE;
-  --white-dim: rgba(247,245,238,0.78);
-  --white-faint: rgba(247,245,238,0.10);
+  /* Text System */
+  --white: #F2F2EA;
+  --white-dim: rgba(242,242,234,0.70);
+  --white-faint: rgba(242,242,234,0.08);
 
-  /* Borders (stronger visibility) */
-  --border: rgba(242,193,78,0.28);
-  --border-green: rgba(60,255,181,0.28);
+  /* Borders */
+  --border: rgba(224,184,74,0.22);
+  --border-green: rgba(0,230,118,0.22);
+
+  /* UI Depth */
+  --shadow-soft: 0 0 20px rgba(0,0,0,0.35);
+  --shadow-gold: 0 0 18px var(--gold-glow);
+  --shadow-green: 0 0 18px var(--green-glow);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 
