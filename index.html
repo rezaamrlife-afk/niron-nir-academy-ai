@@ -138,14 +138,15 @@ body {
 
 .nav-links a {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--white-dim);
   text-decoration: none;
-  transition: color 0.3s;
+  transition: color 0.25s, transform 0.25s, text-shadow 0.25s;
   position: relative;
+  display: inline-block;
 }
 
 .nav-links a::after {
@@ -159,7 +160,11 @@ body {
   transform-origin: left;
 }
 
-.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover {
+  color: var(--gold);
+  transform: translateY(-3px);
+  text-shadow: 0 0 16px rgba(79,195,247,0.5), 0 4px 12px rgba(0,0,0,0.4);
+}
 .nav-links a:hover::after { transform: scaleX(1); }
 
 .nav-ecosystem {
@@ -1450,7 +1455,7 @@ body {
   </ul>
   <div class="nav-ecosystem">
     <span class="eco-tag">NIR Academy</span>
-    <a href="#ecosystem" class="eco-pill">
+    <a href="https://nir-academy-ai.vercel.app/" target="_blank" class="eco-pill">
       <span class="eco-dot"></span>
       Sister App: NIRA
     </a>
@@ -1706,11 +1711,11 @@ body {
         <div class="dna-bridge-node"></div>
       </div>
 
-      <div class="sibling-card">
-        <div class="sibling-label">⬡ Sister App</div>
+      <a href="https://nir-academy-ai.vercel.app/" target="_blank" class="sibling-card" style="text-decoration:none;display:block;cursor:pointer;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--green-light)'" onmouseout="this.style.borderColor=''">
+        <div class="sibling-label">⬡ Sister App · Click to Visit</div>
         <div class="sibling-name nira-name">NIRA</div>
         <div class="sibling-mission">AI-Powered ELT Platform<br>Prompt Generator · IELTS Tasks · Lesson Planner</div>
-      </div>
+      </a>
     </div>
 
     <div class="mother-tag">
