@@ -1,16 +1,16 @@
 /**
- * NIRON — Grok API Proxy
+ * NIRON — Groq API Proxy
  * Route: POST /api/grok
  *
  * Receives: { topic, cefr_level, ielts_band, type }
  * Returns:  { status: 'ok', output: { diagnosis, analysis, core_content,
  *              ielts_application, error_intelligence, practice, pathway, definitions } }
  *
- * API key is read from process.env.XAI_API_KEY — never exposed to the browser.
+ * API key is read from process.env.GROQ_API_KEY — never exposed to the browser.
  */
 
-const GROK_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
-const GROK_MODEL    = 'grok-3-fast';   // change to 'grok-4' when available on your plan
+const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODEL    = 'llama-3.3-70b-versatile';
 
 // ── System prompt ────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
@@ -117,16 +117,13 @@ Return ONLY this JSON object with all fields populated. Do not include any text 
 }`;
 }
 
-// ── JSON extractor — handles Grok wrapping response in markdown fences ───────
+// ── JSON extractor — handles model wrapping response in markdown fences ───────
 function extractJSON(text) {
-  // Try direct parse first
   try { return JSON.parse(text.trim()); } catch (_) {}
-  // Strip ```json ... ``` or ``` ... ```
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fenced) {
     try { return JSON.parse(fenced[1].trim()); } catch (_) {}
   }
-  // Last resort: find first { ... } block
   const start = text.indexOf('{');
   const end   = text.lastIndexOf('}');
   if (start !== -1 && end !== -1) {
@@ -135,7 +132,7 @@ function extractJSON(text) {
   return null;
 }
 
-// ── Validate that the parsed object has required top-level keys ──────────────
+// ── Validate required top-level keys ─────────────────────────────────────────
 function isValidOutput(obj) {
   if (!obj || typeof obj !== 'object') return false;
   const required = ['diagnosis', 'analysis', 'practice', 'pathway', 'definitions'];
@@ -144,46 +141,43 @@ function isValidOutput(obj) {
 
 // ── Main handler ─────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ status: 'error', error: 'Method not allowed' });
   }
 
-  // CORS headers — allow same origin (Vercel handles this but be explicit)
   res.setHeader('Access-Control-Allow-Origin',  req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // API key check
-  const apiKey = process.env.XAI_API_KEY;
+  // API key — server-side only
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ status: 'error', error: 'XAI_API_KEY not configured on server.' });
+    return res.status(500).json({ status: 'error', error: 'GROQ_API_KEY not configured on server.' });
   }
 
-  // Parse request body
   const { topic, cefr_level, ielts_band, type } = req.body || {};
   if (!topic || !cefr_level || !ielts_band || !type) {
     return res.status(400).json({ status: 'error', error: 'Missing required params: topic, cefr_level, ielts_band, type' });
   }
 
-  // Call Grok
-  let grokResponse;
+  // Call Groq
+  let groqResponse;
   try {
-    grokResponse = await fetch(GROK_ENDPOINT, {
+    groqResponse = await fetch(GROQ_ENDPOINT, {
       method:  'POST',
       headers: {
         'Content-Type':  'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model:       GROK_MODEL,
+        model:       GROQ_MODEL,
         temperature: 0.4,
         max_tokens:  3000,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: buildSystemPrompt() },
           { role: 'user',   content: buildUserPrompt(topic, cefr_level, ielts_band, type) },
@@ -191,36 +185,34 @@ export default async function handler(req, res) {
       }),
     });
   } catch (networkErr) {
-    return res.status(502).json({ status: 'error', error: `Network error reaching Grok: ${networkErr.message}` });
+    return res.status(502).json({ status: 'error', error: `Network error reaching Groq: ${networkErr.message}` });
   }
 
-  if (!grokResponse.ok) {
-    const errText = await grokResponse.text().catch(() => '');
+  if (!groqResponse.ok) {
+    const errText = await groqResponse.text().catch(() => '');
     return res.status(502).json({
       status: 'error',
-      error:  `Grok API returned ${grokResponse.status}: ${errText.slice(0, 200)}`,
+      error:  `Groq API returned ${groqResponse.status}: ${errText.slice(0, 200)}`,
     });
   }
 
-  // Parse Grok response
-  let grokData;
+  let groqData;
   try {
-    grokData = await grokResponse.json();
+    groqData = await groqResponse.json();
   } catch (_) {
-    return res.status(502).json({ status: 'error', error: 'Failed to parse Grok API response as JSON.' });
+    return res.status(502).json({ status: 'error', error: 'Failed to parse Groq API response.' });
   }
 
-  const rawContent = grokData?.choices?.[0]?.message?.content;
+  const rawContent = groqData?.choices?.[0]?.message?.content;
   if (!rawContent) {
-    return res.status(502).json({ status: 'error', error: 'Grok returned empty content.' });
+    return res.status(502).json({ status: 'error', error: 'Groq returned empty content.' });
   }
 
-  // Extract and validate the output JSON
   const output = extractJSON(rawContent);
   if (!isValidOutput(output)) {
     return res.status(502).json({
       status: 'error',
-      error:  'Grok response did not match expected NIRON schema. Raw: ' + rawContent.slice(0, 200),
+      error:  'Groq response did not match NIRON schema. Raw: ' + rawContent.slice(0, 200),
     });
   }
 
