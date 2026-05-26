@@ -171,7 +171,7 @@ body.focus-mode .copy-feedback   { bottom: 1rem; }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   background: var(--black);
@@ -1467,9 +1467,11 @@ body {
 }
 
 @media (max-width: 600px) {
+  /* ── Root containment — prevents any child from causing horizontal scroll ── */
+  .page-wrap { width: 100%; overflow-x: hidden; box-sizing: border-box; }
+
   /* ── Navbar ── */
-  /* Prevent logo+title from overflowing into hamburger area */
-  .navbar { padding: 0 0.8rem; height: 56px; overflow: visible; }
+  .navbar { padding: 0 0.8rem; height: 56px; overflow: visible; width: 100%; box-sizing: border-box; }
   .nav-brand { gap: 8px; min-width: 0; overflow: hidden; flex-shrink: 1; }
   .nav-logo-ring { width: 30px; height: 30px; flex-shrink: 0; }
   .nav-logo-img { height: 30px; }
@@ -1479,29 +1481,27 @@ body {
   .nav-ecosystem { display: none; }
 
   /* Hero */
-  .hero { padding: 80px 1.2rem 40px; min-height: auto; }
-  .hero-headline { font-size: clamp(36px, 12vw, 52px); letter-spacing: 4px; }
-  .hero-tagline { font-size: 13px; letter-spacing: 2px; }
+  .hero { padding: 80px 1.2rem 40px; min-height: auto; width: 100%; box-sizing: border-box; }
+  .hero-inner { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .hero-headline { font-size: clamp(28px, 10vw, 48px); letter-spacing: 3px; word-break: break-word; }
+  .hero-tagline { font-size: 12px; letter-spacing: 1.5px; }
   .hero-desc { font-size: 14px; }
   .hero-badge span { font-size: 9px; letter-spacing: 2px; }
   .btn-primary, .btn-ghost { padding: 11px 20px; font-size: 10px; letter-spacing: 2px; }
-  .hero-actions { gap: 10px; }
+  .hero-actions { gap: 10px; flex-wrap: wrap; justify-content: center; }
 
   /* Stats */
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); width: 100%; box-sizing: border-box; }
   .stat-num { font-size: 22px; }
   .stat-item { padding: 1.2rem 1rem; }
 
   /* ── Main interface ── */
-  /* Extra horizontal padding so clip-path corners aren't cut off */
-  .main-interface { padding: 1.5rem 1rem 3rem; }
-  .interface-grid { min-height: auto; overflow: visible; }
-  /* Sidebar: breathing room so inputs aren't edge-clipped */
-  .i-sidebar { padding: 1.2rem 1rem; gap: 1.2rem; }
-  /* Ensure select/field clip-path corners show fully */
+  .main-interface { padding: 1.5rem 1rem 3rem; width: 100%; box-sizing: border-box; }
+  .interface-grid { min-height: auto; overflow: visible; width: 100%; box-sizing: border-box; }
+  .i-sidebar { padding: 1.2rem 1rem; gap: 1.2rem; width: 100%; box-sizing: border-box; }
   .input-select, .input-field { width: 100%; box-sizing: border-box; }
   .lang-type-grid { gap: 6px; }
-  .i-output { min-height: auto; overflow: visible; }
+  .i-output { min-height: auto; overflow: visible; width: 100%; box-sizing: border-box; }
 
   /* ── Output tabs — horizontal scroll ── */
   /* Remove overflow:hidden from topbar so tabs are never clipped */
