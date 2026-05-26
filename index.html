@@ -2158,6 +2158,112 @@ body {
   .hamburger-btn { display: none !important; }
 }
 
+/* ══════════════════ ACCOUNT VIEW ══════════════════ */
+#account-view {
+  display: none;
+  min-height: 100vh;
+  padding: 100px 3rem 6rem;
+  max-width: 780px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+#account-view.show { display: block; }
+
+.acct-header {
+  margin-bottom: 3rem;
+}
+.acct-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--green-light);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.acct-tag::before {
+  content: '';
+  width: 30px; height: 1px;
+  background: var(--green-light);
+}
+.acct-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: clamp(20px, 3vw, 32px);
+  color: var(--gold);
+  letter-spacing: 3px;
+}
+
+.acct-card {
+  background: var(--black-2);
+  border: 1px solid var(--border);
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.acct-card-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--white-faint);
+  margin-bottom: 1.5rem;
+}
+.acct-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 1.2rem;
+}
+.acct-row:last-child { margin-bottom: 0; }
+.acct-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+}
+.acct-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+.acct-value.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  word-break: break-all;
+}
+.acct-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  margin-top: 1rem;
+}
+.acct-back-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-glow);
+}
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -2456,8 +2562,8 @@ window.NIRONAIService = {
           </div>
         </div>
         <div class="ud-items">
-          <a class="ud-item" onclick="closeDropdown()">
-            <span class="ud-item-icon">👤</span>My Profile
+          <a class="ud-item" onclick="showAccount()">
+            <span class="ud-item-icon">👤</span>My Account
           </a>
           <a class="ud-item" onclick="closeDropdown()">
             <span class="ud-item-icon">🔖</span>Saved Prompts
@@ -2510,7 +2616,7 @@ window.NIRONAIService = {
     <!-- Auth: Profile / Sign Out -->
     <div id="mob-auth-section" style="display:none;">
       <span class="mob-section-lbl">Account</span>
-      <button class="mob-item active-item">
+      <button class="mob-item active-item" onclick="showAccount()">
         <span class="mob-item-icon">👤</span>
         <span id="mob-user-name">User</span>
         <span class="mob-item-arrow">›</span>
@@ -2853,6 +2959,40 @@ window.NIRONAIService = {
     <div>By <span>Dr. Niki Majidi</span> · NIR Academy</div>
   </div>
 </footer>
+
+<!-- ══ ACCOUNT VIEW ══ -->
+<div id="account-view">
+  <div class="acct-header">
+    <div class="acct-tag">My Account</div>
+    <h1 class="acct-title">ACCOUNT DETAILS</h1>
+  </div>
+
+  <div class="acct-card">
+    <div class="acct-card-title">⬡ Profile Information</div>
+    <div class="acct-row">
+      <span class="acct-label">Full Name</span>
+      <span class="acct-value" id="acct-name">—</span>
+    </div>
+    <div class="acct-row">
+      <span class="acct-label">Email Address</span>
+      <span class="acct-value" id="acct-email">—</span>
+    </div>
+  </div>
+
+  <div class="acct-card">
+    <div class="acct-card-title">⬡ Session</div>
+    <div class="acct-row">
+      <span class="acct-label">User ID</span>
+      <span class="acct-value mono" id="acct-uid">—</span>
+    </div>
+    <div class="acct-row">
+      <span class="acct-label">Status</span>
+      <span class="acct-value" style="color:var(--green-light);">● Active Session</span>
+    </div>
+  </div>
+
+  <button class="acct-back-btn" onclick="hideAccount()">← Back to App</button>
+</div>
 
 </div><!-- end page-wrap -->
 
@@ -3683,6 +3823,78 @@ function toggleTheme() {
     document.getElementById('theme-label').textContent = 'Dark';
   }
 })();
+
+// ══════════════════════════════════════════
+// ACCOUNT VIEW
+// ══════════════════════════════════════════
+const _ACCT_HIDE_IDS = ['system','interface','engines','ecosystem'];
+
+function showAccount() {
+  closeDropdown();
+  closeMobMenu();
+
+  // Guard: must be logged in
+  if (!_authUser) {
+    openAuth();
+    return;
+  }
+
+  // Populate fields from Supabase session
+  (async function() {
+    let name  = _authUser.name || '—';
+    let email = '—';
+    let uid   = '—';
+
+    try {
+      if (window._sb) {
+        const { data: { session } } = await window._sb.auth.getSession();
+        if (session && session.user) {
+          email = session.user.email || '—';
+          uid   = session.user.id   || '—';
+          name  = session.user.user_metadata?.full_name || _authUser.name || email.split('@')[0] || '—';
+        }
+      }
+    } catch(e) {
+      // Supabase not ready — fall back to _authUser
+    }
+
+    document.getElementById('acct-name').textContent  = name;
+    document.getElementById('acct-email').textContent = email;
+    document.getElementById('acct-uid').textContent   = uid;
+  })();
+
+  // Hide main page sections
+  _ACCT_HIDE_IDS.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  // Also hide stats-bar and footer (no id, use querySelector)
+  const statsBar = document.querySelector('.stats-bar');
+  const footer   = document.querySelector('.footer');
+  if (statsBar) statsBar.style.display = 'none';
+  if (footer)   footer.style.display   = 'none';
+
+  // Show account view
+  document.getElementById('account-view').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideAccount() {
+  // Hide account view
+  document.getElementById('account-view').classList.remove('show');
+
+  // Restore main page sections
+  _ACCT_HIDE_IDS.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  const statsBar = document.querySelector('.stats-bar');
+  const footer   = document.querySelector('.footer');
+  if (statsBar) statsBar.style.display = '';
+  if (footer)   footer.style.display   = '';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 </body>
 </html>
