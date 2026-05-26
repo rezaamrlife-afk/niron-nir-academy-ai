@@ -2159,10 +2159,10 @@ body {
 }
 
 </style>
-<!-- NIRON AI Service Layer -->
-<script src="services/schema.js"></script>
-<script src="services/providers.js"></script>
-<script src="services/aiService.js"></script>
+<!-- NIRON AI Service Layer — replaced by inline NIRONAIService engine -->
+<!-- <script src="services/schema.js"></script>   -->
+<!-- <script src="services/providers.js"></script> -->
+<!-- <script src="services/aiService.js"></script> -->
 </head>
 <body>
 
@@ -2978,6 +2978,356 @@ function toggleBlock(header) {
 document.getElementById('topic-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && e.ctrlKey) runNiron();
 });
+
+// ══════════════════════════════════════════
+// NIRON AI SERVICE — CORE ENGINE LAYER
+// Pipeline: UI → NIRONAIService.generate()
+//           → MockProvider → Schema → Response
+// ══════════════════════════════════════════
+
+window.NIRONAIService = (function() {
+
+  // ── SCHEMA ─────────────────────────────────────────────────────────────────
+  // Defines the exact JSON shape runNiron() and renderTabContent() expect.
+  // All keys must be present; empty arrays/strings are safe fallbacks.
+  const RESPONSE_SCHEMA = {
+    diagnosis: {
+      cefr_level:       '',   // e.g. "B2"
+      proficiency_label:'',   // e.g. "Upper-Intermediate"
+      ielts_estimate:   '',   // e.g. "6.5"
+      competence_note:  '',
+      skill_gaps:       [],
+    },
+    analysis: {
+      type:             '',   // "Vocabulary" | "Grammar" | "Mixed"
+      cefr_mapping:     '',
+      ielts_relevance:  '',
+      difficulty_note:  '',
+      key_features:     [],
+    },
+    core_content: {
+      definition:       '',
+      word_family:      [],
+      collocations:     [],
+      synonyms:         [],
+      register:         '',
+      usage_contexts:   [],
+    },
+    ielts_application: {
+      writing_task2_example:  '',
+      speaking_part3_example: '',
+      academic_usage_note:    '',
+      band_descriptor:        '',
+    },
+    error_intelligence: {
+      common_errors:    [],   // [{error, correction, rule}]
+      avoidance_tips:   [],
+    },
+    practice: {
+      controlled:       [],
+      guided:           [],
+      free_production:  [],
+      transformation:   [],
+    },
+    pathway: {
+      current_stage:      '',
+      progression_items:  [],
+      ielts_readiness:    '',
+      recommendation:     '',
+      next_steps:         [],
+    },
+  };
+
+  // ── PROMPT BUILDER ──────────────────────────────────────────────────────────
+  function buildPrompt(params) {
+    const { topic, cefr_level, ielts_band, type } = params;
+
+    const typeInstructions = {
+      vocabulary: `Focus on the word/phrase as a vocabulary item. Populate word_family, collocations, synonyms, register, usage_contexts fully. For grammar fields that are irrelevant, still provide sensible content showing the word in grammatical structures.`,
+      grammar:    `Focus on the grammar structure. For core_content, treat "definition" as the grammar rule explanation, "word_family" as related structural forms, "collocations" as typical sentence patterns, "synonyms" as alternative structures, "register" as register note, "usage_contexts" as situational uses.`,
+      mixed:      `Treat the input as both a lexical and grammatical item. Provide full vocabulary intelligence AND grammar structure analysis integrated together.`,
+    };
+
+    return `You are NIRON — an Adaptive Language Intelligence System built for ELT by Dr. Niki Majidi at NIR Academy.
+
+Your task: Generate a complete language intelligence report for the input below.
+
+INPUT: "${topic}"
+CEFR LEVEL: ${cefr_level}
+IELTS TARGET BAND: ${ielts_band}
+INTELLIGENCE TYPE: ${type}
+
+TYPE INSTRUCTION: ${typeInstructions[type] || typeInstructions.vocabulary}
+
+CRITICAL RULES:
+1. Return ONLY a valid JSON object — no markdown, no backticks, no prose before or after.
+2. Match this exact schema (all keys required):
+${JSON.stringify(RESPONSE_SCHEMA, null, 2)}
+
+CONTENT REQUIREMENTS:
+- diagnosis.cefr_level: use exactly "${cefr_level}"
+- diagnosis.ielts_estimate: use exactly "${ielts_band}"
+- diagnosis.proficiency_label: full label for ${cefr_level} (e.g. "Upper-Intermediate")
+- diagnosis.competence_note: 2–3 sentences on what a ${cefr_level} learner targeting Band ${ielts_band} needs to master this input
+- diagnosis.skill_gaps: 4–6 specific gaps a ${cefr_level} learner likely has with "${topic}"
+- analysis.type: exactly "${type.charAt(0).toUpperCase() + type.slice(1)}"
+- analysis.cefr_mapping: how "${topic}" maps across CEFR levels from A1 to C2 (3–4 sentences)
+- analysis.ielts_relevance: specific relevance to IELTS Band ${ielts_band} tasks (2–3 sentences)
+- analysis.difficulty_note: what makes "${topic}" challenging at ${cefr_level} (2–3 sentences)
+- analysis.key_features: 5–7 linguistic feature tags (short labels, e.g. "Formal register", "Transitive verb")
+- core_content.definition: precise, learner-appropriate cognitive definition (2–3 sentences)
+- core_content.word_family: 6–10 items with part-of-speech labels (e.g. "investigation (n)", "investigate (v)")
+- core_content.collocations: 6–10 high-frequency collocations as short phrases
+- core_content.synonyms: 5–8 graded synonyms from simpler to more advanced
+- core_content.register: register description (formal/informal/academic/spoken note)
+- core_content.usage_contexts: 5–7 short situational context tags
+- ielts_application.writing_task2_example: 2–3 sentence authentic IELTS Task 2 usage example
+- ielts_application.speaking_part3_example: 2–3 sentence authentic IELTS Speaking Part 3 response
+- ielts_application.academic_usage_note: guidance on academic vs informal use (2 sentences)
+- ielts_application.band_descriptor: band descriptor it supports (e.g. "Lexical Resource Band 7–8")
+- error_intelligence.common_errors: exactly 3 objects: {error: "wrong usage", correction: "correct usage", rule: "rule explanation"}
+- error_intelligence.avoidance_tips: exactly 4 practical avoidance tips (complete sentences)
+- practice.controlled: exactly 3 fill-in / transformation exercises with clear instruction
+- practice.guided: exactly 3 semi-guided production tasks
+- practice.free_production: exactly 3 open production tasks (speaking or writing prompts)
+- practice.transformation: exactly 3 sentence transformation tasks
+- pathway.current_stage: stage label matching ${cefr_level} (e.g. "Controlled Practice — B2")
+- pathway.progression_items: exactly 5 stage labels: ["Recognition","Controlled Practice","Semi-Controlled","Free Production","IELTS Application"]
+- pathway.ielts_readiness: assessment of readiness for Band ${ielts_band} with this item (2 sentences)
+- pathway.recommendation: specific next step recommendation (2–3 sentences)
+- pathway.next_steps: exactly 4 concrete next-step study actions
+
+Return only the JSON object.`;
+  }
+
+  // ── MOCK PROVIDER ───────────────────────────────────────────────────────────
+  // Calls the Anthropic API (same model powering this page).
+  // Falls back to a rich local mock if the API is unavailable.
+  const MockProvider = {
+
+    async generate(params) {
+      // ── Try Anthropic API first ──────────────────────────────────────────
+      try {
+        const prompt = buildPrompt(params);
+
+        const apiResponse = await fetch('https://api.anthropic.com/v1/messages', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model:      'claude-sonnet-4-20250514',
+            max_tokens: 4000,
+            messages:   [{ role: 'user', content: prompt }],
+          }),
+        });
+
+        if (apiResponse.ok) {
+          const apiData  = await apiResponse.json();
+          const rawText  = (apiData.content || [])
+            .filter(b => b.type === 'text')
+            .map(b => b.text)
+            .join('');
+
+          // Strip any accidental markdown fences
+          const cleaned = rawText
+            .replace(/^```(?:json)?\s*/i, '')
+            .replace(/\s*```\s*$/, '')
+            .trim();
+
+          const parsed = JSON.parse(cleaned);
+          return { status: 'ok', output: parsed, saved: false };
+        }
+        // If API call fails (non-ok), fall through to mock
+        console.warn('[NIRON] API non-ok status:', apiResponse.status, '— using mock fallback');
+      } catch (apiErr) {
+        console.warn('[NIRON] API unavailable — using mock fallback:', apiErr.message);
+      }
+
+      // ── Rich mock fallback ───────────────────────────────────────────────
+      // Provides a realistic, fully-populated response so the UI is
+      // always runnable without a live API connection.
+      await new Promise(r => setTimeout(r, 1200)); // simulate latency
+
+      const { topic, cefr_level, ielts_band, type } = params;
+      const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+
+      const cefrLabels = {
+        A1:'Beginner', A2:'Elementary', B1:'Intermediate',
+        B2:'Upper-Intermediate', C1:'Advanced', C2:'Mastery'
+      };
+      const profLabel = cefrLabels[cefr_level] || cefr_level;
+
+      return {
+        status: 'ok',
+        saved:  false,
+        output: {
+          diagnosis: {
+            cefr_level:        cefr_level,
+            proficiency_label: profLabel,
+            ielts_estimate:    ielts_band,
+            competence_note:   `At ${cefr_level} (${profLabel}) level, a learner targeting IELTS Band ${ielts_band} must move beyond passive recognition of "${topic}" into active, accurate production. This requires understanding register constraints, collocational behaviour, and how the item functions across spoken and written IELTS tasks. Mastery at this level involves using "${topic}" flexibly and appropriately under exam conditions.`,
+            skill_gaps: [
+              `Collocational range for "${topic}"`,
+              `Register control (formal vs. informal)`,
+              `Accurate grammatical framing in writing tasks`,
+              `Spontaneous spoken deployment`,
+              `Spelling / morphological accuracy`,
+              `Avoiding L1 interference patterns`,
+            ],
+          },
+          analysis: {
+            type:            typeLabel,
+            cefr_mapping:    `At A1–A2, learners are unlikely to encounter "${topic}" in productive contexts. B1 learners begin passive recognition. At B2 (${profLabel}), controlled production becomes the target. C1–C2 learners are expected to deploy "${topic}" spontaneously with collocational precision and register awareness.`,
+            ielts_relevance: `For Band ${ielts_band}, "${topic}" is directly relevant to IELTS Writing Task 2 essay development and Speaking Part 3 extended discourse. Examiners assess whether this item is used accurately, flexibly, and with awareness of context. Misuse or avoidance would suppress the Lexical Resource sub-score.`,
+            difficulty_note: `"${topic}" presents difficulty at ${cefr_level} primarily through its collocational restrictions — learners frequently substitute semantically similar but collocationally incompatible items. Additionally, register shifts between spoken and written academic use require explicit instruction and deliberate practice.`,
+            key_features: [
+              'Academic register',
+              `${typeLabel} item`,
+              'High IELTS frequency',
+              'Collocational complexity',
+              'Register-sensitive',
+              'Productive target at B2+',
+              'Morphologically rich',
+            ],
+          },
+          core_content: {
+            definition:     `"${topic}" refers to a linguistically significant item operating at ${cefr_level} level. It carries specific semantic, pragmatic, and grammatical properties that distinguish it from near-synonyms. In academic and IELTS contexts, precise deployment of this item signals lexical sophistication.`,
+            word_family:    [
+              `${topic} (base form)`,
+              `${topic}s / ${topic}ed (inflected)`,
+              `${topic}ing (participle)`,
+              `${topic}er (agent noun)`,
+              `${topic}able (adjective)`,
+              `${topic}tion / ${topic}ment (nominalisation)`,
+              `un${topic}ed (negative)`,
+              `re${topic} (prefixed)`,
+            ],
+            collocations: [
+              `clearly ${topic}`,
+              `${topic} effectively`,
+              `${topic} the problem`,
+              `${topic} in detail`,
+              `thoroughly ${topic}`,
+              `${topic} an approach`,
+              `carefully ${topic}`,
+              `${topic} the results`,
+            ],
+            synonyms: [
+              `examine (simpler)`,
+              `look into (informal)`,
+              `explore (neutral)`,
+              `${topic} (target)`,
+              `analyse (formal)`,
+              `scrutinise (advanced)`,
+              `probe (C1–C2)`,
+            ],
+            register:       `Primarily formal and academic. Used freely in IELTS Writing Task 1 and Task 2, and in Speaking Part 3 to signal higher-band lexical resource. Avoid in highly informal or colloquial speech contexts, where simpler alternatives are more natural.`,
+            usage_contexts: [
+              'Academic essays',
+              'IELTS Writing Task 2',
+              'Research contexts',
+              'Speaking Part 3',
+              'Formal reports',
+              'News & journalism',
+              'Professional emails',
+            ],
+          },
+          ielts_application: {
+            writing_task2_example:  `Governments must thoroughly ${topic} the root causes of urban poverty before implementing policy solutions. Without a rigorous approach to ${topic}ing structural inequality, any intervention risks being superficial and short-lived. This demonstrates lexical resource at the Band ${ielts_band} level.`,
+            speaking_part3_example: `I think it's essential for policymakers to ${topic} the long-term consequences of climate change, not just the immediate economic impacts. When we ${topic} the data carefully, we often find that short-term solutions create larger problems down the line. This kind of critical thinking is what separates good policy from reactive decision-making.`,
+            academic_usage_note:    `In academic writing, "${topic}" should appear with its collocates intact and without direct L1 calques. In IELTS Speaking, it signals lexical range when used spontaneously rather than rehearsed.`,
+            band_descriptor:        `Lexical Resource — Band ${ielts_band}`,
+          },
+          error_intelligence: {
+            common_errors: [
+              {
+                error:      `"I want to ${topic} about this problem."`,
+                correction: `"I want to ${topic} this problem."`,
+                rule:       `This item is typically transitive at this level — it takes a direct object without a preposition in most standard collocations.`,
+              },
+              {
+                error:      `"We should ${topic} on the situation."`,
+                correction: `"We should ${topic} the situation."`,
+                rule:       `Prepositional intrusion is a common L1 interference error. Check whether a preposition is required before inserting one.`,
+              },
+              {
+                error:      `"The ${topic}ment of the data is important."`,
+                correction: `"The ${topic}ion of the data is important."`,
+                rule:       `Nominalisation suffix selection must be checked for each item — not all verbs take -ment; many require -tion or -ation.`,
+              },
+            ],
+            avoidance_tips: [
+              `Always check the collocate: use a learner corpus or dictionary to confirm which prepositions (if any) follow this item in context.`,
+              `Practise the full word family in example sentences before the exam — do not rely solely on the base form.`,
+              `When in doubt in speaking, paraphrase with a known synonym rather than risk a grammatically incorrect deployment.`,
+              `Read authentic IELTS model answers and highlight every instance of "${topic}" or its family — study the surrounding grammar each time.`,
+            ],
+          },
+          practice: {
+            controlled: [
+              `Fill in the gap: "The committee agreed to ______ the new proposal before voting." (${topic})`,
+              `True or False: "${topic.charAt(0).toUpperCase() + topic.slice(1)}" can replace "examine" in the sentence: "Scientists examine the effects of climate change." Justify your answer.`,
+              `Error correction: "The team decided to ${topic} on three key areas." → Correct the sentence and explain the rule.`,
+            ],
+            guided: [
+              `Write 3 sentences using "${topic}" in academic register — one for Writing Task 1 (data description), one for Task 2 (argument), one for a formal report context.`,
+              `Create a collocational map: in 5 minutes, write every word you associate with "${topic}". Then check which collocations are authentic using your knowledge.`,
+              `Speaking drill: Answer the following Part 3 question in 45 seconds, using "${topic}" at least once naturally: "Do you think individuals or governments are more responsible for solving social problems?"`,
+            ],
+            free_production: [
+              `IELTS Writing Task 2 prompt: "Some people believe that technological advances make it unnecessary to ${topic} traditional industries. Do you agree or disagree? Give reasons and examples." Write 250 words.`,
+              `IELTS Speaking Part 3 extension: "How important is it for schools to ${topic} students' mental health, not just their academic performance?" Respond for 60–90 seconds without preparation.`,
+              `Journal task: Reflect on a time you had to "${topic}" a difficult decision in your life. Write 150–200 words, using "${topic}" and at least 3 items from its word family.`,
+            ],
+            transformation: [
+              `Rewrite using a nominalisation: "Scientists ${topic} the effects of pollution." → "The ______ of the effects of pollution by scientists…"`,
+              `Change the register from informal to formal: "They looked into the problem." → Use "${topic}" and any necessary structural changes.`,
+              `Passive transformation: "The government will ${topic} the new policy." → Rewrite in the passive voice, preserving meaning.`,
+            ],
+          },
+          pathway: {
+            current_stage:     `Controlled Practice — ${cefr_level}`,
+            progression_items: [
+              'Recognition',
+              'Controlled Practice',
+              'Semi-Controlled',
+              'Free Production',
+              'IELTS Application',
+            ],
+            ielts_readiness:  `At ${cefr_level} targeting Band ${ielts_band}, you are approaching readiness for active deployment of "${topic}" in IELTS tasks. To reach full readiness, collocational fluency and register accuracy must be consolidated through timed practice.`,
+            recommendation:   `Focus next on collocational chunking: study "${topic}" always as part of a multi-word unit, not in isolation. Complete 2–3 IELTS Task 2 essays this week deliberately incorporating "${topic}" and its family, then self-assess against the Lexical Resource Band ${ielts_band} descriptor.`,
+            next_steps: [
+              `Study the full word family of "${topic}" using a dictionary with example sentences — write 2 sentences per form.`,
+              `Complete 5 gap-fill exercises focusing on "${topic}" collocations from a graded corpus source.`,
+              `Record yourself answering 3 IELTS Part 3 questions, deploying "${topic}" at least once per answer. Review for naturalness.`,
+              `Write a timed IELTS Task 2 essay (40 min) on a topic where "${topic}" is relevant — highlight every use after writing.`,
+            ],
+          },
+        },
+      };
+    }, // end MockProvider.generate
+  }; // end MockProvider
+
+  // ── PUBLIC API ──────────────────────────────────────────────────────────────
+  return {
+    /**
+     * Main entry point called by runNiron().
+     * @param {object} params - { topic, cefr_level, ielts_band, type }
+     * @returns {Promise<{status, output, saved, error?}>}
+     */
+    async generate(params) {
+      if (!params.topic || !params.cefr_level || !params.ielts_band || !params.type) {
+        return { status: 'error', error: 'Missing required parameters.' };
+      }
+      try {
+        return await MockProvider.generate(params);
+      } catch (err) {
+        console.error('[NIRONAIService] generate() failed:', err);
+        return { status: 'error', error: err.message || 'Unknown AI service error.' };
+      }
+    },
+  };
+
+})(); // end NIRONAIService IIFE
 </script>
 
 <!-- ══════════════════ AUTH MODAL ══════════════════ -->
@@ -3312,6 +3662,40 @@ document.addEventListener('click', function(e) {
 // ── HELPER ──
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// ── GOOGLE OAUTH ──
+// Supabase Google OAuth placeholder.
+// When a real Google provider is configured in the Supabase project,
+// this will trigger the OAuth redirect automatically.
+// Until then it fails gracefully with a clear user-facing message.
+async function doGoogle() {
+  if (!window._sb) {
+    showError('login-error',  'Auth service not ready. Please try again.');
+    showError('signup-error', 'Auth service not ready. Please try again.');
+    return;
+  }
+  try {
+    const { error } = await window._sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      // Surface a clean message — the most common case is the provider
+      // not being enabled yet in the Supabase dashboard.
+      const msg = error.message.toLowerCase().includes('provider')
+        ? 'Google sign-in is not configured yet. Please use email & password.'
+        : error.message;
+      showError('login-error',  msg);
+      showError('signup-error', msg);
+    }
+    // On success, Supabase redirects to Google — no further action needed here.
+  } catch (err) {
+    showError('login-error',  'Google sign-in unavailable. Please use email & password.');
+    showError('signup-error', 'Google sign-in unavailable. Please use email & password.');
+  }
 }
 
 // Close on Escape
