@@ -1870,6 +1870,7 @@ body {
   cursor: pointer;
   transition: all 0.25s;
   clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+  position: relative;
 }
 .user-pill:hover { border-color: var(--gold); }
 .user-pill.show { display: flex; }
@@ -1888,6 +1889,272 @@ body {
   font-size: 10px;
   letter-spacing: 1px;
   color: var(--gold);
+}
+
+/* ══════════════════ USER DROPDOWN ══════════════════ */
+.user-dropdown-wrap {
+  position: relative;
+  display: none;
+}
+.user-dropdown-wrap.show { display: block; }
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 210px;
+  background: var(--black-2);
+  border: 1px solid var(--border);
+  z-index: 400;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.user-dropdown.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Dropdown header */
+.ud-header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--white-faint);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ud-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  flex-shrink: 0;
+}
+.ud-info {}
+.ud-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+}
+.ud-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Dropdown items */
+.ud-items { padding: 6px 0; }
+.ud-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--white-dim);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.ud-item:hover {
+  color: var(--gold);
+  background: var(--gold-glow);
+  border-left-color: var(--gold);
+}
+.ud-item-icon { font-size: 13px; min-width: 18px; }
+
+.ud-divider {
+  height: 1px;
+  background: var(--white-faint);
+  margin: 4px 16px;
+}
+
+.ud-item.signout {
+  color: rgba(220, 80, 80, 0.75);
+}
+.ud-item.signout:hover {
+  color: #e05555;
+  background: rgba(180, 40, 40, 0.08);
+  border-left-color: #e05555;
+}
+
+/* ══════════════════ MOBILE HAMBURGER MENU ══════════════════ */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 7px;
+  transition: all 0.25s;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  flex-shrink: 0;
+}
+.hamburger-btn:hover { border-color: var(--gold); }
+.hamburger-btn .bar {
+  width: 100%;
+  height: 1.5px;
+  background: var(--white-dim);
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+.hamburger-btn.open .bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--gold); }
+.hamburger-btn.open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger-btn.open .bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--gold); }
+
+.mob-menu-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: rgba(8,8,8,0.65);
+  backdrop-filter: blur(4px);
+}
+.mob-menu-overlay.show { display: block; }
+
+.mob-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  bottom: 0;
+  width: min(300px, 85vw);
+  z-index: 191;
+  background: var(--black-2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto;
+}
+.mob-menu.open { right: 0; }
+
+.mob-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.mob-menu-brand { display: flex; align-items: center; gap: 9px; }
+.mob-menu-brand img {
+  width: 28px; height: 28px;
+  border-radius: 3px;
+  border: 1px solid rgba(201,168,76,0.25);
+  filter: drop-shadow(0 0 5px rgba(255,215,0,0.2));
+}
+.mob-menu-name { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 3px; }
+.mob-menu-close {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--black-4); border: 1px solid var(--border); color: var(--white-dim);
+  font-size: 12px; cursor: pointer; transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  flex-shrink: 0;
+}
+.mob-menu-close:hover { border-color: var(--gold); color: var(--gold); }
+
+.mob-menu-body { flex: 1; padding: 6px 0; }
+
+.mob-section-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: 2.5px;
+  color: var(--gold-dim); text-transform: uppercase;
+  padding: 10px 16px 4px; display: block;
+}
+
+.mob-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-dim); cursor: pointer;
+  transition: all 0.18s;
+  border-left: 2px solid transparent;
+  border-right: none; border-top: none; border-bottom: none;
+  background: none; width: 100%; text-align: left; text-decoration: none;
+}
+.mob-item:hover { color: var(--gold); background: var(--gold-glow); border-left-color: var(--gold); }
+.mob-item.active-item { color: var(--gold); background: var(--gold-glow); border-left-color: var(--gold); }
+.mob-item.danger { color: rgba(220,80,80,0.75); }
+.mob-item.danger:hover { color: #e05555; background: rgba(180,40,40,0.08); border-left-color: #e05555; }
+.mob-item-icon { font-size: 14px; min-width: 20px; }
+
+.mob-divider { height: 1px; background: var(--white-faint); margin: 6px 16px; }
+
+.mob-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px;
+}
+.mob-toggle-lbl {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-dim);
+}
+.mob-pill-toggle {
+  position: relative; width: 36px; height: 18px;
+  background: var(--black-4); border: 1px solid var(--border);
+  border-radius: 10px; cursor: pointer; transition: all 0.25s; flex-shrink: 0;
+}
+.mob-pill-toggle.on { background: var(--gold-glow); border-color: var(--gold); }
+.mob-pill-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--white-dim); transition: all 0.25s;
+}
+.mob-pill-toggle.on::after { left: calc(100% - 14px); background: var(--gold); }
+
+.mob-lang-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 5px; padding: 6px 16px 12px;
+}
+.mob-lang-btn {
+  padding: 7px 4px;
+  background: var(--black-3); border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-align: center;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+}
+.mob-lang-btn:hover,
+.mob-lang-btn.active-lang { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+
+.mob-menu-footer {
+  padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.mob-footer-txt {
+  font-family: 'JetBrains Mono', monospace; font-size: 8px;
+  letter-spacing: 1.5px; color: var(--gold-dim);
+  text-transform: uppercase; text-align: center; line-height: 1.8;
+}
+
+@media (max-width: 600px) {
+  .nav-ecosystem { display: none !important; }
+  .hamburger-btn { display: flex !important; }
+}
+@media (min-width: 601px) {
+  .hamburger-btn { display: none !important; }
 }
 
 </style>
@@ -1933,14 +2200,140 @@ body {
     </button>
     <button class="btn-focus" id="focus-btn" onclick="toggleFocus()">⊞ Focus</button>
     <button class="btn-signin" onclick="openAuth('login')">✦ Sign In</button>
-    <div class="user-pill" id="user-pill" onclick="openAuth('login')">
-      <div class="user-avatar" id="user-avatar"></div>
-      <span class="user-name" id="user-name"></span>
+    <div class="user-dropdown-wrap" id="user-dropdown-wrap">      <div class="user-pill show" id="user-pill" onclick="toggleDropdown()">
+        <div class="user-avatar" id="user-avatar"></div>
+        <span class="user-name" id="user-name"></span>
+        <span style="font-size:8px;color:var(--gold);margin-left:2px;">▾</span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="ud-header">
+          <div class="ud-avatar" id="ud-avatar"></div>
+          <div class="ud-info">
+            <div class="ud-name" id="ud-name"></div>
+            <div class="ud-role">NIRON Member</div>
+          </div>
+        </div>
+        <div class="ud-items">
+          <a class="ud-item" onclick="closeDropdown()">
+            <span class="ud-item-icon">👤</span>My Profile
+          </a>
+          <a class="ud-item" onclick="closeDropdown()">
+            <span class="ud-item-icon">🔖</span>Saved Prompts
+          </a>
+          <a class="ud-item" onclick="closeDropdown()">
+            <span class="ud-item-icon">📊</span>Dashboard
+          </a>
+          <div class="ud-divider"></div>
+          <a class="ud-item signout" onclick="doSignOut()">
+            <span class="ud-item-icon">🚪</span>Sign Out
+          </a>
+        </div>
+      </div>
     </div>
   </div>
+  <!-- Hamburger — mobile only -->
+  <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobMenu()" aria-label="Menu">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
 </nav>
 
-<!-- ══ HERO ══ -->
+<!-- ══ MOBILE MENU OVERLAY ══ -->
+<div class="mob-menu-overlay" id="mob-menu-overlay" onclick="closeMobMenu()"></div>
+
+<!-- ══ MOBILE MENU DRAWER ══ -->
+<div class="mob-menu" id="mob-menu">
+  <div class="mob-menu-header">
+    <div class="mob-menu-brand">
+      <img id="mob-logo" src="" alt="NIR Academy">
+      <span class="mob-menu-name">NIRON</span>
+    </div>
+    <button class="mob-menu-close" onclick="closeMobMenu()">✕</button>
+  </div>
+
+  <div class="mob-menu-body">
+
+    <!-- Guest: Sign In / Sign Up -->
+    <div id="mob-guest-section">
+      <span class="mob-section-lbl">Account</span>
+      <button class="mob-item" onclick="closeMobMenu();openAuth('login');">
+        <span class="mob-item-icon">→</span>Sign In<span class="mob-item-arrow">›</span>
+      </button>
+      <button class="mob-item" onclick="closeMobMenu();openAuth('signup');">
+        <span class="mob-item-icon">+</span>Sign Up<span class="mob-item-arrow">›</span>
+      </button>
+    </div>
+
+    <!-- Auth: Profile / Sign Out -->
+    <div id="mob-auth-section" style="display:none;">
+      <span class="mob-section-lbl">Account</span>
+      <button class="mob-item active-item">
+        <span class="mob-item-icon">👤</span>
+        <span id="mob-user-name">User</span>
+        <span class="mob-item-arrow">›</span>
+      </button>
+      <button class="mob-item">
+        <span class="mob-item-icon">🔖</span>Saved Prompts<span class="mob-item-arrow">›</span>
+      </button>
+      <button class="mob-item">
+        <span class="mob-item-icon">📊</span>Dashboard<span class="mob-item-arrow">›</span>
+      </button>
+      <div class="mob-divider"></div>
+      <button class="mob-item danger" onclick="doSignOut();closeMobMenu();">
+        <span class="mob-item-icon">🚪</span>Sign Out
+      </button>
+    </div>
+
+    <div class="mob-divider"></div>
+
+    <!-- Settings -->
+    <span class="mob-section-lbl">Settings</span>
+
+    <!-- Dark / Light Mode -->
+    <div class="mob-toggle-row">
+      <span class="mob-toggle-lbl">
+        <span class="mob-item-icon" id="mob-theme-icon">☀</span>Light Mode
+      </span>
+      <div class="mob-pill-toggle" id="mob-theme-toggle" onclick="toggleTheme();updateMobThemeToggle();"></div>
+    </div>
+
+    <!-- Focus Mode -->
+    <div class="mob-toggle-row">
+      <span class="mob-toggle-lbl">
+        <span class="mob-item-icon">⊞</span>Focus Mode
+      </span>
+      <div class="mob-pill-toggle" id="mob-focus-toggle" onclick="toggleFocus();updateMobFocusToggle();closeMobMenu();"></div>
+    </div>
+
+    <div class="mob-divider"></div>
+
+    <!-- Language -->
+    <span class="mob-section-lbl">Language</span>
+    <div class="mob-lang-grid">
+      <button class="mob-lang-btn active-lang" onclick="setMobLang(this,'EN')">EN</button>
+      <button class="mob-lang-btn" onclick="setMobLang(this,'TR')">TR</button>
+      <button class="mob-lang-btn" onclick="setMobLang(this,'AR')">AR</button>
+      <button class="mob-lang-btn" onclick="setMobLang(this,'ZH')">ZH</button>
+      <button class="mob-lang-btn" onclick="setMobLang(this,'FA')">FA</button>
+    </div>
+
+    <div class="mob-divider"></div>
+
+    <!-- Sister App -->
+    <span class="mob-section-lbl">NIR Ecosystem</span>
+    <a class="mob-item" href="https://nir-academy-ai.vercel.app/" target="_blank" onclick="closeMobMenu()">
+      <span class="mob-item-icon">↗</span>Sister App: NIRA<span class="mob-item-arrow">›</span>
+    </a>
+
+  </div>
+
+  <div class="mob-menu-footer">
+    <div class="mob-footer-txt">NIRON · NIR Academy<br>Dr. Niki Majidi · Language Intelligence</div>
+  </div>
+</div>
+
+
 <section class="hero" id="system">
   <div class="hero-inner">
     <div class="hero-badge">
@@ -2873,12 +3266,40 @@ function doGoogle() {
 function loginSuccess(name) {
   _authUser = { name: name };
   closeAuth();
-  // Show user pill, hide sign in button
+  // Update user pill
   document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('user-name').textContent = name;
+  // Update dropdown header
+  document.getElementById('ud-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('ud-name').textContent = name;
+  // Show dropdown wrap, hide sign in button
   document.querySelector('.btn-signin').style.display = 'none';
-  document.getElementById('user-pill').classList.add('show');
+  document.getElementById('user-dropdown-wrap').classList.add('show');
+  // Sync mobile menu
+  updateMobAuthState();
 }
+
+// ── DROPDOWN ──
+function toggleDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+function closeDropdown() {
+  document.getElementById('user-dropdown').classList.remove('open');
+}
+function doSignOut() {
+  _authUser = null;
+  closeDropdown();
+  document.getElementById('user-dropdown-wrap').classList.remove('show');
+  document.querySelector('.btn-signin').style.display = '';
+  // Reset fields
+  document.getElementById('user-avatar').textContent = '';
+  document.getElementById('user-name').textContent = '';
+}
+// Close dropdown on outside click
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('user-dropdown-wrap');
+  if (wrap && !wrap.contains(e.target)) closeDropdown();
+});
 
 // ── HELPER ──
 function isValidEmail(email) {
@@ -2891,8 +3312,81 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ══════════════════════════════════════════
-// FOCUS MODE
+// MOBILE MENU
 // ══════════════════════════════════════════
+// Sync logo to mob-menu
+(function() {
+  const navLogo = document.querySelector('.nav-logo-img');
+  if (navLogo) document.getElementById('mob-logo').src = navLogo.src;
+})();
+
+function toggleMobMenu() {
+  const menu = document.getElementById('mob-menu');
+  const overlay = document.getElementById('mob-menu-overlay');
+  const btn = document.getElementById('hamburger-btn');
+  const isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    menu.classList.remove('open');
+    overlay.classList.remove('show');
+    btn.classList.remove('open');
+  } else {
+    menu.classList.add('open');
+    overlay.classList.add('show');
+    btn.classList.add('open');
+    updateMobThemeToggle();
+    updateMobFocusToggle();
+    updateMobAuthState();
+  }
+}
+function closeMobMenu() {
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('mob-menu-overlay').classList.remove('show');
+  document.getElementById('hamburger-btn').classList.remove('open');
+}
+
+function updateMobThemeToggle() {
+  const isLight = document.body.classList.contains('light-mode');
+  const toggle = document.getElementById('mob-theme-toggle');
+  const icon = document.getElementById('mob-theme-icon');
+  toggle.classList.toggle('on', isLight);
+  if (icon) icon.textContent = isLight ? '🌙' : '☀';
+}
+
+function updateMobFocusToggle() {
+  const isFocus = document.body.classList.contains('focus-mode');
+  const toggle = document.getElementById('mob-focus-toggle');
+  toggle.classList.toggle('on', isFocus);
+}
+
+function updateMobAuthState() {
+  const guestSec = document.getElementById('mob-guest-section');
+  const authSec = document.getElementById('mob-auth-section');
+  const mobName = document.getElementById('mob-user-name');
+  if (_authUser) {
+    guestSec.style.display = 'none';
+    authSec.style.display = 'block';
+    if (mobName) mobName.textContent = _authUser.name;
+  } else {
+    guestSec.style.display = 'block';
+    authSec.style.display = 'none';
+  }
+}
+
+function setMobLang(btn, lang) {
+  document.querySelectorAll('.mob-lang-btn').forEach(b => b.classList.remove('active-lang'));
+  btn.classList.add('active-lang');
+  // RTL support for Arabic and Persian
+  if (lang === 'AR' || lang === 'FA') {
+    document.documentElement.setAttribute('dir', 'rtl');
+  } else {
+    document.documentElement.setAttribute('dir', 'ltr');
+  }
+}
+
+// Close mob menu on ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMobMenu();
+});
 function toggleFocus() {
   const isActive = document.body.classList.toggle('focus-mode');
   const btn = document.getElementById('focus-btn');
