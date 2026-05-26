@@ -2427,6 +2427,30 @@ body {
   .intro-name  { font-size: 20px; }
   .intro-quote { font-size: 14px; }
 }
+/* ── Recent Topics ── */
+.history-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0; right: 0;
+  background: var(--black-2);
+  border: 1px solid var(--border);
+  z-index: 100;
+}
+.history-dropdown.open { display: block; }
+.history-item {
+  padding: 7px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--white-dim);
+  cursor: pointer;
+  border-bottom: 1px solid var(--white-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-item:last-child { border-bottom: none; }
+.history-item:hover { background: var(--gold-glow); color: var(--gold); }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -2985,9 +3009,10 @@ window.NIRONAIService = {
         </div>
       </div>
 
-      <div class="input-group">
+      <div class="input-group" style="position:relative;">
         <label class="input-label">Input <span class="req">*</span><br><span style="font-size:9px;color:var(--white-dim);letter-spacing:1px;text-transform:none;">Word / phrase / grammar structure</span></label>
         <textarea class="input-field" id="topic-input" placeholder="e.g.  'investigate'&#10;or  'present perfect'&#10;or  'climate change vocabulary'"></textarea>
+        <div class="history-dropdown" id="history-dropdown"></div>
       </div>
 
       <button class="generate-btn" id="generate-btn" onclick="runNiron()">
@@ -3387,6 +3412,7 @@ async function runNiron() {
 
     // Store for tab switching
     window._lastNironData = response.output;
+    _historySave(topic);
 
     showLoading(false);
     renderTabContent('diagnosis', response.output);
@@ -4097,7 +4123,47 @@ function dismissIntro() {
   setTimeout(function() { intro.classList.add('hidden'); }, 500);
 }
 
-// Restore saved theme on load
+// ── Recent Topics ──────────────────────────────
+function _historySave(topic) {
+  if (!topic) return;
+  var list = JSON.parse(localStorage.getItem('niron_history') || '[]');
+  list = list.filter(function(t){ return t !== topic; });
+  list.unshift(topic);
+  if (list.length > 5) list = list.slice(0, 5);
+  localStorage.setItem('niron_history', JSON.stringify(list));
+}
+
+function _historyShow() {
+  var list = JSON.parse(localStorage.getItem('niron_history') || '[]');
+  var dd = document.getElementById('history-dropdown');
+  if (!dd || list.length === 0) return;
+  dd.innerHTML = list.map(function(t) {
+    return '<div class="history-item" onmousedown="_historyPick(event,\'' + t.replace(/'/g,"\\'") + '\')">' + t + '</div>';
+  }).join('');
+  dd.classList.add('open');
+}
+
+function _historyHide() {
+  var dd = document.getElementById('history-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+function _historyPick(e, topic) {
+  e.preventDefault();
+  document.getElementById('topic-input').value = topic;
+  _historyHide();
+}
+
+(function() {
+  var inp = document.getElementById('topic-input');
+  if (!inp) return;
+  inp.addEventListener('focus', _historyShow);
+  inp.addEventListener('blur',  function(){ setTimeout(_historyHide, 150); });
+  inp.addEventListener('input', function() {
+    if (inp.value.trim() === '') { _historyShow(); } else { _historyHide(); }
+  });
+})();
+// ───────────────────────────────────────────────
 (function() {
   if (localStorage.getItem('niron-theme') === 'light') {
     document.body.classList.add('light-mode');
