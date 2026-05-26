@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "functions": {
+    "api/grok.js": {
+      "memory": 256,
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/grok",
+      "dest": "/api/grok.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
