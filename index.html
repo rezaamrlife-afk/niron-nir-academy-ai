@@ -1497,20 +1497,26 @@ body {
 
   /* ── Main interface ── */
   .main-interface { padding: 1.5rem 1rem 3rem; width: 100%; box-sizing: border-box; }
-  .interface-grid { min-height: auto; overflow: visible; width: 100%; box-sizing: border-box; }
-  .i-sidebar { padding: 1.2rem 1rem; gap: 1.2rem; width: 100%; box-sizing: border-box; }
-  .input-select, .input-field { width: 100%; box-sizing: border-box; }
-  .lang-type-grid { gap: 6px; }
-  .i-output { min-height: auto; overflow: visible; width: 100%; box-sizing: border-box; }
+  /* interface-grid must clip its children — overflow:visible was causing inputs to escape */
+  .interface-grid { min-height: auto; overflow: hidden; width: 100%; max-width: 100%; box-sizing: border-box; }
+  /* sidebar: box-sizing ensures padding is included in the 100% width */
+  .i-sidebar { padding: 1.2rem 1rem; gap: 1.2rem; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden; }
+  /* inputs: box-sizing + max-width stop them from punching through the right edge */
+  .input-select, .input-field { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .input-group { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .lang-type-grid { gap: 6px; width: 100%; box-sizing: border-box; }
+  .type-btn { box-sizing: border-box; }
+  .generate-btn { width: 100%; box-sizing: border-box; }
+  /* output panel: clamp scroll to its own width */
+  .i-output { min-height: auto; overflow: hidden; width: 100%; max-width: 100%; box-sizing: border-box; }
 
-  /* ── Output tabs — horizontal scroll ── */
-  /* Remove overflow:hidden from topbar so tabs are never clipped */
-  .output-topbar { padding: 0; flex-direction: column; align-items: stretch; gap: 0; overflow: visible; border-bottom: 1px solid var(--border); }
-  .output-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 2px; width: 100%; min-width: 0; padding: 0.5rem 0.8rem 0.5rem; box-sizing: border-box; }
+  /* ── Output tabs — horizontal scroll, contained within i-output ── */
+  .output-topbar { padding: 0; flex-direction: column; align-items: stretch; gap: 0; overflow: hidden; border-bottom: 1px solid var(--border); width: 100%; box-sizing: border-box; }
+  .output-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 2px; width: 100%; max-width: 100%; padding: 0.5rem 0.8rem; box-sizing: border-box; }
   .output-tabs::-webkit-scrollbar { display: none; }
-  .out-tab { padding: 6px 12px; font-size: 9px; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; min-width: max-content; }
+  .out-tab { padding: 6px 12px; font-size: 9px; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
   .output-actions { display: none; }
-  .output-body { padding: 1rem 0.8rem; }
+  .output-body { padding: 1rem 0.8rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
 
   /* Engines */
   .engines-grid { grid-template-columns: 1fr; }
@@ -1543,6 +1549,16 @@ body {
   .tag { font-size: 10px; padding: 3px 8px; }
   .content-text { font-size: 13px; }
   .ib-title { font-size: 10px; letter-spacing: 1px; }
+
+  /* ── engines section has inline style="padding:4rem 3rem" — needs !important ── */
+  #engines { padding-left: 1.2rem !important; padding-right: 1.2rem !important; }
+
+  /* ── account-view: 3rem horizontal padding overflows on mobile ── */
+  #account-view { padding: 80px 1.2rem 4rem; }
+  .acct-card { padding: 1.2rem 1rem; }
+
+  /* ── output-body: allow vertical scroll but block horizontal overflow ── */
+  .output-body { overflow-x: hidden; }
 }
 
 /* copy feedback */
