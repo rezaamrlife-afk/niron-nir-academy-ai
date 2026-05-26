@@ -2522,12 +2522,35 @@ function buildMockOutput(params) {
 
 // ── Public API ────────────────────────────────────────────
 window.NIRONAIService = {
-  generate: function(params) {
-    return new Promise(function(resolve) {
-      setTimeout(function() {
-        resolve({ status: 'ok', output: buildMockOutput(params), saved: false, id: null });
-      }, 900);
-    });
+  generate: async function(params) {
+    try {
+      var res = await fetch('/api/grok', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(params),
+      });
+
+      // Non-2xx → fall back to mock
+      if (!res.ok) {
+        console.warn('[NIRON] /api/grok returned ' + res.status + ' — using mock fallback.');
+        return { status: 'ok', output: buildMockOutput(params), saved: false, id: null };
+      }
+
+      var data = await res.json();
+
+      // Proxy-level error → fall back to mock
+      if (data.status === 'error') {
+        console.warn('[NIRON] Grok proxy error: ' + data.error + ' — using mock fallback.');
+        return { status: 'ok', output: buildMockOutput(params), saved: false, id: null };
+      }
+
+      return data; // { status:'ok', output:{...}, saved:false, id:null }
+
+    } catch (networkErr) {
+      // Network failure (offline, Vercel down, etc.) → fall back to mock
+      console.warn('[NIRON] Network error: ' + networkErr.message + ' — using mock fallback.');
+      return { status: 'ok', output: buildMockOutput(params), saved: false, id: null };
+    }
   }
 };
 
