@@ -2158,6 +2158,149 @@ body {
   .hamburger-btn { display: none !important; }
 }
 
+/* ══════════════════ PROFILE PAGE ══════════════════ */
+.profile-page {
+  display: none;
+  padding: 3rem 2.5rem 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeUp 0.3s ease both;
+  min-height: 100vh;
+  padding-top: calc(68px + 3rem);
+}
+.profile-page.show { display: block; }
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  padding: 2rem;
+  background: var(--black-2);
+  border: 1px solid var(--border);
+  margin-bottom: 2px;
+  clip-path: polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
+.profile-avatar-lg {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,var(--gold),var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron',monospace;
+  font-size: 26px; font-weight: 700;
+  color: var(--black);
+  border: 2px solid var(--border);
+  box-shadow: 0 0 20px var(--gold-glow);
+  flex-shrink: 0;
+}
+.profile-header-info { flex: 1; }
+.profile-name {
+  font-family: 'Orbitron',monospace;
+  font-size: clamp(16px,3vw,22px);
+  font-weight: 700; color: var(--gold);
+  letter-spacing: 3px; margin-bottom: 4px;
+}
+.profile-email {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 11px; letter-spacing: 1.5px;
+  color: var(--white-dim); margin-bottom: 8px;
+}
+.profile-member-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  background: var(--gold-glow); border: 1px solid var(--border);
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 8px; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase;
+}
+.profile-logout-btn {
+  padding: 10px 22px;
+  background: transparent;
+  border: 1px solid rgba(220,80,80,0.4);
+  color: rgba(220,80,80,0.8);
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.25s; flex-shrink: 0;
+  clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+}
+.profile-logout-btn:hover {
+  border-color: #e05555; color: #e05555;
+  background: rgba(180,40,40,0.08);
+}
+.profile-stats {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 2px; background: var(--border);
+  border: 1px solid var(--border); border-top: none;
+  margin-bottom: 2px;
+}
+.profile-stat {
+  background: var(--black-2);
+  padding: 1.4rem 1.2rem; text-align: center;
+  transition: background 0.2s;
+}
+.profile-stat:hover { background: var(--black-3); }
+.profile-stat-val {
+  font-family: 'Orbitron',monospace;
+  font-size: 24px; font-weight: 700;
+  color: var(--gold); display: block; line-height: 1;
+}
+.profile-stat-lbl {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 8px; letter-spacing: 2px;
+  color: var(--white-dim); text-transform: uppercase;
+  margin-top: 5px; display: block;
+}
+.profile-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; background: var(--border);
+  border: 1px solid var(--border); border-top: none;
+}
+.profile-card {
+  background: var(--black-2);
+  padding: 1.6rem 1.8rem;
+}
+.profile-card-title {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--gold-dim); text-transform: uppercase;
+  margin-bottom: 1rem; padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--white-faint);
+}
+.profile-field { margin-bottom: 1rem; }
+.profile-field:last-child { margin-bottom: 0; }
+.profile-field-label {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 8px; letter-spacing: 2px;
+  color: var(--white-dim); text-transform: uppercase;
+  margin-bottom: 4px; display: block;
+}
+.profile-field-value {
+  font-family: 'Rajdhani',sans-serif;
+  font-size: 14px; font-weight: 500;
+  color: var(--white); letter-spacing: 0.5px;
+}
+.profile-field-value.gold {
+  color: var(--gold);
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 11px; word-break: break-all;
+}
+.profile-locked {
+  text-align: center; padding: 5rem 2rem;
+}
+.profile-locked-icon { font-size: 40px; margin-bottom: 1rem; opacity: 0.4; }
+.profile-locked-msg {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 11px; letter-spacing: 2px;
+  color: var(--white-dim); text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .profile-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .profile-stats { grid-template-columns: repeat(2,1fr); }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-page { padding: 1.5rem 1rem 3rem; }
+}
+
 </style>
 <!-- NIRON AI Service Layer — replaced by inline NIRONAIService engine -->
 <!-- <script src="services/schema.js"></script>   -->
@@ -2219,7 +2362,7 @@ body {
           </div>
         </div>
         <div class="ud-items">
-          <a class="ud-item" onclick="closeDropdown()">
+          <a class="ud-item" onclick="closeDropdown();showPage('profile');">
             <span class="ud-item-icon">👤</span>My Profile
           </a>
           <a class="ud-item" onclick="closeDropdown()">
@@ -2273,7 +2416,7 @@ body {
     <!-- Auth: Profile / Sign Out -->
     <div id="mob-auth-section" style="display:none;">
       <span class="mob-section-lbl">Account</span>
-      <button class="mob-item active-item">
+      <button class="mob-item active-item" onclick="closeMobMenu();showPage('profile');">
         <span class="mob-item-icon">👤</span>
         <span id="mob-user-name">User</span>
         <span class="mob-item-arrow">›</span>
@@ -2618,8 +2761,95 @@ body {
 
 </div><!-- end page-wrap -->
 
-<script>
-// DNA canvas removed
+<!-- ══ PROFILE PAGE ══ -->
+<div style="position:relative;z-index:1;">
+<div class="profile-page" id="profile-page">
+
+  <!-- Not logged in -->
+  <div id="profile-locked">
+    <div class="profile-locked-icon">🔒</div>
+    <div class="profile-locked-msg">Sign in to view your profile</div>
+    <button class="btn-primary" onclick="profileGoLogin()">✦ Sign In</button>
+  </div>
+
+  <!-- Logged in content -->
+  <div id="profile-content" style="display:none;">
+
+    <div class="profile-header">
+      <div class="profile-avatar-lg" id="pf-avatar-lg">?</div>
+      <div class="profile-header-info">
+        <div class="profile-name" id="pf-name-hdr">—</div>
+        <div class="profile-email" id="pf-email-hdr">—</div>
+        <span class="profile-member-tag">⬡ NIRON Member</span>
+      </div>
+      <button class="profile-logout-btn" onclick="profileLogout()">🚪 Sign Out</button>
+    </div>
+
+    <div class="profile-stats">
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="pf-stat-total">—</span>
+        <span class="profile-stat-lbl">AI Sessions</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="pf-stat-vocab">—</span>
+        <span class="profile-stat-lbl">Vocabulary</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="pf-stat-grammar">—</span>
+        <span class="profile-stat-lbl">Grammar</span>
+      </div>
+      <div class="profile-stat">
+        <span class="profile-stat-val" id="pf-stat-saved">—</span>
+        <span class="profile-stat-lbl">Saved</span>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="profile-card-title">⬡ Account Information</div>
+        <div class="profile-field">
+          <span class="profile-field-label">Full Name</span>
+          <div class="profile-field-value" id="pf-name">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">Email Address</span>
+          <div class="profile-field-value" id="pf-email">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">Member Since</span>
+          <div class="profile-field-value gold" id="pf-joined">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">User ID</span>
+          <div class="profile-field-value gold" id="pf-uid">—</div>
+        </div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-title">⬡ Intelligence Summary</div>
+        <div class="profile-field">
+          <span class="profile-field-label">Last Session</span>
+          <div class="profile-field-value gold" id="pf-last">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">Most Used Type</span>
+          <div class="profile-field-value" id="pf-type">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">Most Used CEFR</span>
+          <div class="profile-field-value" id="pf-cefr">—</div>
+        </div>
+        <div class="profile-field">
+          <span class="profile-field-label">Provider</span>
+          <div class="profile-field-value gold" id="pf-provider">Mock (Development)</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #profile-content -->
+</div><!-- .profile-page -->
+</div><!-- profile wrapper -->
+
+
 
 // ══════════════════════════════════════════
 // UI STATE
@@ -3805,6 +4035,143 @@ function toggleTheme() {
     document.getElementById('theme-label').textContent = 'Dark';
   }
 })();
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// SPA NAVIGATION
+// ══════════════════════════════════════════
+
+function showPage(page) {
+  var pageWrap    = document.querySelector('.page-wrap');
+  var profilePage = document.getElementById('profile-page');
+
+  if (page === 'profile') {
+    if (pageWrap)    { pageWrap.style.display = 'none'; }
+    if (profilePage) { profilePage.classList.add('show'); }
+    document.querySelector('.navbar').style.display = '';
+    loadProfilePage();
+  } else {
+    if (pageWrap)    { pageWrap.style.display = ''; }
+    if (profilePage) { profilePage.classList.remove('show'); }
+  }
+}
+
+// ══════════════════════════════════════════
+// PROFILE PAGE
+// ══════════════════════════════════════════
+
+async function loadProfilePage() {
+  var locked  = document.getElementById('profile-locked');
+  var content = document.getElementById('profile-content');
+
+  // Guard: must have Supabase
+  if (!window._sb) {
+    locked.style.display  = 'block';
+    content.style.display = 'none';
+    return;
+  }
+
+  // Check session
+  var res  = await window._sb.auth.getUser();
+  var user = res.data && res.data.user;
+
+  if (!user) {
+    locked.style.display  = 'block';
+    content.style.display = 'none';
+    return;
+  }
+
+  locked.style.display  = 'none';
+  content.style.display = 'block';
+
+  // Basic info
+  var name   = (user.user_metadata && user.user_metadata.full_name)
+               || user.email.split('@')[0] || 'User';
+  var email  = user.email || '—';
+  var uid    = user.id    || '—';
+  var joined = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+    : '—';
+
+  document.getElementById('pf-avatar-lg').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('pf-name-hdr').textContent  = name;
+  document.getElementById('pf-email-hdr').textContent = email;
+  document.getElementById('pf-name').textContent      = name;
+  document.getElementById('pf-email').textContent     = email;
+  document.getElementById('pf-joined').textContent    = joined;
+  document.getElementById('pf-uid').textContent       = uid;
+
+  // Stats from Supabase
+  try {
+    var r1 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid);
+    var r2 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid).eq('type','vocabulary');
+    var r3 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid).eq('type','grammar');
+    var r4 = await window._sb.from('saved_outputs').select('*',{count:'exact',head:true}).eq('user_id',uid);
+
+    document.getElementById('pf-stat-total').textContent   = r1.count  ?? 0;
+    document.getElementById('pf-stat-vocab').textContent   = r2.count  ?? 0;
+    document.getElementById('pf-stat-grammar').textContent = r3.count  ?? 0;
+    document.getElementById('pf-stat-saved').textContent   = r4.count  ?? 0;
+
+    // Last session
+    var r5 = await window._sb.from('ai_sessions')
+      .select('created_at,type,cefr_level,provider')
+      .eq('user_id',uid)
+      .order('created_at',{ascending:false})
+      .limit(1)
+      .single();
+
+    if (r5.data) {
+      document.getElementById('pf-last').textContent = new Date(r5.data.created_at)
+        .toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+      document.getElementById('pf-provider').textContent =
+        r5.data.provider
+          ? r5.data.provider.charAt(0).toUpperCase() + r5.data.provider.slice(1)
+          : 'Mock';
+    } else {
+      document.getElementById('pf-last').textContent = 'No sessions yet';
+    }
+
+    // Most used type
+    var vocabN   = r2.count || 0;
+    var grammarN = r3.count || 0;
+    document.getElementById('pf-type').textContent = vocabN >= grammarN ? 'Vocabulary' : 'Grammar';
+
+    // Most used CEFR
+    var r6 = await window._sb.from('ai_sessions').select('cefr_level').eq('user_id',uid);
+    if (r6.data && r6.data.length > 0) {
+      var counts = {};
+      r6.data.forEach(function(row) {
+        counts[row.cefr_level] = (counts[row.cefr_level] || 0) + 1;
+      });
+      var topCefr = Object.entries(counts).sort(function(a,b){return b[1]-a[1];})[0];
+      document.getElementById('pf-cefr').textContent = topCefr ? topCefr[0] : '—';
+    } else {
+      document.getElementById('pf-cefr').textContent = '—';
+    }
+
+  } catch(e) {
+    // Non-fatal — show zeros
+    ['pf-stat-total','pf-stat-vocab','pf-stat-grammar','pf-stat-saved'].forEach(function(id){
+      document.getElementById(id).textContent = '0';
+    });
+  }
+}
+
+// Profile logout
+async function profileLogout() {
+  if (window._sb) await window._sb.auth.signOut();
+  showPage('home');
+}
+
+// Safe login redirect from profile locked state
+function profileGoLogin() {
+  showPage('home');
+  setTimeout(function() {
+    if (typeof openAuth === 'function') openAuth('login');
+  }, 100);
+}
 </script>
 </body>
 </html>
