@@ -810,6 +810,11 @@ body {
   color: var(--gold);
 }
 
+.act-btn.saved {
+  border-color: var(--green-light);
+  color: var(--green-light);
+}
+
 .output-body {
   flex: 1;
   padding: 2rem;
@@ -2855,6 +2860,7 @@ window.NIRONAIService = {
         <div class="output-actions">
           <button class="act-btn" onclick="copyOutput()" title="Copy">⎘</button>
           <button class="act-btn" onclick="printOutput()" title="Print">⎙</button>
+          <button class="act-btn" onclick="saveOutput()" title="Save" id="save-btn">↓</button>
           <button class="act-btn" onclick="clearOutput()" title="Clear">✕</button>
         </div>
       </div>
@@ -3134,6 +3140,62 @@ function printOutput() {
   win.document.close();
   win.focus();
   setTimeout(() => win.print(), 300);
+}
+
+async function saveOutput() {
+  if (!window._lastNironData) return;
+
+  // اگه login نباشه → modal login
+  if (!_authUser) {
+    openAuth('login');
+    return;
+  }
+
+  const btn = document.getElementById('save-btn');
+  if (!btn || btn.disabled) return;
+
+  btn.disabled    = true;
+  btn.textContent = '…';
+
+  try {
+    const { data: { session } } = await window._sb.auth.getSession();
+    if (!session) {
+      openAuth('login');
+      btn.disabled    = false;
+      btn.textContent = '↓';
+      return;
+    }
+
+    const { error } = await window._sb
+      .from('saved_outputs')
+      .insert({
+        user_id:     session.user.id,
+        topic:       document.getElementById('topic-input').value.trim(),
+        cefr_level:  document.getElementById('cefr-select').value,
+        ielts_band:  document.getElementById('ielts-select').value,
+        output_type: selectedType,
+        content:     window._lastNironData,
+      });
+
+    if (error) throw error;
+
+    btn.textContent = '✓';
+    btn.classList.add('saved');
+    btn.title = 'Saved ✓';
+    setTimeout(() => {
+      btn.disabled    = false;
+      btn.textContent = '↓';
+      btn.classList.remove('saved');
+      btn.title       = 'Save';
+    }, 3000);
+
+  } catch (err) {
+    console.error('[NIRON] Save error:', err);
+    btn.disabled    = false;
+    btn.textContent = '↓';
+    btn.title = 'Save failed — try again';
+    setTimeout(() => { btn.title = 'Save'; }, 3000);
+  }
 }
 
 // ══════════════════════════════════════════
