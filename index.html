@@ -1495,9 +1495,10 @@ body {
   .i-output { min-height: auto; }
 
   /* Output tabs — scrollable */
-  .output-topbar { padding: 0.7rem 0.8rem; flex-wrap: wrap; gap: 8px; }
-  .output-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; gap: 2px; width: 100%; }
-  .out-tab { padding: 5px 10px; font-size: 9px; white-space: nowrap; flex-shrink: 0; }
+  .output-topbar { padding: 0.6rem 0; flex-direction: column; align-items: stretch; gap: 0; }
+  .output-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 2px; width: 100%; padding: 0.6rem 0.8rem; }
+  .output-tabs::-webkit-scrollbar { display: none; }
+  .out-tab { padding: 6px 12px; font-size: 9px; white-space: nowrap; flex-shrink: 0; }
   .output-actions { display: none; }
   .output-body { padding: 1rem 0.8rem; }
 
