@@ -1490,15 +1490,15 @@ body {
 
   /* Main interface */
   .main-interface { padding: 1.5rem 0.8rem 3rem; }
-  .interface-grid { min-height: auto; }
+  .interface-grid { min-height: auto; overflow: visible; }
   .i-sidebar { padding: 1.2rem 1rem; gap: 1.2rem; }
-  .i-output { min-height: auto; }
+  .i-output { min-height: auto; overflow: visible; }
 
   /* Output tabs — scrollable */
-  .output-topbar { padding: 0.6rem 0; flex-direction: column; align-items: stretch; gap: 0; }
-  .output-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 2px; width: 100%; padding: 0.6rem 0.8rem; }
+  .output-topbar { padding: 0; flex-direction: column; align-items: stretch; gap: 0; overflow: hidden; border-bottom: 1px solid var(--border); }
+  .output-tabs { display: flex; flex-wrap: nowrap; overflow-x: scroll; overflow-y: visible; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 2px; width: 100%; min-width: 0; padding: 0.5rem 0.8rem; box-sizing: border-box; }
   .output-tabs::-webkit-scrollbar { display: none; }
-  .out-tab { padding: 6px 12px; font-size: 9px; white-space: nowrap; flex-shrink: 0; }
+  .out-tab { padding: 6px 12px; font-size: 9px; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; min-width: max-content; }
   .output-actions { display: none; }
   .output-body { padding: 1rem 0.8rem; }
 
