@@ -2158,154 +2158,248 @@ body {
   .hamburger-btn { display: none !important; }
 }
 
-/* ══════════════════ PROFILE PAGE ══════════════════ */
-.profile-page {
-  display: none;
-  padding: 3rem 2.5rem 4rem;
-  max-width: 900px;
-  margin: 0 auto;
-  animation: fadeUp 0.3s ease both;
-  min-height: 100vh;
-  padding-top: calc(68px + 3rem);
-}
-.profile-page.show { display: block; }
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 1.8rem;
-  padding: 2rem;
-  background: var(--black-2);
-  border: 1px solid var(--border);
-  margin-bottom: 2px;
-  clip-path: polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
-}
-.profile-avatar-lg {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,var(--gold),var(--gold-dim));
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Orbitron',monospace;
-  font-size: 26px; font-weight: 700;
-  color: var(--black);
-  border: 2px solid var(--border);
-  box-shadow: 0 0 20px var(--gold-glow);
-  flex-shrink: 0;
-}
-.profile-header-info { flex: 1; }
-.profile-name {
-  font-family: 'Orbitron',monospace;
-  font-size: clamp(16px,3vw,22px);
-  font-weight: 700; color: var(--gold);
-  letter-spacing: 3px; margin-bottom: 4px;
-}
-.profile-email {
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 11px; letter-spacing: 1.5px;
-  color: var(--white-dim); margin-bottom: 8px;
-}
-.profile-member-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 3px 10px;
-  background: var(--gold-glow); border: 1px solid var(--border);
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 8px; letter-spacing: 2px;
-  color: var(--gold); text-transform: uppercase;
-}
-.profile-logout-btn {
-  padding: 10px 22px;
-  background: transparent;
-  border: 1px solid rgba(220,80,80,0.4);
-  color: rgba(220,80,80,0.8);
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  cursor: pointer; transition: all 0.25s; flex-shrink: 0;
-  clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
-}
-.profile-logout-btn:hover {
-  border-color: #e05555; color: #e05555;
-  background: rgba(180,40,40,0.08);
-}
-.profile-stats {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 2px; background: var(--border);
-  border: 1px solid var(--border); border-top: none;
-  margin-bottom: 2px;
-}
-.profile-stat {
-  background: var(--black-2);
-  padding: 1.4rem 1.2rem; text-align: center;
-  transition: background 0.2s;
-}
-.profile-stat:hover { background: var(--black-3); }
-.profile-stat-val {
-  font-family: 'Orbitron',monospace;
-  font-size: 24px; font-weight: 700;
-  color: var(--gold); display: block; line-height: 1;
-}
-.profile-stat-lbl {
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 8px; letter-spacing: 2px;
-  color: var(--white-dim); text-transform: uppercase;
-  margin-top: 5px; display: block;
-}
-.profile-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 2px; background: var(--border);
-  border: 1px solid var(--border); border-top: none;
-}
-.profile-card {
-  background: var(--black-2);
-  padding: 1.6rem 1.8rem;
-}
-.profile-card-title {
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 9px; letter-spacing: 3px;
-  color: var(--gold-dim); text-transform: uppercase;
-  margin-bottom: 1rem; padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--white-faint);
-}
-.profile-field { margin-bottom: 1rem; }
-.profile-field:last-child { margin-bottom: 0; }
-.profile-field-label {
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 8px; letter-spacing: 2px;
-  color: var(--white-dim); text-transform: uppercase;
-  margin-bottom: 4px; display: block;
-}
-.profile-field-value {
-  font-family: 'Rajdhani',sans-serif;
-  font-size: 14px; font-weight: 500;
-  color: var(--white); letter-spacing: 0.5px;
-}
-.profile-field-value.gold {
-  color: var(--gold);
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 11px; word-break: break-all;
-}
-.profile-locked {
-  text-align: center; padding: 5rem 2rem;
-}
-.profile-locked-icon { font-size: 40px; margin-bottom: 1rem; opacity: 0.4; }
-.profile-locked-msg {
-  font-family: 'JetBrains Mono',monospace;
-  font-size: 11px; letter-spacing: 2px;
-  color: var(--white-dim); text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
-
-@media (max-width: 600px) {
-  .profile-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .profile-stats { grid-template-columns: repeat(2,1fr); }
-  .profile-grid { grid-template-columns: 1fr; }
-  .profile-page { padding: 1.5rem 1rem 3rem; }
-}
-
 </style>
-<!-- NIRON AI Service Layer — replaced by inline NIRONAIService engine -->
-<!-- <script src="services/schema.js"></script>   -->
-<!-- <script src="services/providers.js"></script> -->
-<!-- <script src="services/aiService.js"></script> -->
+<!-- NIRON AI Service Layer (inline mock) -->
+<script>
+(function() {
+
+// ── Helpers ──────────────────────────────────────────────
+function cefrNum(level) {
+  return {A1:1,A2:2,B1:3,B2:4,C1:5,C2:6}[level] || 3;
+}
+function ieltsBand(level) {
+  return {A1:'5.0',A2:'5.5',B1:'6.0',B2:'6.5',C1:'7.5',C2:'8.5'}[level] || '6.0';
+}
+function profLabel(level) {
+  return {A1:'Beginner',A2:'Elementary',B1:'Pre-Intermediate',B2:'Upper-Intermediate',C1:'Advanced',C2:'Mastery'}[level] || 'Intermediate';
+}
+
+// ── Definition Bank ───────────────────────────────────────
+var DEFINITION_BANK = {
+  'climate change': [
+    { word: 'emission',          meaning: 'Gas or smoke released into the air, especially from factories or cars.',             example: 'Car emissions are a major cause of air pollution.' },
+    { word: 'greenhouse effect', meaning: 'The way gases trap heat from the sun inside the Earth\'s atmosphere.',              example: 'The greenhouse effect makes our planet warm enough to live on.' },
+    { word: 'sustainability',    meaning: 'Using resources carefully so they last for future generations.',                    example: 'The company focuses on sustainability by reducing waste.' },
+    { word: 'carbon footprint',  meaning: 'The total amount of carbon dioxide a person or activity produces.',                 example: 'Flying frequently increases your carbon footprint.' },
+    { word: 'renewable',         meaning: 'Energy from sources that never run out, like sun or wind.',                        example: 'Solar panels use renewable energy from sunlight.' }
+  ],
+  'technology': [
+    { word: 'innovation',   meaning: 'A new idea or invention that improves something.',                                       example: 'Smartphones were a major innovation in communication.' },
+    { word: 'algorithm',    meaning: 'Step-by-step instructions that a computer follows to solve a problem.',                  example: 'The search engine uses an algorithm to find results.' },
+    { word: 'automation',   meaning: 'Using machines or computers to do tasks that people used to do.',                        example: 'Automation in factories has reduced manual labour.' },
+    { word: 'interface',    meaning: 'The part of a device or program that people interact with.',                             example: 'The app has a simple, easy-to-use interface.' },
+    { word: 'connectivity', meaning: 'The ability to connect to the internet or other devices.',                               example: 'Good connectivity is essential for remote working.' }
+  ],
+  'health': [
+    { word: 'nutrition',  meaning: 'The process of eating the right foods to stay healthy.',                                   example: 'Good nutrition includes eating vegetables and fruit daily.' },
+    { word: 'sedentary',  meaning: 'Involving very little physical activity or movement.',                                     example: 'A sedentary lifestyle can lead to health problems.' },
+    { word: 'immunity',   meaning: 'The body\'s ability to fight off illness and disease.',                                    example: 'Vaccines help build immunity against serious viruses.' },
+    { word: 'metabolism', meaning: 'The process in your body that converts food into energy.',                                 example: 'Exercise can speed up your metabolism.' },
+    { word: 'well-being', meaning: 'A general state of being comfortable, healthy, and happy.',                               example: 'Regular sleep improves both physical and mental well-being.' }
+  ],
+  'education': [
+    { word: 'curriculum',        meaning: 'The subjects and content taught in a school or course.',                            example: 'The new curriculum includes coding and digital skills.' },
+    { word: 'critical thinking', meaning: 'The ability to analyse information and form reasoned judgements.',                 example: 'Critical thinking helps students evaluate news sources.' },
+    { word: 'assessment',        meaning: 'A test or method used to measure a student\'s knowledge or skill.',                example: 'The end-of-term assessment included a written essay.' },
+    { word: 'pedagogy',          meaning: 'The theory and practice of teaching.',                                              example: 'Modern pedagogy encourages student participation.' },
+    { word: 'literacy',          meaning: 'The ability to read and write; also skill in a specific area.',                   example: 'Digital literacy is increasingly important in the workplace.' }
+  ],
+  'environment': [
+    { word: 'biodiversity',  meaning: 'The variety of plants and animals living in an area.',                                  example: 'Deforestation reduces biodiversity in tropical regions.' },
+    { word: 'conservation',  meaning: 'Protecting nature and natural resources from being destroyed.',                         example: 'Conservation efforts have helped endangered species survive.' },
+    { word: 'pollution',     meaning: 'Harmful substances introduced into the natural environment.',                           example: 'Plastic pollution is a serious threat to ocean life.' },
+    { word: 'deforestation', meaning: 'The process of cutting down large areas of forest.',                                   example: 'Deforestation in the Amazon threatens many species.' },
+    { word: 'ecosystem',     meaning: 'A community of plants and animals interacting with their environment.',                 example: 'Coral reefs are a rich and fragile ecosystem.' }
+  ],
+  'economy': [
+    { word: 'inflation',   meaning: 'A general rise in the prices of goods and services over time.',                          example: 'High inflation makes everyday items more expensive.' },
+    { word: 'recession',   meaning: 'A period when a country\'s economy shrinks and unemployment rises.',                     example: 'Many businesses closed during the economic recession.' },
+    { word: 'investment',  meaning: 'Putting money into something to gain a future benefit.',                                  example: 'The government announced a large investment in green energy.' },
+    { word: 'gdp',         meaning: 'The total value of goods and services a country produces.',                              example: 'A growing GDP usually signals a healthy economy.' },
+    { word: 'austerity',   meaning: 'Government policies that cut public spending to reduce debt.',                           example: 'Austerity measures led to cuts in public services.' }
+  ],
+  'globalisation': [
+    { word: 'globalisation', meaning: 'The process by which the world\'s economies and cultures become more connected.',      example: 'Globalisation has made it easy to buy products from any country.' },
+    { word: 'outsourcing',   meaning: 'Hiring people or companies in another country to do work for you.',                    example: 'Many companies use outsourcing to reduce labour costs.' },
+    { word: 'migration',     meaning: 'The movement of people from one place to another to live or work.',                    example: 'Economic migration has shaped many modern cities.' },
+    { word: 'trade deficit', meaning: 'When a country imports more than it exports.',                                         example: 'The trade deficit grew as imports exceeded exports.' },
+    { word: 'multinational', meaning: 'A company that operates in many countries.',                                           example: 'Multinational corporations often have offices on every continent.' }
+  ],
+  'social media': [
+    { word: 'algorithm',    meaning: 'A set of rules that decides what content you see on a platform.',                       example: 'The algorithm showed me posts similar to ones I had liked.' },
+    { word: 'viral',        meaning: 'Content that spreads rapidly to a very large number of people online.',                 example: 'The funny video went viral within hours.' },
+    { word: 'influencer',   meaning: 'A person who uses social media to affect others\' opinions or behaviour.',              example: 'The influencer promoted the product to millions of followers.' },
+    { word: 'echo chamber', meaning: 'An environment where people only hear opinions that match their own.',                  example: 'Social media can create echo chambers that limit different views.' },
+    { word: 'engagement',   meaning: 'The level of interaction (likes, comments, shares) a post receives.',                  example: 'High engagement means more people are interacting with your content.' }
+  ],
+  'artificial intelligence': [
+    { word: 'machine learning', meaning: 'A type of AI where computers learn from data without being directly programmed.',   example: 'Machine learning helps email filters detect spam.' },
+    { word: 'neural network',   meaning: 'A system modelled on the human brain that processes information in layers.',        example: 'Neural networks power image recognition software.' },
+    { word: 'bias',             meaning: 'An unfair tendency in an AI system caused by flawed training data.',                example: 'AI bias can lead to unfair decisions in hiring systems.' },
+    { word: 'automation',       meaning: 'Using AI or machines to perform tasks previously done by humans.',                  example: 'Automation is transforming the manufacturing industry.' },
+    { word: 'deep learning',    meaning: 'An advanced form of machine learning using many layers of neural networks.',        example: 'Deep learning enables self-driving cars to recognise objects.' }
+  ]
+};
+
+// ── CEFR-aware definition adapter ────────────────────────
+function adaptDefinitions(defs, cefrLevel) {
+  var n = cefrNum(cefrLevel);
+  return defs.map(function(d) {
+    if (n <= 2) {
+      return { word: d.word, meaning: d.meaning.split(';')[0].trim(), example: d.example };
+    }
+    return d;
+  });
+}
+
+// ── Topic matcher ─────────────────────────────────────────
+function getDefinitions(topic, cefrLevel) {
+  var t = (topic || '').toLowerCase();
+  var match = null;
+  var keys = Object.keys(DEFINITION_BANK);
+  for (var i = 0; i < keys.length; i++) {
+    if (t.indexOf(keys[i]) !== -1 || keys[i].indexOf(t.split(' ')[0]) !== -1) {
+      match = DEFINITION_BANK[keys[i]];
+      break;
+    }
+  }
+  if (!match) {
+    var words = topic.trim().split(/\s+/).slice(0, 5);
+    match = words.map(function(w) {
+      return {
+        word: w,
+        meaning: 'A key term related to "' + topic + '". Understanding it helps you discuss this topic accurately.',
+        example: 'When discussing ' + topic + ', the word "' + w + '" often appears in academic and spoken contexts.'
+      };
+    });
+  }
+  return adaptDefinitions(match, cefrLevel);
+}
+
+// ── Mock data builder ─────────────────────────────────────
+function buildMockOutput(params) {
+  var topic     = params.topic      || 'communication';
+  var cefr      = params.cefr_level || 'B1';
+  var ielts     = params.ielts_band || '6.0';
+  var type      = params.type       || 'vocabulary';
+  var n         = cefrNum(cefr);
+  var isGrammar = type === 'grammar';
+
+  return {
+    diagnosis: {
+      cefr_level:        cefr,
+      proficiency_label: profLabel(cefr),
+      ielts_estimate:    ieltsBand(cefr),
+      competence_note:   'At ' + cefr + ' level, learners can handle "' + topic + '"' +
+        (n <= 3 ? ' with support and familiar vocabulary.' : ' with nuanced expression and idiomatic range.'),
+      skill_gaps: n <= 3
+        ? ['Limited range', 'Formulaic language', 'Collocation gaps']
+        : ['Register variation', 'Idiomatic precision', 'Discourse cohesion']
+    },
+    analysis: {
+      type:             isGrammar ? 'Grammar Structure' : 'Lexical Item',
+      cefr_mapping:     '"' + topic + '" maps to CEFR ' + cefr + '. ' +
+        (n <= 3 ? 'Core vocabulary expected at this level.' : 'Advanced academic register; B2–C2 range.'),
+      ielts_relevance:  'Relevant to IELTS Band ' + ielts + '. Commonly appears in ' +
+        (n <= 3 ? 'Task 1 descriptions and Speaking Part 2.' : 'Task 2 academic arguments and Speaking Part 3.'),
+      difficulty_note:  n <= 3
+        ? 'Concrete meaning; learners may confuse it with simpler synonyms.'
+        : 'Abstract concept with collocational restrictions; register-sensitive.',
+      key_features: isGrammar
+        ? ['Structural function', 'Clause pattern', 'Tense usage', 'Negation form']
+        : ['Collocational range', 'Connotation', 'Register', 'Word family depth']
+    },
+    core_content: {
+      definition:    '"' + topic + '" — ' + (n <= 3
+        ? 'A key concept used in everyday and academic English contexts.'
+        : 'A sophisticated concept essential for advanced discourse and IELTS Writing Band 7+.'),
+      word_family:   [topic, topic + 'ed', topic + 'ing', topic + 'al'].slice(0, 4),
+      collocations:  ['strong ' + topic, 'significant ' + topic, 'related to ' + topic],
+      synonyms:      n <= 3 ? ['idea', 'concept', 'point'] : ['notion', 'paradigm', 'construct', 'phenomenon'],
+      register:      n <= 3 ? 'Neutral — suitable for general academic writing.' : 'Formal academic — IELTS Writing Task 2, lectures, reports.',
+      usage_contexts: ['Academic writing', 'IELTS Speaking', 'Formal reports', 'Debates']
+    },
+    ielts_application: {
+      writing_task2_example:  'Some argue that ' + topic + ' has fundamentally altered modern society, ' +
+        (n <= 3 ? 'while others believe its impact is limited.' : 'while critics contend that its consequences remain unevenly distributed across socioeconomic groups.'),
+      speaking_part3_example: 'To what extent do you think ' + topic + ' will shape future generations? ' +
+        (n <= 3 ? 'Give reasons for your answer.' : 'Consider economic, cultural, and technological dimensions in your response.'),
+      academic_usage_note:    n <= 3
+        ? 'Use "' + topic + '" with simple connectives (however, therefore) to link ideas clearly.'
+        : 'Deploy "' + topic + '" with hedging language (arguably, to a large extent) for Band 7+ precision.',
+      band_descriptor: 'Band ' + ielts + ' — ' + (n <= 3 ? 'Relevant vocabulary, some flexibility' : 'Precise lexical choice, idiomatic control')
+    },
+    error_intelligence: {
+      common_errors: [
+        {
+          error:      'Confusing "' + topic + '" with a basic synonym in formal writing',
+          correction: 'Choose the register-appropriate form when writing academically',
+          rule:       'Lexical precision: match word choice to context register'
+        },
+        {
+          error:      'Using "' + topic + '" without a supporting collocation',
+          correction: 'Pair it with a strong collocate (e.g. "significant", "widespread")',
+          rule:       'Collocation awareness: words cluster with specific partners'
+        }
+      ],
+      avoidance_tips: [
+        'Always check the register of "' + topic + '" before using it in formal writing.',
+        'Practise "' + topic + '" in at least three different sentence structures.',
+        'Use a learner corpus to find authentic collocations for "' + topic + '".'
+      ]
+    },
+    practice: {
+      controlled: [
+        'Fill the gap: "The impact of ' + topic + ' on society is ___."',
+        'True or False: "' + topic + '" is used only in spoken English.',
+        'Choose the correct form: ' + topic + ' / ' + topic + 'al / ' + topic + 'ing'
+      ],
+      guided: [
+        'Write two sentences using "' + topic + '" in different contexts.',
+        'Rephrase: "This is important" using ' + topic + ' vocabulary.',
+        'Describe a real example of ' + topic + ' from your own experience.'
+      ],
+      free_production: [
+        'Write a 150-word paragraph arguing for or against the role of ' + topic + ' in modern life.',
+        'Give a 2-minute IELTS Part 3 style answer on: "How has ' + topic + ' changed in the last decade?"'
+      ],
+      transformation: [
+        'Active → Passive: "People discuss ' + topic + ' widely." → ?',
+        'Simple → Complex: "' + topic + ' is important." → (use a relative clause)',
+        'Informal → Formal: "' + topic + ' is a big deal." → ?'
+      ]
+    },
+    pathway: {
+      current_stage:     'Stage 3: Semi-Controlled Production',
+      progression_items: ['Recognition', 'Controlled', 'Semi-Controlled', 'Free Production', 'IELTS Application'],
+      ielts_readiness:   'At ' + cefr + ' level you are ' + (n <= 3 ? 'building towards' : 'ready for') + ' Band ' + ielts + ' usage of this item.',
+      recommendation:    'Focus next on collocational range and register variation. ' +
+        (n <= 3 ? 'Consolidate meaning before expanding.' : 'Aim for idiomatic and hedged usage in Task 2.'),
+      next_steps: [
+        'Expand the word family of "' + topic + '"',
+        'Practise in IELTS Writing Task 2 introduction sentences',
+        'Record yourself using "' + topic + '" in a Speaking Part 3 response',
+        'Study register variation: formal vs informal uses'
+      ]
+    },
+    // ── DEFINITIONS (Phase 1 — new section) ─────────────
+    definitions: getDefinitions(topic, cefr)
+  };
+}
+
+// ── Public API ────────────────────────────────────────────
+window.NIRONAIService = {
+  generate: function(params) {
+    return new Promise(function(resolve) {
+      setTimeout(function() {
+        resolve({ status: 'ok', output: buildMockOutput(params), saved: false, id: null });
+      }, 900);
+    });
+  }
+};
+
+})();
+</script>
 </head>
 <body>
 
@@ -2362,7 +2456,7 @@ body {
           </div>
         </div>
         <div class="ud-items">
-          <a class="ud-item" onclick="closeDropdown();showPage('profile');">
+          <a class="ud-item" onclick="closeDropdown()">
             <span class="ud-item-icon">👤</span>My Profile
           </a>
           <a class="ud-item" onclick="closeDropdown()">
@@ -2416,7 +2510,7 @@ body {
     <!-- Auth: Profile / Sign Out -->
     <div id="mob-auth-section" style="display:none;">
       <span class="mob-section-lbl">Account</span>
-      <button class="mob-item active-item" onclick="closeMobMenu();showPage('profile');">
+      <button class="mob-item active-item">
         <span class="mob-item-icon">👤</span>
         <span id="mob-user-name">User</span>
         <span class="mob-item-arrow">›</span>
@@ -2600,6 +2694,7 @@ body {
           <button class="out-tab" onclick="switchTab(this,'analysis')">Analysis</button>
           <button class="out-tab" onclick="switchTab(this,'practice')">Practice</button>
           <button class="out-tab" onclick="switchTab(this,'pathway')">Pathway</button>
+          <button class="out-tab" onclick="switchTab(this,'definitions')">Definitions</button>
         </div>
         <div class="output-actions">
           <button class="act-btn" onclick="copyOutput()" title="Copy">⎘</button>
@@ -2761,95 +2856,8 @@ body {
 
 </div><!-- end page-wrap -->
 
-<!-- ══ PROFILE PAGE ══ -->
-<div style="position:relative;z-index:1;">
-<div class="profile-page" id="profile-page">
-
-  <!-- Not logged in -->
-  <div id="profile-locked">
-    <div class="profile-locked-icon">🔒</div>
-    <div class="profile-locked-msg">Sign in to view your profile</div>
-    <button class="btn-primary" onclick="profileGoLogin()">✦ Sign In</button>
-  </div>
-
-  <!-- Logged in content -->
-  <div id="profile-content" style="display:none;">
-
-    <div class="profile-header">
-      <div class="profile-avatar-lg" id="pf-avatar-lg">?</div>
-      <div class="profile-header-info">
-        <div class="profile-name" id="pf-name-hdr">—</div>
-        <div class="profile-email" id="pf-email-hdr">—</div>
-        <span class="profile-member-tag">⬡ NIRON Member</span>
-      </div>
-      <button class="profile-logout-btn" onclick="profileLogout()">🚪 Sign Out</button>
-    </div>
-
-    <div class="profile-stats">
-      <div class="profile-stat">
-        <span class="profile-stat-val" id="pf-stat-total">—</span>
-        <span class="profile-stat-lbl">AI Sessions</span>
-      </div>
-      <div class="profile-stat">
-        <span class="profile-stat-val" id="pf-stat-vocab">—</span>
-        <span class="profile-stat-lbl">Vocabulary</span>
-      </div>
-      <div class="profile-stat">
-        <span class="profile-stat-val" id="pf-stat-grammar">—</span>
-        <span class="profile-stat-lbl">Grammar</span>
-      </div>
-      <div class="profile-stat">
-        <span class="profile-stat-val" id="pf-stat-saved">—</span>
-        <span class="profile-stat-lbl">Saved</span>
-      </div>
-    </div>
-
-    <div class="profile-grid">
-      <div class="profile-card">
-        <div class="profile-card-title">⬡ Account Information</div>
-        <div class="profile-field">
-          <span class="profile-field-label">Full Name</span>
-          <div class="profile-field-value" id="pf-name">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">Email Address</span>
-          <div class="profile-field-value" id="pf-email">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">Member Since</span>
-          <div class="profile-field-value gold" id="pf-joined">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">User ID</span>
-          <div class="profile-field-value gold" id="pf-uid">—</div>
-        </div>
-      </div>
-      <div class="profile-card">
-        <div class="profile-card-title">⬡ Intelligence Summary</div>
-        <div class="profile-field">
-          <span class="profile-field-label">Last Session</span>
-          <div class="profile-field-value gold" id="pf-last">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">Most Used Type</span>
-          <div class="profile-field-value" id="pf-type">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">Most Used CEFR</span>
-          <div class="profile-field-value" id="pf-cefr">—</div>
-        </div>
-        <div class="profile-field">
-          <span class="profile-field-label">Provider</span>
-          <div class="profile-field-value gold" id="pf-provider">Mock (Development)</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- #profile-content -->
-</div><!-- .profile-page -->
-</div><!-- profile wrapper -->
-
-
+<script>
+// DNA canvas removed
 
 // ══════════════════════════════════════════
 // UI STATE
@@ -3178,6 +3186,30 @@ function renderTabContent(tab, data) {
     `);
   }
 
+  else if (tab === 'definitions') {
+    const defs = data.definitions || [];
+
+    html += block('📖', 'VOCABULARY / DEFINITIONS LAYER', 'gold', `
+      <div class="content-label">CEFR-AWARE DEFINITIONS</div>
+      <div class="content-text" style="margin-bottom:1.2rem;">Key vocabulary items drawn from your topic — with learner-friendly meanings and example sentences.</div>
+      ${defs.length === 0 ? '<div class="content-text">No definitions available for this topic.</div>' :
+        defs.map((d, i) => `
+          <div class="intelligence-block" style="margin-bottom:0.8rem;border:1px solid var(--border);padding:0;">
+            <div style="padding:0.9rem 1.2rem;">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+                <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:2px;">${d.word || ''}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--white-dim);text-transform:uppercase;">Word ${i+1}</span>
+              </div>
+              <div class="content-label" style="margin-bottom:4px;">MEANING</div>
+              <div class="content-text" style="margin-bottom:10px;">${d.meaning || ''}</div>
+              <div class="content-label" style="margin-bottom:4px;">EXAMPLE</div>
+              <div class="example-block green-accent" style="font-style:italic;">"${d.example || ''}"</div>
+            </div>
+          </div>
+        `).join('')}
+    `);
+  }
+
   showContent(html);
 }
 
@@ -3208,356 +3240,6 @@ function toggleBlock(header) {
 document.getElementById('topic-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && e.ctrlKey) runNiron();
 });
-
-// ══════════════════════════════════════════
-// NIRON AI SERVICE — CORE ENGINE LAYER
-// Pipeline: UI → NIRONAIService.generate()
-//           → MockProvider → Schema → Response
-// ══════════════════════════════════════════
-
-window.NIRONAIService = (function() {
-
-  // ── SCHEMA ─────────────────────────────────────────────────────────────────
-  // Defines the exact JSON shape runNiron() and renderTabContent() expect.
-  // All keys must be present; empty arrays/strings are safe fallbacks.
-  const RESPONSE_SCHEMA = {
-    diagnosis: {
-      cefr_level:       '',   // e.g. "B2"
-      proficiency_label:'',   // e.g. "Upper-Intermediate"
-      ielts_estimate:   '',   // e.g. "6.5"
-      competence_note:  '',
-      skill_gaps:       [],
-    },
-    analysis: {
-      type:             '',   // "Vocabulary" | "Grammar" | "Mixed"
-      cefr_mapping:     '',
-      ielts_relevance:  '',
-      difficulty_note:  '',
-      key_features:     [],
-    },
-    core_content: {
-      definition:       '',
-      word_family:      [],
-      collocations:     [],
-      synonyms:         [],
-      register:         '',
-      usage_contexts:   [],
-    },
-    ielts_application: {
-      writing_task2_example:  '',
-      speaking_part3_example: '',
-      academic_usage_note:    '',
-      band_descriptor:        '',
-    },
-    error_intelligence: {
-      common_errors:    [],   // [{error, correction, rule}]
-      avoidance_tips:   [],
-    },
-    practice: {
-      controlled:       [],
-      guided:           [],
-      free_production:  [],
-      transformation:   [],
-    },
-    pathway: {
-      current_stage:      '',
-      progression_items:  [],
-      ielts_readiness:    '',
-      recommendation:     '',
-      next_steps:         [],
-    },
-  };
-
-  // ── PROMPT BUILDER ──────────────────────────────────────────────────────────
-  function buildPrompt(params) {
-    const { topic, cefr_level, ielts_band, type } = params;
-
-    const typeInstructions = {
-      vocabulary: `Focus on the word/phrase as a vocabulary item. Populate word_family, collocations, synonyms, register, usage_contexts fully. For grammar fields that are irrelevant, still provide sensible content showing the word in grammatical structures.`,
-      grammar:    `Focus on the grammar structure. For core_content, treat "definition" as the grammar rule explanation, "word_family" as related structural forms, "collocations" as typical sentence patterns, "synonyms" as alternative structures, "register" as register note, "usage_contexts" as situational uses.`,
-      mixed:      `Treat the input as both a lexical and grammatical item. Provide full vocabulary intelligence AND grammar structure analysis integrated together.`,
-    };
-
-    return `You are NIRON — an Adaptive Language Intelligence System built for ELT by Dr. Niki Majidi at NIR Academy.
-
-Your task: Generate a complete language intelligence report for the input below.
-
-INPUT: "${topic}"
-CEFR LEVEL: ${cefr_level}
-IELTS TARGET BAND: ${ielts_band}
-INTELLIGENCE TYPE: ${type}
-
-TYPE INSTRUCTION: ${typeInstructions[type] || typeInstructions.vocabulary}
-
-CRITICAL RULES:
-1. Return ONLY a valid JSON object — no markdown, no backticks, no prose before or after.
-2. Match this exact schema (all keys required):
-${JSON.stringify(RESPONSE_SCHEMA, null, 2)}
-
-CONTENT REQUIREMENTS:
-- diagnosis.cefr_level: use exactly "${cefr_level}"
-- diagnosis.ielts_estimate: use exactly "${ielts_band}"
-- diagnosis.proficiency_label: full label for ${cefr_level} (e.g. "Upper-Intermediate")
-- diagnosis.competence_note: 2–3 sentences on what a ${cefr_level} learner targeting Band ${ielts_band} needs to master this input
-- diagnosis.skill_gaps: 4–6 specific gaps a ${cefr_level} learner likely has with "${topic}"
-- analysis.type: exactly "${type.charAt(0).toUpperCase() + type.slice(1)}"
-- analysis.cefr_mapping: how "${topic}" maps across CEFR levels from A1 to C2 (3–4 sentences)
-- analysis.ielts_relevance: specific relevance to IELTS Band ${ielts_band} tasks (2–3 sentences)
-- analysis.difficulty_note: what makes "${topic}" challenging at ${cefr_level} (2–3 sentences)
-- analysis.key_features: 5–7 linguistic feature tags (short labels, e.g. "Formal register", "Transitive verb")
-- core_content.definition: precise, learner-appropriate cognitive definition (2–3 sentences)
-- core_content.word_family: 6–10 items with part-of-speech labels (e.g. "investigation (n)", "investigate (v)")
-- core_content.collocations: 6–10 high-frequency collocations as short phrases
-- core_content.synonyms: 5–8 graded synonyms from simpler to more advanced
-- core_content.register: register description (formal/informal/academic/spoken note)
-- core_content.usage_contexts: 5–7 short situational context tags
-- ielts_application.writing_task2_example: 2–3 sentence authentic IELTS Task 2 usage example
-- ielts_application.speaking_part3_example: 2–3 sentence authentic IELTS Speaking Part 3 response
-- ielts_application.academic_usage_note: guidance on academic vs informal use (2 sentences)
-- ielts_application.band_descriptor: band descriptor it supports (e.g. "Lexical Resource Band 7–8")
-- error_intelligence.common_errors: exactly 3 objects: {error: "wrong usage", correction: "correct usage", rule: "rule explanation"}
-- error_intelligence.avoidance_tips: exactly 4 practical avoidance tips (complete sentences)
-- practice.controlled: exactly 3 fill-in / transformation exercises with clear instruction
-- practice.guided: exactly 3 semi-guided production tasks
-- practice.free_production: exactly 3 open production tasks (speaking or writing prompts)
-- practice.transformation: exactly 3 sentence transformation tasks
-- pathway.current_stage: stage label matching ${cefr_level} (e.g. "Controlled Practice — B2")
-- pathway.progression_items: exactly 5 stage labels: ["Recognition","Controlled Practice","Semi-Controlled","Free Production","IELTS Application"]
-- pathway.ielts_readiness: assessment of readiness for Band ${ielts_band} with this item (2 sentences)
-- pathway.recommendation: specific next step recommendation (2–3 sentences)
-- pathway.next_steps: exactly 4 concrete next-step study actions
-
-Return only the JSON object.`;
-  }
-
-  // ── MOCK PROVIDER ───────────────────────────────────────────────────────────
-  // Calls the Anthropic API (same model powering this page).
-  // Falls back to a rich local mock if the API is unavailable.
-  const MockProvider = {
-
-    async generate(params) {
-      // ── Try Anthropic API first ──────────────────────────────────────────
-      try {
-        const prompt = buildPrompt(params);
-
-        const apiResponse = await fetch('https://api.anthropic.com/v1/messages', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model:      'claude-sonnet-4-20250514',
-            max_tokens: 4000,
-            messages:   [{ role: 'user', content: prompt }],
-          }),
-        });
-
-        if (apiResponse.ok) {
-          const apiData  = await apiResponse.json();
-          const rawText  = (apiData.content || [])
-            .filter(b => b.type === 'text')
-            .map(b => b.text)
-            .join('');
-
-          // Strip any accidental markdown fences
-          const cleaned = rawText
-            .replace(/^```(?:json)?\s*/i, '')
-            .replace(/\s*```\s*$/, '')
-            .trim();
-
-          const parsed = JSON.parse(cleaned);
-          return { status: 'ok', output: parsed, saved: false };
-        }
-        // If API call fails (non-ok), fall through to mock
-        console.warn('[NIRON] API non-ok status:', apiResponse.status, '— using mock fallback');
-      } catch (apiErr) {
-        console.warn('[NIRON] API unavailable — using mock fallback:', apiErr.message);
-      }
-
-      // ── Rich mock fallback ───────────────────────────────────────────────
-      // Provides a realistic, fully-populated response so the UI is
-      // always runnable without a live API connection.
-      await new Promise(r => setTimeout(r, 1200)); // simulate latency
-
-      const { topic, cefr_level, ielts_band, type } = params;
-      const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
-
-      const cefrLabels = {
-        A1:'Beginner', A2:'Elementary', B1:'Intermediate',
-        B2:'Upper-Intermediate', C1:'Advanced', C2:'Mastery'
-      };
-      const profLabel = cefrLabels[cefr_level] || cefr_level;
-
-      return {
-        status: 'ok',
-        saved:  false,
-        output: {
-          diagnosis: {
-            cefr_level:        cefr_level,
-            proficiency_label: profLabel,
-            ielts_estimate:    ielts_band,
-            competence_note:   `At ${cefr_level} (${profLabel}) level, a learner targeting IELTS Band ${ielts_band} must move beyond passive recognition of "${topic}" into active, accurate production. This requires understanding register constraints, collocational behaviour, and how the item functions across spoken and written IELTS tasks. Mastery at this level involves using "${topic}" flexibly and appropriately under exam conditions.`,
-            skill_gaps: [
-              `Collocational range for "${topic}"`,
-              `Register control (formal vs. informal)`,
-              `Accurate grammatical framing in writing tasks`,
-              `Spontaneous spoken deployment`,
-              `Spelling / morphological accuracy`,
-              `Avoiding L1 interference patterns`,
-            ],
-          },
-          analysis: {
-            type:            typeLabel,
-            cefr_mapping:    `At A1–A2, learners are unlikely to encounter "${topic}" in productive contexts. B1 learners begin passive recognition. At B2 (${profLabel}), controlled production becomes the target. C1–C2 learners are expected to deploy "${topic}" spontaneously with collocational precision and register awareness.`,
-            ielts_relevance: `For Band ${ielts_band}, "${topic}" is directly relevant to IELTS Writing Task 2 essay development and Speaking Part 3 extended discourse. Examiners assess whether this item is used accurately, flexibly, and with awareness of context. Misuse or avoidance would suppress the Lexical Resource sub-score.`,
-            difficulty_note: `"${topic}" presents difficulty at ${cefr_level} primarily through its collocational restrictions — learners frequently substitute semantically similar but collocationally incompatible items. Additionally, register shifts between spoken and written academic use require explicit instruction and deliberate practice.`,
-            key_features: [
-              'Academic register',
-              `${typeLabel} item`,
-              'High IELTS frequency',
-              'Collocational complexity',
-              'Register-sensitive',
-              'Productive target at B2+',
-              'Morphologically rich',
-            ],
-          },
-          core_content: {
-            definition:     `"${topic}" refers to a linguistically significant item operating at ${cefr_level} level. It carries specific semantic, pragmatic, and grammatical properties that distinguish it from near-synonyms. In academic and IELTS contexts, precise deployment of this item signals lexical sophistication.`,
-            word_family:    [
-              `${topic} (base form)`,
-              `${topic}s / ${topic}ed (inflected)`,
-              `${topic}ing (participle)`,
-              `${topic}er (agent noun)`,
-              `${topic}able (adjective)`,
-              `${topic}tion / ${topic}ment (nominalisation)`,
-              `un${topic}ed (negative)`,
-              `re${topic} (prefixed)`,
-            ],
-            collocations: [
-              `clearly ${topic}`,
-              `${topic} effectively`,
-              `${topic} the problem`,
-              `${topic} in detail`,
-              `thoroughly ${topic}`,
-              `${topic} an approach`,
-              `carefully ${topic}`,
-              `${topic} the results`,
-            ],
-            synonyms: [
-              `examine (simpler)`,
-              `look into (informal)`,
-              `explore (neutral)`,
-              `${topic} (target)`,
-              `analyse (formal)`,
-              `scrutinise (advanced)`,
-              `probe (C1–C2)`,
-            ],
-            register:       `Primarily formal and academic. Used freely in IELTS Writing Task 1 and Task 2, and in Speaking Part 3 to signal higher-band lexical resource. Avoid in highly informal or colloquial speech contexts, where simpler alternatives are more natural.`,
-            usage_contexts: [
-              'Academic essays',
-              'IELTS Writing Task 2',
-              'Research contexts',
-              'Speaking Part 3',
-              'Formal reports',
-              'News & journalism',
-              'Professional emails',
-            ],
-          },
-          ielts_application: {
-            writing_task2_example:  `Governments must thoroughly ${topic} the root causes of urban poverty before implementing policy solutions. Without a rigorous approach to ${topic}ing structural inequality, any intervention risks being superficial and short-lived. This demonstrates lexical resource at the Band ${ielts_band} level.`,
-            speaking_part3_example: `I think it's essential for policymakers to ${topic} the long-term consequences of climate change, not just the immediate economic impacts. When we ${topic} the data carefully, we often find that short-term solutions create larger problems down the line. This kind of critical thinking is what separates good policy from reactive decision-making.`,
-            academic_usage_note:    `In academic writing, "${topic}" should appear with its collocates intact and without direct L1 calques. In IELTS Speaking, it signals lexical range when used spontaneously rather than rehearsed.`,
-            band_descriptor:        `Lexical Resource — Band ${ielts_band}`,
-          },
-          error_intelligence: {
-            common_errors: [
-              {
-                error:      `"I want to ${topic} about this problem."`,
-                correction: `"I want to ${topic} this problem."`,
-                rule:       `This item is typically transitive at this level — it takes a direct object without a preposition in most standard collocations.`,
-              },
-              {
-                error:      `"We should ${topic} on the situation."`,
-                correction: `"We should ${topic} the situation."`,
-                rule:       `Prepositional intrusion is a common L1 interference error. Check whether a preposition is required before inserting one.`,
-              },
-              {
-                error:      `"The ${topic}ment of the data is important."`,
-                correction: `"The ${topic}ion of the data is important."`,
-                rule:       `Nominalisation suffix selection must be checked for each item — not all verbs take -ment; many require -tion or -ation.`,
-              },
-            ],
-            avoidance_tips: [
-              `Always check the collocate: use a learner corpus or dictionary to confirm which prepositions (if any) follow this item in context.`,
-              `Practise the full word family in example sentences before the exam — do not rely solely on the base form.`,
-              `When in doubt in speaking, paraphrase with a known synonym rather than risk a grammatically incorrect deployment.`,
-              `Read authentic IELTS model answers and highlight every instance of "${topic}" or its family — study the surrounding grammar each time.`,
-            ],
-          },
-          practice: {
-            controlled: [
-              `Fill in the gap: "The committee agreed to ______ the new proposal before voting." (${topic})`,
-              `True or False: "${topic.charAt(0).toUpperCase() + topic.slice(1)}" can replace "examine" in the sentence: "Scientists examine the effects of climate change." Justify your answer.`,
-              `Error correction: "The team decided to ${topic} on three key areas." → Correct the sentence and explain the rule.`,
-            ],
-            guided: [
-              `Write 3 sentences using "${topic}" in academic register — one for Writing Task 1 (data description), one for Task 2 (argument), one for a formal report context.`,
-              `Create a collocational map: in 5 minutes, write every word you associate with "${topic}". Then check which collocations are authentic using your knowledge.`,
-              `Speaking drill: Answer the following Part 3 question in 45 seconds, using "${topic}" at least once naturally: "Do you think individuals or governments are more responsible for solving social problems?"`,
-            ],
-            free_production: [
-              `IELTS Writing Task 2 prompt: "Some people believe that technological advances make it unnecessary to ${topic} traditional industries. Do you agree or disagree? Give reasons and examples." Write 250 words.`,
-              `IELTS Speaking Part 3 extension: "How important is it for schools to ${topic} students' mental health, not just their academic performance?" Respond for 60–90 seconds without preparation.`,
-              `Journal task: Reflect on a time you had to "${topic}" a difficult decision in your life. Write 150–200 words, using "${topic}" and at least 3 items from its word family.`,
-            ],
-            transformation: [
-              `Rewrite using a nominalisation: "Scientists ${topic} the effects of pollution." → "The ______ of the effects of pollution by scientists…"`,
-              `Change the register from informal to formal: "They looked into the problem." → Use "${topic}" and any necessary structural changes.`,
-              `Passive transformation: "The government will ${topic} the new policy." → Rewrite in the passive voice, preserving meaning.`,
-            ],
-          },
-          pathway: {
-            current_stage:     `Controlled Practice — ${cefr_level}`,
-            progression_items: [
-              'Recognition',
-              'Controlled Practice',
-              'Semi-Controlled',
-              'Free Production',
-              'IELTS Application',
-            ],
-            ielts_readiness:  `At ${cefr_level} targeting Band ${ielts_band}, you are approaching readiness for active deployment of "${topic}" in IELTS tasks. To reach full readiness, collocational fluency and register accuracy must be consolidated through timed practice.`,
-            recommendation:   `Focus next on collocational chunking: study "${topic}" always as part of a multi-word unit, not in isolation. Complete 2–3 IELTS Task 2 essays this week deliberately incorporating "${topic}" and its family, then self-assess against the Lexical Resource Band ${ielts_band} descriptor.`,
-            next_steps: [
-              `Study the full word family of "${topic}" using a dictionary with example sentences — write 2 sentences per form.`,
-              `Complete 5 gap-fill exercises focusing on "${topic}" collocations from a graded corpus source.`,
-              `Record yourself answering 3 IELTS Part 3 questions, deploying "${topic}" at least once per answer. Review for naturalness.`,
-              `Write a timed IELTS Task 2 essay (40 min) on a topic where "${topic}" is relevant — highlight every use after writing.`,
-            ],
-          },
-        },
-      };
-    }, // end MockProvider.generate
-  }; // end MockProvider
-
-  // ── PUBLIC API ──────────────────────────────────────────────────────────────
-  return {
-    /**
-     * Main entry point called by runNiron().
-     * @param {object} params - { topic, cefr_level, ielts_band, type }
-     * @returns {Promise<{status, output, saved, error?}>}
-     */
-    async generate(params) {
-      if (!params.topic || !params.cefr_level || !params.ielts_band || !params.type) {
-        return { status: 'error', error: 'Missing required parameters.' };
-      }
-      try {
-        return await MockProvider.generate(params);
-      } catch (err) {
-        console.error('[NIRONAIService] generate() failed:', err);
-        return { status: 'error', error: err.message || 'Unknown AI service error.' };
-      }
-    },
-  };
-
-})(); // end NIRONAIService IIFE
 </script>
 
 <!-- ══════════════════ AUTH MODAL ══════════════════ -->
@@ -3894,40 +3576,6 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// ── GOOGLE OAUTH ──
-// Supabase Google OAuth placeholder.
-// When a real Google provider is configured in the Supabase project,
-// this will trigger the OAuth redirect automatically.
-// Until then it fails gracefully with a clear user-facing message.
-async function doGoogle() {
-  if (!window._sb) {
-    showError('login-error',  'Auth service not ready. Please try again.');
-    showError('signup-error', 'Auth service not ready. Please try again.');
-    return;
-  }
-  try {
-    const { error } = await window._sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
-    if (error) {
-      // Surface a clean message — the most common case is the provider
-      // not being enabled yet in the Supabase dashboard.
-      const msg = error.message.toLowerCase().includes('provider')
-        ? 'Google sign-in is not configured yet. Please use email & password.'
-        : error.message;
-      showError('login-error',  msg);
-      showError('signup-error', msg);
-    }
-    // On success, Supabase redirects to Google — no further action needed here.
-  } catch (err) {
-    showError('login-error',  'Google sign-in unavailable. Please use email & password.');
-    showError('signup-error', 'Google sign-in unavailable. Please use email & password.');
-  }
-}
-
 // Close on Escape
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') { closeAuth(); closeMobMenu(); }
@@ -4035,143 +3683,6 @@ function toggleTheme() {
     document.getElementById('theme-label').textContent = 'Dark';
   }
 })();
-</script>
-
-<script>
-// ══════════════════════════════════════════
-// SPA NAVIGATION
-// ══════════════════════════════════════════
-
-function showPage(page) {
-  var pageWrap    = document.querySelector('.page-wrap');
-  var profilePage = document.getElementById('profile-page');
-
-  if (page === 'profile') {
-    if (pageWrap)    { pageWrap.style.display = 'none'; }
-    if (profilePage) { profilePage.classList.add('show'); }
-    document.querySelector('.navbar').style.display = '';
-    loadProfilePage();
-  } else {
-    if (pageWrap)    { pageWrap.style.display = ''; }
-    if (profilePage) { profilePage.classList.remove('show'); }
-  }
-}
-
-// ══════════════════════════════════════════
-// PROFILE PAGE
-// ══════════════════════════════════════════
-
-async function loadProfilePage() {
-  var locked  = document.getElementById('profile-locked');
-  var content = document.getElementById('profile-content');
-
-  // Guard: must have Supabase
-  if (!window._sb) {
-    locked.style.display  = 'block';
-    content.style.display = 'none';
-    return;
-  }
-
-  // Check session
-  var res  = await window._sb.auth.getUser();
-  var user = res.data && res.data.user;
-
-  if (!user) {
-    locked.style.display  = 'block';
-    content.style.display = 'none';
-    return;
-  }
-
-  locked.style.display  = 'none';
-  content.style.display = 'block';
-
-  // Basic info
-  var name   = (user.user_metadata && user.user_metadata.full_name)
-               || user.email.split('@')[0] || 'User';
-  var email  = user.email || '—';
-  var uid    = user.id    || '—';
-  var joined = user.created_at
-    ? new Date(user.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
-    : '—';
-
-  document.getElementById('pf-avatar-lg').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('pf-name-hdr').textContent  = name;
-  document.getElementById('pf-email-hdr').textContent = email;
-  document.getElementById('pf-name').textContent      = name;
-  document.getElementById('pf-email').textContent     = email;
-  document.getElementById('pf-joined').textContent    = joined;
-  document.getElementById('pf-uid').textContent       = uid;
-
-  // Stats from Supabase
-  try {
-    var r1 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid);
-    var r2 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid).eq('type','vocabulary');
-    var r3 = await window._sb.from('ai_sessions').select('*',{count:'exact',head:true}).eq('user_id',uid).eq('type','grammar');
-    var r4 = await window._sb.from('saved_outputs').select('*',{count:'exact',head:true}).eq('user_id',uid);
-
-    document.getElementById('pf-stat-total').textContent   = r1.count  ?? 0;
-    document.getElementById('pf-stat-vocab').textContent   = r2.count  ?? 0;
-    document.getElementById('pf-stat-grammar').textContent = r3.count  ?? 0;
-    document.getElementById('pf-stat-saved').textContent   = r4.count  ?? 0;
-
-    // Last session
-    var r5 = await window._sb.from('ai_sessions')
-      .select('created_at,type,cefr_level,provider')
-      .eq('user_id',uid)
-      .order('created_at',{ascending:false})
-      .limit(1)
-      .single();
-
-    if (r5.data) {
-      document.getElementById('pf-last').textContent = new Date(r5.data.created_at)
-        .toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-      document.getElementById('pf-provider').textContent =
-        r5.data.provider
-          ? r5.data.provider.charAt(0).toUpperCase() + r5.data.provider.slice(1)
-          : 'Mock';
-    } else {
-      document.getElementById('pf-last').textContent = 'No sessions yet';
-    }
-
-    // Most used type
-    var vocabN   = r2.count || 0;
-    var grammarN = r3.count || 0;
-    document.getElementById('pf-type').textContent = vocabN >= grammarN ? 'Vocabulary' : 'Grammar';
-
-    // Most used CEFR
-    var r6 = await window._sb.from('ai_sessions').select('cefr_level').eq('user_id',uid);
-    if (r6.data && r6.data.length > 0) {
-      var counts = {};
-      r6.data.forEach(function(row) {
-        counts[row.cefr_level] = (counts[row.cefr_level] || 0) + 1;
-      });
-      var topCefr = Object.entries(counts).sort(function(a,b){return b[1]-a[1];})[0];
-      document.getElementById('pf-cefr').textContent = topCefr ? topCefr[0] : '—';
-    } else {
-      document.getElementById('pf-cefr').textContent = '—';
-    }
-
-  } catch(e) {
-    // Non-fatal — show zeros
-    ['pf-stat-total','pf-stat-vocab','pf-stat-grammar','pf-stat-saved'].forEach(function(id){
-      document.getElementById(id).textContent = '0';
-    });
-  }
-}
-
-// Profile logout
-async function profileLogout() {
-  if (window._sb) await window._sb.auth.signOut();
-  showPage('home');
-}
-
-// Safe login redirect from profile locked state
-function profileGoLogin() {
-  showPage('home');
-  setTimeout(function() {
-    if (typeof openAuth === 'function') openAuth('login');
-  }, 100);
-}
 </script>
 </body>
 </html>
