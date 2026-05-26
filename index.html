@@ -1837,7 +1837,8 @@ body {
   color: var(--gold);
   background: var(--gold-glow);
 }
-.auth-google svg { flex-shrink: 0; }
+.auth-google { display: none !important; }
+.auth-divider { display: none !important; }
 
 /* Success state */
 .auth-success {
@@ -3168,10 +3169,22 @@ document.getElementById('topic-input').addEventListener('keydown', function(e) {
 
 <script>
 // ══════════════════════════════════════════
-// AUTH SYSTEM
+// SUPABASE — NIRON AUTH SYSTEM
 // ══════════════════════════════════════════
 
-// Set logo in auth modal (reuse navbar logo src)
+const SUPABASE_URL  = 'https://kkjnbzfvgfwczipevkye.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_aO2mufRNG0RJLXFzV-ox8w_oyL1K0Kh';
+
+// Load Supabase SDK dynamically
+const _sbScript = document.createElement('script');
+_sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+_sbScript.onload = function() {
+  window._sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  initAuth();
+};
+document.head.appendChild(_sbScript);
+
+// Set logo in auth modal
 (function() {
   const navLogo = document.querySelector('.nav-logo-img');
   if (navLogo) document.getElementById('auth-logo').src = navLogo.src;
@@ -3180,102 +3193,190 @@ document.getElementById('topic-input').addEventListener('keydown', function(e) {
 // Current user state
 let _authUser = null;
 
+// ── INIT — check existing session on load ──
+async function initAuth() {
+  const { data: { session } } = await window._sb.auth.getSession();
+  if (session && session.user) {
+    const name = session.user.user_metadata?.full_name
+               || session.user.email.split('@')[0]
+               || 'User';
+    loginSuccess(name, false);
+  }
+
+  // Listen for auth state changes
+  window._sb.auth.onAuthStateChange(function(event, session) {
+    if (event === 'SIGNED_IN' && session) {
+      const name = session.user.user_metadata?.full_name
+                 || session.user.email.split('@')[0]
+                 || 'User';
+      loginSuccess(name, false);
+    }
+    if (event === 'SIGNED_OUT') {
+      resetAuthUI();
+    }
+  });
+}
+
+// ── MODAL CONTROLS ──
 function openAuth(tab) {
   document.getElementById('auth-overlay').classList.add('show');
   switchAuthTab(tab || 'login');
   clearAuthErrors();
 }
-
 function closeAuth() {
   document.getElementById('auth-overlay').classList.remove('show');
   clearAuthErrors();
-  document.getElementById('forgot-success').classList.remove('show');
+  const fs = document.getElementById('forgot-success');
+  if (fs) fs.classList.remove('show');
 }
-
 function handleOverlayClick(e) {
   if (e.target === document.getElementById('auth-overlay')) closeAuth();
 }
-
 function switchAuthTab(tab) {
-  // Panels
   ['login','signup','forgot'].forEach(function(p) {
     document.getElementById('panel-' + p).classList.remove('show');
   });
   document.getElementById('panel-' + tab).classList.add('show');
-
-  // Tabs (only login/signup have tab buttons)
   ['login','signup'].forEach(function(t) {
     const el = document.getElementById('tab-' + t);
     if (el) el.classList.toggle('active', t === tab);
   });
-
   clearAuthErrors();
 }
-
 function clearAuthErrors() {
   ['login-error','signup-error','forgot-error'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) { el.textContent = ''; el.classList.remove('show'); }
   });
 }
-
 function showError(id, msg) {
   const el = document.getElementById(id);
   if (el) { el.textContent = msg; el.classList.add('show'); }
 }
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait…' : btn.dataset.label;
+}
 
 // ── LOGIN ──
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
   if (!email || !pass) { showError('login-error', 'Please fill in all fields.'); return; }
   if (!isValidEmail(email)) { showError('login-error', 'Please enter a valid email address.'); return; }
   if (pass.length < 6) { showError('login-error', 'Password must be at least 6 characters.'); return; }
-  loginSuccess(email.split('@')[0] || 'User');
+
+  const btn = document.querySelector('#panel-login .auth-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+
+  const { data, error } = await window._sb.auth.signInWithPassword({ email, password: pass });
+
+  if (btn) { btn.disabled = false; btn.textContent = '✦  Sign In'; }
+
+  if (error) {
+    const msg = error.message.includes('Invalid login')
+      ? 'Incorrect email or password.'
+      : error.message;
+    showError('login-error', msg);
+    return;
+  }
+
+  const name = data.user.user_metadata?.full_name
+             || data.user.email.split('@')[0]
+             || 'User';
+  loginSuccess(name);
 }
 
 // ── SIGN UP ──
-function doSignup() {
+async function doSignup() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pass  = document.getElementById('signup-password').value;
+
   if (!name || !email || !pass) { showError('signup-error', 'Please fill in all fields.'); return; }
   if (!isValidEmail(email)) { showError('signup-error', 'Please enter a valid email address.'); return; }
   if (pass.length < 6) { showError('signup-error', 'Password must be at least 6 characters.'); return; }
-  loginSuccess(name.split(' ')[0] || 'User');
+
+  const btn = document.querySelector('#panel-signup .auth-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
+
+  const { data, error } = await window._sb.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { full_name: name } }
+  });
+
+  if (btn) { btn.disabled = false; btn.textContent = '✦  Create Account'; }
+
+  if (error) {
+    const msg = error.message.includes('already registered')
+      ? 'This email is already registered. Please sign in.'
+      : error.message;
+    showError('signup-error', msg);
+    return;
+  }
+
+  loginSuccess(name);
 }
 
 // ── FORGOT PASSWORD ──
-function doForgot() {
+async function doForgot() {
   const email = document.getElementById('forgot-email').value.trim();
   if (!email) { showError('forgot-error', 'Please enter your email address.'); return; }
   if (!isValidEmail(email)) { showError('forgot-error', 'Please enter a valid email address.'); return; }
+
+  const btn = document.querySelector('#panel-forgot .auth-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+  const { error } = await window._sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+
+  if (btn) { btn.disabled = false; btn.textContent = '✦  Send Reset Link'; }
+
+  if (error) {
+    showError('forgot-error', error.message);
+    return;
+  }
+
   document.getElementById('forgot-success').classList.add('show');
   document.getElementById('forgot-email').value = '';
 }
 
-// ── GOOGLE OAUTH (placeholder) ──
-function doGoogle() {
-  const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
-  // Production: replace with real Google OAuth flow
-  // google.accounts.oauth2.initTokenClient({ client_id: GOOGLE_CLIENT_ID, ... })
-  loginSuccess('Google User');
-}
-
 // ── LOGIN SUCCESS ──
-function loginSuccess(name) {
-  _authUser = { name: name };
-  closeAuth();
-  // Update user pill
+function loginSuccess(name, closeModal = true) {
+  _authUser = { name };
+  if (closeModal) closeAuth();
+  // Update navbar user pill
   document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('user-name').textContent = name;
-  // Update dropdown header
+  // Update dropdown
   document.getElementById('ud-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('ud-name').textContent = name;
-  // Show dropdown wrap, hide sign in button
-  document.querySelector('.btn-signin').style.display = 'none';
+  // Show user area, hide sign in button
+  const signinBtn = document.querySelector('.btn-signin');
+  if (signinBtn) signinBtn.style.display = 'none';
   document.getElementById('user-dropdown-wrap').classList.add('show');
   // Sync mobile menu
+  updateMobAuthState();
+}
+
+// ── SIGN OUT ──
+async function doSignOut() {
+  await window._sb.auth.signOut();
+  closeDropdown();
+  resetAuthUI();
+}
+
+function resetAuthUI() {
+  _authUser = null;
+  document.getElementById('user-dropdown-wrap').classList.remove('show');
+  const signinBtn = document.querySelector('.btn-signin');
+  if (signinBtn) signinBtn.style.display = '';
+  document.getElementById('user-avatar').textContent = '';
+  document.getElementById('user-name').textContent = '';
   updateMobAuthState();
 }
 
@@ -3286,16 +3387,6 @@ function toggleDropdown() {
 function closeDropdown() {
   document.getElementById('user-dropdown').classList.remove('open');
 }
-function doSignOut() {
-  _authUser = null;
-  closeDropdown();
-  document.getElementById('user-dropdown-wrap').classList.remove('show');
-  document.querySelector('.btn-signin').style.display = '';
-  // Reset fields
-  document.getElementById('user-avatar').textContent = '';
-  document.getElementById('user-name').textContent = '';
-}
-// Close dropdown on outside click
 document.addEventListener('click', function(e) {
   const wrap = document.getElementById('user-dropdown-wrap');
   if (wrap && !wrap.contains(e.target)) closeDropdown();
@@ -3308,8 +3399,9 @@ function isValidEmail(email) {
 
 // Close on Escape
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeAuth();
+  if (e.key === 'Escape') { closeAuth(); closeMobMenu(); }
 });
+
 
 // ══════════════════════════════════════════
 // MOBILE MENU
