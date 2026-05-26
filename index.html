@@ -2547,7 +2547,7 @@ window.NIRONAIService = {
       <span id="theme-label">Light</span>
     </button>
     <button class="btn-focus" id="focus-btn" onclick="toggleFocus()">⊞ Focus</button>
-    <button class="btn-signin" onclick="openAuth('login')">✦ Sign In</button>
+    <button class="btn-signin" onclick="openAuth('login')">✦ Log In</button>
     <div class="user-dropdown-wrap" id="user-dropdown-wrap">      <div class="user-pill show" id="user-pill" onclick="toggleDropdown()">
         <div class="user-avatar" id="user-avatar"></div>
         <span class="user-name" id="user-name"></span>
@@ -2606,7 +2606,7 @@ window.NIRONAIService = {
     <div id="mob-guest-section">
       <span class="mob-section-lbl">Account</span>
       <button class="mob-item" onclick="closeMobMenu();openAuth('login');">
-        <span class="mob-item-icon">→</span>Sign In<span class="mob-item-arrow">›</span>
+        <span class="mob-item-icon">→</span>Log In<span class="mob-item-arrow">›</span>
       </button>
       <button class="mob-item" onclick="closeMobMenu();openAuth('signup');">
         <span class="mob-item-icon">+</span>Sign Up<span class="mob-item-arrow">›</span>
@@ -3398,7 +3398,7 @@ document.getElementById('topic-input').addEventListener('keydown', function(e) {
         </div>
       </div>
       <div class="auth-tabs" id="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
         <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
       </div>
     </div>
@@ -3420,7 +3420,7 @@ document.getElementById('topic-input').addEventListener('keydown', function(e) {
           </label>
           <input class="auth-input" type="password" id="login-password" placeholder="••••••••">
         </div>
-        <button class="auth-submit" onclick="doLogin()">✦ &nbsp;Sign In</button>
+        <button class="auth-submit" onclick="doLogin()">✦ &nbsp;Log In</button>
         <div class="auth-divider">or</div>
         <button class="auth-google" onclick="doGoogle()">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
@@ -3474,7 +3474,7 @@ document.getElementById('topic-input').addEventListener('keydown', function(e) {
         </div>
         <button class="auth-submit" onclick="doForgot()">✦ &nbsp;Send Reset Link</button>
         <div style="margin-top:12px;text-align:center;">
-          <button class="auth-forgot" style="float:none;" onclick="switchAuthTab('login')">← Back to Sign In</button>
+          <button class="auth-forgot" style="float:none;" onclick="switchAuthTab('login')">← Back to Log In</button>
         </div>
         <div class="auth-success" id="forgot-success">
           <div class="auth-success-icon">✦</div>
@@ -3592,7 +3592,7 @@ async function doLogin() {
 
   const { data, error } = await window._sb.auth.signInWithPassword({ email, password: pass });
 
-  if (btn) { btn.disabled = false; btn.textContent = '✦  Sign In'; }
+  if (btn) { btn.disabled = false; btn.textContent = '✦  Log In'; }
 
   if (error) {
     const msg = error.message.includes('Invalid login')
