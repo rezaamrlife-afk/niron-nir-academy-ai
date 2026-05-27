@@ -3046,7 +3046,7 @@ window.NIRONAIService = {
         </div>
         <div class="loading-state" id="loading-state">
           <div class="loader-ring"></div>
-          <div class="loader-text">Processing Language Intelligence...</div>
+          <div class="loader-text" id="loader-text">Processing Language Intelligence...</div>
         </div>
         <div class="output-content" id="output-content"></div>
       </div>
@@ -3257,16 +3257,48 @@ function switchTab(btn, tab) {
   }
 }
 
+var _loadingInterval = null;
+var _loadingMessages = [
+  'Processing Language Intelligence...',
+  'Analysing vocabulary...',
+  'Evaluating grammar...',
+  'Building CEFR diagnosis...',
+  'Checking language accuracy...',
+  'Preparing recommendations...',
+  'Generating personalised feedback...'
+];
+
 function showLoading(show) {
   const loading = document.getElementById('loading-state');
-  const empty = document.getElementById('output-empty');
+  const empty   = document.getElementById('output-empty');
   const content = document.getElementById('output-content');
+  const txt     = document.getElementById('loader-text');
+
+  // Always clear any existing interval first
+  if (_loadingInterval) {
+    clearInterval(_loadingInterval);
+    _loadingInterval = null;
+  }
+
   if (show) {
     loading.classList.add('show');
     empty.style.display = 'none';
     content.classList.remove('show');
+
+    // Reset to first message
+    if (txt) txt.textContent = _loadingMessages[0];
+
+    // Rotate messages every 2s — start from index 1
+    var idx = 1;
+    _loadingInterval = setInterval(function() {
+      if (txt) txt.textContent = _loadingMessages[idx % _loadingMessages.length];
+      idx++;
+    }, 2000);
+
   } else {
     loading.classList.remove('show');
+    // Reset text for next use
+    if (txt) txt.textContent = _loadingMessages[0];
   }
 }
 
