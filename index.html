@@ -3433,9 +3433,10 @@ async function runNiron() {
 
     const response = await window.NIRONAIService.generate({
       topic,
-      cefr_level: cefr,
-      ielts_band: ielts,
-      type:       selectedType,
+      cefr_level:      cefr,
+      ielts_band:      ielts,
+      type:            selectedType,
+      mother_language: window._selectedLang || null,
     });
 
     if (response.status === 'error') {
@@ -4104,6 +4105,8 @@ function updateMobAuthState() {
 function setMobLang(btn, lang) {
   document.querySelectorAll('.mob-lang-btn').forEach(b => b.classList.remove('active-lang'));
   btn.classList.add('active-lang');
+  // Set mother_language for API — only fa and tr are supported
+  window._selectedLang = (lang === 'FA') ? 'fa' : (lang === 'TR') ? 'tr' : null;
   // RTL support for Arabic and Persian
   if (lang === 'AR' || lang === 'FA') {
     document.documentElement.setAttribute('dir', 'rtl');
