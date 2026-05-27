@@ -2566,6 +2566,11 @@ body {
   white-space: nowrap;
 }
 .install-btn-secondary:hover { border-color: var(--white-dim); color: var(--white); }
+.def-highlight {
+  color: var(--gold);
+  font-weight: 600;
+  font-style: normal;
+}
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -3798,7 +3803,7 @@ function renderTabContent(tab, data) {
               <div class="content-label" style="margin-bottom:4px;">MEANING</div>
               <div class="content-text" style="margin-bottom:10px;">${d.meaning || ''}</div>
               <div class="content-label" style="margin-bottom:4px;">EXAMPLE</div>
-              <div class="example-block green-accent" style="font-style:italic;">"${d.example || ''}"</div>
+              <div class="example-block green-accent" style="font-style:italic;">"${highlightWord(d.example, d.word)}"</div>
               ${d.translation ? `
               <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">TRANSLATION</div>
               <div class="content-text" style="color:var(--gold-dim);font-size:13px;direction:auto;">${d.translation}</div>` : ''}
@@ -4337,7 +4342,20 @@ function dismissIntro() {
   setTimeout(function() { intro.classList.add('hidden'); }, 500);
 }
 
-// ── Pronunciation (SpeechSynthesis) ────────────────
+// ── Example Word Highlighting ───────────────────────
+function highlightWord(example, word) {
+  if (!example || !word) return example || '';
+  try {
+    var escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var pattern = new RegExp('\\b' + escaped + '\\b', 'gi');
+    return example.replace(pattern, function(m) {
+      return '<em class="def-highlight">' + m + '</em>';
+    });
+  } catch (e) {
+    return example; // safe fallback — plain text if anything fails
+  }
+}
+// ────────────────────────────────────────────────────
 function speakWord(encodedWord) {
   if (!('speechSynthesis' in window)) return;
   var word = decodeURIComponent(encodedWord);
