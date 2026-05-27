@@ -2451,6 +2451,53 @@ body {
 }
 .history-item:last-child { border-bottom: none; }
 .history-item:hover { background: var(--gold-glow); color: var(--gold); }
+/* ── Nav Language Toggle (desktop) ── */
+.nav-lang {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.nav-lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  transition: all 0.2s;
+}
+.nav-lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+.nav-lang-btn.active { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.nav-lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--black-2);
+  border: 1px solid var(--border);
+  min-width: 80px;
+  z-index: 500;
+}
+.nav-lang-dropdown.open { display: block; }
+.nav-lang-option {
+  padding: 7px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--white-dim);
+  cursor: pointer;
+  border-bottom: 1px solid var(--white-faint);
+}
+.nav-lang-option:last-child { border-bottom: none; }
+.nav-lang-option:hover { background: var(--gold-glow); color: var(--gold); }
+.nav-lang-option.selected { color: var(--gold); }
+@media (max-width: 900px) { .nav-lang { display: none; } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -2769,6 +2816,14 @@ window.NIRONAIService = {
       <span class="eco-dot"></span>
       Sister App: NIRA
     </a>
+    <div class="nav-lang" id="nav-lang">
+      <button class="nav-lang-btn" id="nav-lang-btn" onclick="toggleNavLang()">EN ▾</button>
+      <div class="nav-lang-dropdown" id="nav-lang-dropdown">
+        <div class="nav-lang-option selected" onclick="setNavLang('EN')">EN</div>
+        <div class="nav-lang-option" onclick="setNavLang('FA')">FA</div>
+        <div class="nav-lang-option" onclick="setNavLang('TR')">TR</div>
+      </div>
+    </div>
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
       <span class="theme-toggle-icon" id="theme-icon">☀</span>
       <span id="theme-label">Light</span>
@@ -4110,6 +4165,8 @@ function setMobLang(btn, lang) {
   btn.classList.add('active-lang');
   // Set mother_language for API — only fa and tr are supported
   window._selectedLang = (lang === 'FA') ? 'fa' : (lang === 'TR') ? 'tr' : null;
+  // Sync desktop toggle
+  _syncNavLang(lang);
   // RTL support for Arabic and Persian
   if (lang === 'AR' || lang === 'FA') {
     document.documentElement.setAttribute('dir', 'rtl');
@@ -4117,6 +4174,44 @@ function setMobLang(btn, lang) {
     document.documentElement.setAttribute('dir', 'ltr');
   }
 }
+
+function _syncNavLang(lang) {
+  var btn = document.getElementById('nav-lang-btn');
+  if (btn) btn.textContent = lang + ' ▾';
+  document.querySelectorAll('.nav-lang-option').forEach(function(el) {
+    el.classList.toggle('selected', el.textContent.trim() === lang);
+  });
+}
+
+function toggleNavLang() {
+  var dd = document.getElementById('nav-lang-dropdown');
+  if (dd) dd.classList.toggle('open');
+}
+
+function setNavLang(lang) {
+  // Set unified language state
+  window._selectedLang = (lang === 'FA') ? 'fa' : (lang === 'TR') ? 'tr' : null;
+  // Sync desktop button label and selected state
+  _syncNavLang(lang);
+  // Sync mobile buttons
+  document.querySelectorAll('.mob-lang-btn').forEach(function(b) {
+    b.classList.toggle('active-lang', b.textContent.trim() === lang);
+  });
+  // RTL for Persian
+  document.documentElement.setAttribute('dir', lang === 'FA' ? 'rtl' : 'ltr');
+  // Close dropdown
+  var dd = document.getElementById('nav-lang-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+// Close nav-lang dropdown on outside click
+document.addEventListener('click', function(e) {
+  var nl = document.getElementById('nav-lang');
+  if (nl && !nl.contains(e.target)) {
+    var dd = document.getElementById('nav-lang-dropdown');
+    if (dd) dd.classList.remove('open');
+  }
+});
 
 // Close mob menu on ESC
 document.addEventListener('keydown', function(e) {
