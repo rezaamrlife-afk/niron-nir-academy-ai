@@ -64,6 +64,7 @@ IELTS target band: ${ielts}
 Input type: ${type}${translationNote}
 
 Return ONLY this JSON object. All fields must be fully populated. No text outside the JSON.
+STRICT RULE FOR DEFINITIONS: Every item in the "definitions" array must be a real vocabulary word or phrase. Grammar terms (noun, verb, tense, clause, auxiliary, structure, form, grammar, modal, etc.) are FORBIDDEN in the "word" field.
 
 {
   "diagnosis": {
@@ -124,27 +125,27 @@ Return ONLY this JSON object. All fields must be fully populated. No text outsid
   },
   "definitions": [
     {
-      "word": "<key term 1 directly related to '${topic}'>",
+      "word": "<vocabulary item 1 — must be a real English word or phrase directly related to '${topic}'. NEVER a grammar term (noun/verb/tense/clause/grammar/structure/form). Only concrete vocabulary.>",
       "meaning": "<learner-friendly definition suitable for ${cefr}>",
       "example": "<natural example sentence>"${hasLang ? `,\n      "translation": "<simple ${langName} explanation of meaning>"` : ''}
     },
     {
-      "word": "<key term 2>",
+      "word": "<vocabulary item 2 — same rule: real word or phrase, NOT a grammar term>",
       "meaning": "<definition>",
       "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
-      "word": "<key term 3>",
+      "word": "<vocabulary item 3 — same rule: real word or phrase, NOT a grammar term>",
       "meaning": "<definition>",
       "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
-      "word": "<key term 4>",
+      "word": "<vocabulary item 4 — same rule: real word or phrase, NOT a grammar term>",
       "meaning": "<definition>",
       "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
-      "word": "<key term 5>",
+      "word": "<vocabulary item 5 — same rule: real word or phrase, NOT a grammar term>",
       "meaning": "<definition>",
       "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     }
