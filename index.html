@@ -2498,6 +2498,74 @@ body {
 .nav-lang-option:hover { background: var(--gold-glow); color: var(--gold); }
 .nav-lang-option.selected { color: var(--gold); }
 @media (max-width: 900px) { .nav-lang { display: none; } }
+/* ── Install Banner ── */
+#install-banner {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  background: var(--black-2);
+  border: 1px solid var(--gold-dim);
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 420px;
+  width: calc(100% - 2rem);
+  box-sizing: border-box;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  animation: slideUp 0.3s ease;
+}
+#install-banner.hidden { display: none; }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.install-banner-text { flex: 1; min-width: 0; }
+.install-banner-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
+.install-banner-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--white-dim);
+}
+.install-banner-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.install-btn-primary {
+  padding: 6px 14px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  white-space: nowrap;
+}
+.install-btn-primary:hover { opacity: 0.85; }
+.install-btn-secondary {
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--white-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  white-space: nowrap;
+}
+.install-btn-secondary:hover { border-color: var(--white-dim); color: var(--white); }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -2782,6 +2850,18 @@ window.NIRONAIService = {
     <button class="intro-btn" onclick="dismissIntro()">Enter NIRON</button>
     <br>
     <button class="intro-skip" onclick="dismissIntro()">Skip introduction</button>
+  </div>
+</div>
+
+<!-- ══ INSTALL BANNER ══ -->
+<div id="install-banner" class="hidden">
+  <div class="install-banner-text">
+    <div class="install-banner-title">NIR Academy</div>
+    <div class="install-banner-sub">Add to your home screen for instant access</div>
+  </div>
+  <div class="install-banner-actions">
+    <button class="install-btn-primary" onclick="installApp()">Install</button>
+    <button class="install-btn-secondary" onclick="dismissInstall()">Not now</button>
   </div>
 </div>
 
@@ -4297,6 +4377,28 @@ function _historyPick(e, topic) {
   });
 })();
 // ───────────────────────────────────────────────
+
+// ── Install Banner ─────────────────────────────
+(function() {
+  if (localStorage.getItem('niron_install_dismissed')) return;
+  setTimeout(function() {
+    var banner = document.getElementById('install-banner');
+    if (banner) banner.classList.remove('hidden');
+  }, 3000);
+})();
+
+function dismissInstall() {
+  localStorage.setItem('niron_install_dismissed', '1');
+  var banner = document.getElementById('install-banner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function installApp() {
+  dismissInstall();
+  alert('To install:\n\nOn mobile: tap Share \u2192 "Add to Home Screen"\nOn desktop: use browser menu \u2192 "Save as shortcut"');
+}
+// ───────────────────────────────────────────────
+
 (function() {
   if (localStorage.getItem('niron-theme') === 'light') {
     document.body.classList.add('light-mode');
