@@ -14,104 +14,139 @@ const GROQ_MODEL    = 'llama-3.3-70b-versatile';
 
 // ── System prompt ────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
-  return `You are NIRON, an expert IELTS and CEFR language intelligence engine.
-You receive a vocabulary or grammar input and return a structured JSON analysis for language learners.
-Always respond with ONLY a valid JSON object — no markdown, no backticks, no explanation outside the JSON.
-The JSON must follow the exact schema provided by the user.`;
+  return `You are NIRON AI, an advanced English Language Intelligence System for learning and teaching English.
+
+ROLE:
+You analyse English vocabulary items or grammar structures and return structured, educationally rich JSON output for language learners at specific CEFR levels preparing for IELTS.
+
+SAFETY AND VALIDATION (MANDATORY FIRST STEP):
+Before generating output, silently verify:
+- Is the input a real English word, phrase, or grammar structure?
+- Is the analysis appropriate for the given CEFR level?
+- Will the output be educationally accurate and safe?
+If the input is invalid or unclear, return a safe, simplified, pedagogically appropriate analysis instead. Never refuse — always adapt.
+
+OUTPUT RULES (ABSOLUTE):
+- Respond with ONLY valid JSON — no markdown, no backticks, no text outside the JSON
+- Follow the exact schema provided in the user message — no extra keys, no missing keys
+- Never change key names or nesting structure
+- All string values must be complete, meaningful, and educationally accurate
+- Arrays must always contain the exact number of items shown in the schema
+
+CONTENT QUALITY:
+- Match complexity to the learner's CEFR level
+- A1/A2: simple, concrete, everyday language
+- B1/B2: clear academic language with moderate complexity
+- C1/C2: sophisticated, nuanced, idiomatic academic English
+- All IELTS examples must reflect the correct band descriptor style
+- Practice items must be genuinely useful for the learner's level
+
+TRANSLATION FIELD (OPTIONAL):
+If mother_language is provided (fa = Persian, tr = Turkish), add a translation field where specified in the schema.
+- Translation is always supplementary — never replaces English content
+- Use simple learner-friendly language in the target language
+- If mother_language is null or absent, omit all translation fields entirely`;
 }
 
 // ── User prompt ──────────────────────────────────────────────────────────────
-function buildUserPrompt(topic, cefr, ielts, type) {
-  const isGrammar = type === 'grammar';
-  return `Analyse the ${isGrammar ? 'grammar structure' : 'vocabulary item'}: "${topic}"
-CEFR level of the learner: ${cefr}
-IELTS target band: ${ielts}
-Input type: ${type}
+function buildUserPrompt(topic, cefr, ielts, type, motherLang) {
+  const isGrammar  = type === 'grammar';
+  const hasLang    = motherLang === 'fa' || motherLang === 'tr';
+  const langName   = motherLang === 'fa' ? 'Persian (Farsi)' : motherLang === 'tr' ? 'Turkish' : '';
 
-Return ONLY this JSON object with all fields populated. Do not include any text outside the JSON.
+  const translationNote = hasLang
+    ? `\nMother Language Mode is ON (${langName}). For the "definitions" array, add a "translation" field to each item with a simple ${langName} explanation of the meaning. Do NOT add translation fields to any other section.`
+    : '\nMother Language Mode is OFF. Do NOT include any translation fields.';
+
+  return `Analyse the ${isGrammar ? 'grammar structure' : 'vocabulary item'}: "${topic}"
+CEFR level: ${cefr}
+IELTS target band: ${ielts}
+Input type: ${type}${translationNote}
+
+Return ONLY this JSON object. All fields must be fully populated. No text outside the JSON.
 
 {
   "diagnosis": {
     "cefr_level": "${cefr}",
-    "proficiency_label": "<e.g. Upper-Intermediate>",
-    "ielts_estimate": "<e.g. 6.5>",
-    "competence_note": "<one sentence about learner's ability with this item at ${cefr}>",
-    "skill_gaps": ["<gap 1>", "<gap 2>", "<gap 3>"]
+    "proficiency_label": "<proficiency label for ${cefr}, e.g. Upper-Intermediate>",
+    "ielts_estimate": "<estimated IELTS band, e.g. 6.5>",
+    "competence_note": "<one clear sentence describing learner ability with '${topic}' at ${cefr}>",
+    "skill_gaps": ["<specific gap 1>", "<specific gap 2>", "<specific gap 3>"]
   },
   "analysis": {
     "type": "${isGrammar ? 'Grammar Structure' : 'Lexical Item'}",
-    "cefr_mapping": "<how this item maps to CEFR ${cefr}>",
-    "ielts_relevance": "<how this item appears in IELTS Band ${ielts} tasks>",
-    "difficulty_note": "<what makes this item challenging at ${cefr}>",
-    "key_features": ["<feature 1>", "<feature 2>", "<feature 3>", "<feature 4>"]
+    "cefr_mapping": "<explain how '${topic}' maps to CEFR ${cefr} expectations>",
+    "ielts_relevance": "<explain where '${topic}' appears in IELTS Band ${ielts} tasks>",
+    "difficulty_note": "<explain what makes '${topic}' challenging for ${cefr} learners>",
+    "key_features": ["<linguistic feature 1>", "<feature 2>", "<feature 3>", "<feature 4>"]
   },
   "core_content": {
-    "definition": "<clear academic definition of '${topic}'>",
-    "word_family": ["<base>", "<form 2>", "<form 3>", "<form 4>"],
-    "collocations": ["<collocation 1>", "<collocation 2>", "<collocation 3>"],
+    "definition": "<precise academic definition of '${topic}'>",
+    "word_family": ["<base form>", "<second form>", "<third form>", "<fourth form>"],
+    "collocations": ["<natural collocation 1>", "<collocation 2>", "<collocation 3>"],
     "synonyms": ["<synonym 1>", "<synonym 2>", "<synonym 3>"],
-    "register": "<formal/neutral/informal and context>",
+    "register": "<describe register: formal/neutral/informal and context of use>",
     "usage_contexts": ["<context 1>", "<context 2>", "<context 3>"]
   },
   "ielts_application": {
-    "writing_task2_example": "<full example sentence using '${topic}' in IELTS Writing Task 2 style>",
-    "speaking_part3_example": "<example question or answer using '${topic}' in IELTS Speaking Part 3 style>",
-    "academic_usage_note": "<specific advice for using '${topic}' at Band ${ielts}>",
-    "band_descriptor": "<Band ${ielts} — specific lexical/grammatical descriptor>"
+    "writing_task2_example": "<complete sentence using '${topic}' in IELTS Writing Task 2 academic style>",
+    "speaking_part3_example": "<IELTS Speaking Part 3 question or response using '${topic}'>",
+    "academic_usage_note": "<targeted advice for using '${topic}' at Band ${ielts}>",
+    "band_descriptor": "<Band ${ielts} — specific descriptor for this lexical or grammatical item>"
   },
   "error_intelligence": {
     "common_errors": [
       {
         "error": "<typical learner error with '${topic}'>",
         "correction": "<correct form or usage>",
-        "rule": "<underlying linguistic rule>"
+        "rule": "<underlying linguistic rule that explains the correction>"
       },
       {
-        "error": "<second typical error>",
+        "error": "<second typical learner error>",
         "correction": "<correct form>",
         "rule": "<rule>"
       }
     ],
-    "avoidance_tips": ["<tip 1>", "<tip 2>", "<tip 3>"]
+    "avoidance_tips": ["<practical tip 1>", "<practical tip 2>", "<practical tip 3>"]
   },
   "practice": {
     "controlled": ["<controlled practice item 1>", "<item 2>", "<item 3>"],
-    "guided": ["<guided task 1>", "<task 2>", "<task 3>"],
+    "guided": ["<guided production task 1>", "<task 2>", "<task 3>"],
     "free_production": ["<free production task 1>", "<task 2>"],
     "transformation": ["<transformation drill 1>", "<drill 2>", "<drill 3>"]
   },
   "pathway": {
-    "current_stage": "<Stage name matching ${cefr} level>",
+    "current_stage": "<stage name appropriate for ${cefr}>",
     "progression_items": ["Recognition", "Controlled", "Semi-Controlled", "Free Production", "IELTS Application"],
-    "ielts_readiness": "<readiness statement for Band ${ielts}>",
-    "recommendation": "<specific next step recommendation>",
+    "ielts_readiness": "<readiness statement for Band ${ielts} using '${topic}'>",
+    "recommendation": "<specific, actionable next step for this learner>",
     "next_steps": ["<step 1>", "<step 2>", "<step 3>", "<step 4>"]
   },
   "definitions": [
     {
-      "word": "<key term 1 related to '${topic}'>",
-      "meaning": "<learner-friendly definition appropriate for ${cefr}>",
-      "example": "<natural example sentence>"
+      "word": "<key term 1 directly related to '${topic}'>",
+      "meaning": "<learner-friendly definition suitable for ${cefr}>",
+      "example": "<natural example sentence>"${hasLang ? `,\n      "translation": "<simple ${langName} explanation of meaning>"` : ''}
     },
     {
       "word": "<key term 2>",
       "meaning": "<definition>",
-      "example": "<example>"
+      "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
       "word": "<key term 3>",
       "meaning": "<definition>",
-      "example": "<example>"
+      "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
       "word": "<key term 4>",
       "meaning": "<definition>",
-      "example": "<example>"
+      "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     },
     {
       "word": "<key term 5>",
       "meaning": "<definition>",
-      "example": "<example>"
+      "example": "<example>"${hasLang ? `,\n      "translation": "<${langName} explanation>"` : ''}
     }
   ]
 }`;
@@ -159,7 +194,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ status: 'error', error: 'GROQ_API_KEY not configured on server.' });
   }
 
-  const { topic, cefr_level, ielts_band, type } = req.body || {};
+  const { topic, cefr_level, ielts_band, type, mother_language } = req.body || {};
   if (!topic || !cefr_level || !ielts_band || !type) {
     return res.status(400).json({ status: 'error', error: 'Missing required params: topic, cefr_level, ielts_band, type' });
   }
@@ -180,7 +215,7 @@ export default async function handler(req, res) {
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: buildSystemPrompt() },
-          { role: 'user',   content: buildUserPrompt(topic, cefr_level, ielts_band, type) },
+          { role: 'user',   content: buildUserPrompt(topic, cefr_level, ielts_band, type, mother_language || null) },
         ],
       }),
     });
