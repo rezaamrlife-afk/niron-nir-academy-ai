@@ -2571,6 +2571,38 @@ body {
   font-weight: 600;
   font-style: normal;
 }
+/* ── Validation UX ── */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(3px); }
+}
+.input-select.field-error,
+.input-field.field-error,
+.lang-type-grid.field-error {
+  border-color: #d9534f !important;
+  animation: field-shake 0.35s ease;
+}
+.lang-type-grid.field-error .type-btn {
+  border-color: #d9534f;
+}
+.field-error-msg {
+  display: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: #e07b77;
+  margin-top: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.field-error-msg.show {
+  display: block;
+  opacity: 1;
+  animation: fadeUp 0.3s ease both;
+}
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -3123,6 +3155,7 @@ window.NIRONAIService = {
           <option value="C1">C1 — Advanced</option>
           <option value="C2">C2 — Mastery</option>
         </select>
+        <div class="field-error-msg" id="cefr-error">Please select your CEFR level</div>
       </div>
 
       <div class="input-group">
@@ -3138,6 +3171,7 @@ window.NIRONAIService = {
           <option value="8">Band 8 — Very Good</option>
           <option value="9">Band 9 — Expert</option>
         </select>
+        <div class="field-error-msg" id="ielts-error">Please select your IELTS target band</div>
       </div>
 
       <div class="input-group">
@@ -3153,6 +3187,7 @@ window.NIRONAIService = {
         <label class="input-label">Input <span class="req">*</span><br><span style="font-size:9px;color:var(--white-dim);letter-spacing:1px;text-transform:none;">Word / phrase / grammar structure</span></label>
         <textarea class="input-field" id="topic-input" placeholder="e.g.  'investigate'&#10;or  'present perfect'&#10;or  'climate change vocabulary'"></textarea>
         <div class="history-dropdown" id="history-dropdown"></div>
+        <div class="field-error-msg" id="topic-error">Please enter a word, phrase, or structure</div>
       </div>
 
       <button class="generate-btn" id="generate-btn" onclick="runNiron()">
@@ -3546,13 +3581,59 @@ async function saveOutput() {
 // ══════════════════════════════════════════
 // MAIN AI INTELLIGENCE CALL
 // ══════════════════════════════════════════
+
+// ── Field validation helpers ──
+function _showFieldError(fieldId, msgId) {
+  const field = document.getElementById(fieldId);
+  const msg   = document.getElementById(msgId);
+  if (field) {
+    field.classList.remove('field-error'); // reset to retrigger animation
+    void field.offsetWidth;                // force reflow
+    field.classList.add('field-error');
+  }
+  if (msg) msg.classList.add('show');
+}
+
+function _clearFieldErrors() {
+  ['cefr-select', 'ielts-select', 'topic-input'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('field-error');
+  });
+  ['cefr-error', 'ielts-error', 'topic-error'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+}
+
+// Clear error on a field as soon as user fixes it
+(function() {
+  ['cefr-select', 'ielts-select', 'topic-input'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var evt = (id === 'topic-input') ? 'input' : 'change';
+    el.addEventListener(evt, function() {
+      el.classList.remove('field-error');
+      var errId = id.replace('-select', '-error').replace('-input', '-error');
+      var errEl = document.getElementById(errId);
+      if (errEl) errEl.classList.remove('show');
+    });
+  });
+})();
+
 async function runNiron() {
   const cefr  = document.getElementById('cefr-select').value;
   const ielts = document.getElementById('ielts-select').value;
   const topic = document.getElementById('topic-input').value.trim();
 
-  if (!cefr || !ielts || !topic) {
-    alert('Please fill in all parameters before generating intelligence.');
+  // ── Elegant inline validation (no browser alert) ──
+  _clearFieldErrors();
+  let firstInvalid = null;
+  if (!cefr)  { _showFieldError('cefr-select',  'cefr-error');  firstInvalid = firstInvalid || 'cefr-select'; }
+  if (!ielts) { _showFieldError('ielts-select', 'ielts-error'); firstInvalid = firstInvalid || 'ielts-select'; }
+  if (!topic) { _showFieldError('topic-input',  'topic-error'); firstInvalid = firstInvalid || 'topic-input'; }
+  if (firstInvalid) {
+    const el = document.getElementById(firstInvalid);
+    if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
 
