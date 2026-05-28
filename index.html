@@ -910,6 +910,31 @@ body {
   overflow: hidden;
 }
 
+/* Staged reveal — blocks fade up in sequence when content appears */
+.output-content.reveal > .intelligence-block {
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+}
+.output-content.reveal > .intelligence-block:nth-child(1) { animation-delay: 0.00s; }
+.output-content.reveal > .intelligence-block:nth-child(2) { animation-delay: 0.06s; }
+.output-content.reveal > .intelligence-block:nth-child(3) { animation-delay: 0.12s; }
+.output-content.reveal > .intelligence-block:nth-child(4) { animation-delay: 0.18s; }
+.output-content.reveal > .intelligence-block:nth-child(5) { animation-delay: 0.24s; }
+.output-content.reveal > .intelligence-block:nth-child(6) { animation-delay: 0.30s; }
+.output-content.reveal > .intelligence-block:nth-child(n+7) { animation-delay: 0.36s; }
+@media (prefers-reduced-motion: reduce) {
+  .output-content.reveal > .intelligence-block { animation: none; opacity: 1; }
+}
+
+/* Definition cards — staggered entrance (inline animation-delay per card) */
+.output-content.reveal .def-card {
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .output-content.reveal .def-card { animation: none; opacity: 1; }
+}
+
 .ib-header {
   display: flex;
   align-items: center;
@@ -3503,6 +3528,10 @@ function showContent(html) {
   content.classList.add('show');
   content.innerHTML = html;
   currentOutput = content.innerText;
+  // Trigger staged reveal — restart animation each render
+  content.classList.remove('reveal');
+  void content.offsetWidth; // force reflow so animation replays
+  content.classList.add('reveal');
 }
 
 function clearOutput() {
@@ -3893,7 +3922,7 @@ function renderTabContent(tab, data) {
       <div class="content-text" style="margin-bottom:1.2rem;">Key vocabulary items drawn from your topic — with learner-friendly meanings and example sentences.</div>
       ${defs.length === 0 ? '<div class="content-text">No definitions available for this topic.</div>' :
         defs.map((d, i) => `
-          <div class="intelligence-block" style="margin-bottom:0.8rem;border:1px solid var(--border);padding:0;">
+          <div class="intelligence-block def-card" style="margin-bottom:0.8rem;border:1px solid var(--border);padding:0;animation-delay:${(i*0.07).toFixed(2)}s;">
             <div style="padding:0.9rem 1.2rem;">
               <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
                 <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:2px;">${d.word || ''}</span>
