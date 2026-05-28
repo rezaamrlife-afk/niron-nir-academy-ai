@@ -10,7 +10,7 @@
  */
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL    = 'llama-3.3-70b-versatile';
+const GROQ_MODEL    = 'llama-3.1-8b-instant'; // ✅ عوض شد
 
 // ── System prompt ────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
@@ -189,7 +189,6 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // API key — server-side only
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ status: 'error', error: 'GROQ_API_KEY not configured on server.' });
@@ -200,7 +199,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ status: 'error', error: 'Missing required params: topic, cefr_level, ielts_band, type' });
   }
 
-  // Call Groq
   let groqResponse;
   try {
     groqResponse = await fetch(GROQ_ENDPOINT, {
