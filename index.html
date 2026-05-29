@@ -2798,6 +2798,44 @@ body.light-mode .vh-reveal-btn {
 }
 body.light-mode .vh-reveal-btn:hover { background: rgba(184,134,11,0.06); }
 
+/* ═══ VOCAB HUB — LEARNING EFFECTS ═══ */
+/* Visual progress bar */
+.vh-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--white-faint);
+  margin-bottom: 1.1rem;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.vh-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+/* Reveal flip — content "discovered" in active mode */
+@keyframes vh-flip-in {
+  0%   { opacity: 0; transform: rotateX(-90deg); transform-origin: top; }
+  100% { opacity: 1; transform: rotateX(0deg); transform-origin: top; }
+}
+.vh-revealed-content {
+  animation: vh-flip-in 0.45s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vh-revealed-content { animation: none; }
+  .vh-progress-fill { transition: none; }
+}
+/* Light-mode contrast: track visible, fill with warm depth */
+body.light-mode .vh-progress-bar {
+  background: rgba(184,134,11,0.15);
+}
+body.light-mode .vh-progress-fill {
+  background: linear-gradient(90deg, #b8860b, #d4a017);
+  box-shadow: 0 0 6px rgba(184,134,11,0.35);
+}
+
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -4974,13 +5012,15 @@ var VocabHub = {
         return '<button class="vh-mode-btn' + (cur===m?' vh-active':'') +
                '" onclick="VocabHub.setMode(\'' + m + '\')">' + lbl + '</button>';
       };
+      var pct = Math.round(((s.index + 1) / total) * 100);
       var head =
         '<div class="vh-learn-head">' +
           '<span class="vh-progress">' + (s.index+1) + ' / ' + total + '</span>' +
           '<span class="vh-mode-switch">' +
             modeBtn('passive','Passive',s.mode) + modeBtn('active','Active',s.mode) + modeBtn('ielts','IELTS',s.mode) +
           '</span>' +
-        '</div>';
+        '</div>' +
+        '<div class="vh-progress-bar"><div class="vh-progress-fill" style="width:' + pct + '%;"></div></div>';
 
       var speaker = ('speechSynthesis' in window)
         ? '<button class="vh-close" style="width:30px;height:30px;font-size:13px;border:none;" onclick="VocabHub._speak(\'' + encodeURIComponent(w.word||'') + '\')" title="Pronounce">🔊</button>'
@@ -4994,6 +5034,9 @@ var VocabHub = {
       if (s.mode === 'active' && !s.revealed) {
         card += '<button class="vh-reveal-btn" onclick="VocabHub.reveal()">Tap to reveal meaning</button>';
       } else {
+        // Flip-in wrapper only when freshly revealed in active mode
+        var flipOpen = (s.mode === 'active' && s.revealed) ? '<div class="vh-revealed-content">' : '<div>';
+        card += flipOpen;
         // IELTS mode focuses collocations + ielts_relevance; passive shows all
         if (s.mode !== 'ielts') {
           card += '<div class="vh-card-section"><div class="vh-card-lbl">Meaning</div><div class="vh-card-text">' + this._esc(w.meaning) + '</div></div>';
@@ -5014,6 +5057,7 @@ var VocabHub = {
           '<span class="vh-meta">REGISTER <b>' + this._esc(w.register||'—') + '</b></span>' +
           '<span class="vh-meta">CEFR <b>' + this._esc(w.cefr||'—') + '</b></span>' +
         '</div>';
+        card += '</div>'; // close flip wrapper
       }
       card += '</div>';
 
