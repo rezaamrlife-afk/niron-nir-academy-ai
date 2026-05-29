@@ -3935,7 +3935,7 @@ function renderTabContent(tab, data) {
               <div class="example-block green-accent" style="font-style:italic;">"${highlightWord(d.example, d.word)}"</div>
               ${d.translation ? `
               <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">TRANSLATION</div>
-              <div class="content-text" style="color:var(--gold-dim);font-size:13px;direction:auto;">${d.translation}</div>` : ''}
+              <div class="content-text" style="color:var(--gold-dim);font-size:13px;direction:auto;unicode-bidi:plaintext;text-align:start;">${d.translation}</div>` : ''}
             </div>
           </div>
         `).join('')}
@@ -4382,12 +4382,8 @@ function setMobLang(btn, lang) {
   window._selectedLang = (lang === 'FA') ? 'fa' : (lang === 'TR') ? 'tr' : null;
   // Sync desktop toggle
   _syncNavLang(lang);
-  // RTL support for Arabic and Persian
-  if (lang === 'AR' || lang === 'FA') {
-    document.documentElement.setAttribute('dir', 'rtl');
-  } else {
-    document.documentElement.setAttribute('dir', 'ltr');
-  }
+  // NOTE: UI stays LTR. Persian/Arabic translation text flips automatically
+  // via direction:auto on the translation field — no document-wide dir change.
 }
 
 function _syncNavLang(lang) {
@@ -4412,8 +4408,7 @@ function setNavLang(lang) {
   document.querySelectorAll('.mob-lang-btn').forEach(function(b) {
     b.classList.toggle('active-lang', b.textContent.trim() === lang);
   });
-  // RTL for Persian
-  document.documentElement.setAttribute('dir', lang === 'FA' ? 'rtl' : 'ltr');
+  // NOTE: UI stays LTR. Translation text flips automatically via direction:auto.
   // Close dropdown
   var dd = document.getElementById('nav-lang-dropdown');
   if (dd) dd.classList.remove('open');
@@ -4563,6 +4558,11 @@ function installApp() {
     document.getElementById('theme-icon').textContent  = '🌙';
     document.getElementById('theme-label').textContent = 'Dark';
   }
+})();
+
+// Safety: NIRON UI is always LTR. Clear any stale dir="rtl" from earlier versions.
+(function() {
+  document.documentElement.setAttribute('dir', 'ltr');
 })();
 
 // ══════════════════════════════════════════
