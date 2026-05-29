@@ -2798,6 +2798,32 @@ body.light-mode .vh-reveal-btn {
 }
 body.light-mode .vh-reveal-btn:hover { background: rgba(184,134,11,0.06); }
 
+/* ═══ VOCAB HUB — INPUT VALIDATION ═══ */
+@keyframes vh-shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.vh-input.vh-error-field {
+  border-color: #d9534f !important;
+  animation: vh-shake 0.35s ease;
+}
+.vh-input-error {
+  display: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: #e07b77;
+  margin-top: 6px;
+}
+.vh-input-error.vh-show {
+  display: block;
+  animation: fadeUp 0.3s ease both;
+}
+body.light-mode .vh-input-error { color: #c0392b; }
+
 /* ═══ VOCAB HUB — LEARNING EFFECTS ═══ */
 /* Visual progress bar */
 .vh-progress-bar {
@@ -2835,6 +2861,78 @@ body.light-mode .vh-progress-fill {
   background: linear-gradient(90deg, #b8860b, #d4a017);
   box-shadow: 0 0 6px rgba(184,134,11,0.35);
 }
+
+
+/* ═══════════════ NIRON JOURNEY — namespace nj- ═══════════════ */
+#nj-overlay { position: fixed; inset: 0; z-index: 9600; background: rgba(0,0,0,0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#nj-overlay.nj-open { display: block; }
+.nj-shell { max-width: 680px; margin: 0 auto; padding: 1.4rem 1.3rem 5rem; box-sizing: border-box; }
+.nj-topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0 1rem; background: linear-gradient(180deg, rgba(0,0,0,0.96) 70%, rgba(0,0,0,0)); margin-bottom: 0.5rem; }
+.nj-brand { font-family: 'Orbitron', monospace; font-size: 15px; font-weight: 700; letter-spacing: 3px; color: var(--gold); }
+.nj-brand small { display: block; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--white-dim); margin-top: 3px; }
+.nj-close { background: transparent; border: 1px solid var(--border); color: var(--white-dim); width: 34px; height: 34px; cursor: pointer; font-size: 16px; clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); transition: all 0.18s ease; flex-shrink: 0; }
+.nj-close:hover { border-color: var(--gold); color: var(--gold); }
+/* progress dots */
+.nj-progress { position: fixed; right: 14px; top: 50%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; gap: 9px; }
+.nj-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--white-faint); border: 1px solid var(--border); cursor: pointer; transition: all 0.25s ease; padding: 0; }
+.nj-dot.nj-active { background: var(--gold); box-shadow: 0 0 8px var(--gold-glow); transform: scale(1.3); }
+@media (max-width: 600px) { .nj-progress { right: 8px; gap: 7px; } .nj-dot { width: 7px; height: 7px; } }
+/* chapter */
+.nj-chapter { min-height: auto; padding: 2.2rem 0 2.6rem; border-bottom: 1px solid var(--white-faint); opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.nj-chapter.nj-visible { opacity: 1; transform: translateY(0); }
+.nj-chapter:last-child { border-bottom: none; }
+.nj-num { font-family: 'Orbitron', monospace; font-size: 46px; font-weight: 900; line-height: 1; color: var(--gold); opacity: 0.22; letter-spacing: 2px; margin-bottom: 0.3rem; }
+.nj-title { font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 700; letter-spacing: 1px; color: var(--white); margin-bottom: 1rem; text-shadow: 0 0 20px var(--gold-glow); }
+.nj-quote { font-family: 'Inter', sans-serif; font-style: italic; font-size: 16px; line-height: 1.6; color: var(--gold); border-left: 2px solid var(--gold-dim); padding-left: 1rem; margin-bottom: 1.2rem; }
+.nj-text { font-family: 'Inter', sans-serif; font-size: 14.5px; line-height: 1.7; color: var(--white-dim); margin-bottom: 1rem; }
+.nj-text b { color: var(--white); font-weight: 600; }
+.nj-points { list-style: none; padding: 0; margin: 0; }
+.nj-point { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.5px; color: var(--white); padding: 7px 0 7px 22px; position: relative; }
+.nj-point::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+/* tabs flow chips */
+.nj-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 0.6rem; }
+.nj-flow-item { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 11px; background: var(--gold-glow); border: 1px solid var(--border); color: var(--gold); }
+.nj-flow-arrow { color: var(--white-dim); font-size: 11px; }
+/* modules grid */
+.nj-modules { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0.6rem; }
+.nj-module { background: var(--black-3); border: 1px solid var(--border); padding: 1.2rem 1.3rem; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); position: relative; transition: all 0.2s ease; }
+.nj-module.nj-available { cursor: pointer; }
+.nj-module.nj-available:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+.nj-module.nj-soon { opacity: 0.82; }
+.nj-mod-name { font-family: 'Orbitron', monospace; font-size: 15px; font-weight: 700; letter-spacing: 1px; color: var(--gold); margin-bottom: 4px; }
+.nj-mod-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white-dim); margin-bottom: 0.7rem; }
+.nj-mod-desc { font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.6; color: var(--white-dim); }
+.nj-badge { position: absolute; top: 1.2rem; right: 1.3rem; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 9px; border: 1px solid var(--gold-dim); color: var(--gold); }
+.nj-badge.nj-soon-badge { color: var(--white-dim); border-color: var(--border); animation: nj-pulse 2.4s ease-in-out infinite; }
+@keyframes nj-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+.nj-mod-open { display: inline-block; margin-top: 0.9rem; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--gold); }
+/* CTA */
+.nj-cta { width: 100%; padding: 14px; margin-top: 1.5rem; background: var(--gold); color: var(--black); font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; border: none; cursor: pointer; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); transition: opacity 0.18s ease; }
+.nj-cta:hover { opacity: 0.88; }
+/* trigger */
+.nj-trigger { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; cursor: pointer; clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px)); transition: all 0.18s ease; }
+.nj-trigger:hover { background: var(--gold-glow); }
+@media (max-width: 900px) { .nj-trigger { display: none; } }
+@media (prefers-reduced-motion: reduce) { .nj-chapter { transition: none; opacity: 1; transform: none; } .nj-badge.nj-soon-badge { animation: none; } }
+/* light mode */
+body.light-mode #nj-overlay { background: radial-gradient(ellipse at top, rgba(245,240,232,0.98), rgba(232,226,214,0.98)); }
+body.light-mode .nj-topbar { background: linear-gradient(180deg, rgba(242,237,228,0.97) 70%, rgba(242,237,228,0)); }
+body.light-mode .nj-brand { color: var(--gold-dim); }
+body.light-mode .nj-brand small { color: rgba(30,20,0,0.55); }
+body.light-mode .nj-num { color: var(--gold-dim); opacity: 0.28; }
+body.light-mode .nj-title { color: #1a1200; text-shadow: 0 0 18px rgba(184,134,11,0.12); }
+body.light-mode .nj-quote { color: #8a6408; border-left-color: var(--gold); }
+body.light-mode .nj-text { color: rgba(30,20,0,0.72); }
+body.light-mode .nj-text b { color: #1a1200; }
+body.light-mode .nj-point { color: #2a1d00; }
+body.light-mode .nj-flow-item { background: linear-gradient(180deg,#fff7e6,#fbeecb); border-color: rgba(184,134,11,0.3); color: var(--gold-dim); }
+body.light-mode .nj-module { background: linear-gradient(180deg,#fff,#fbf7ef); border-color: rgba(184,134,11,0.22); box-shadow: 0 4px 16px rgba(120,90,10,0.08); }
+body.light-mode .nj-mod-name { color: var(--gold-dim); }
+body.light-mode .nj-mod-desc, body.light-mode .nj-mod-tag { color: rgba(30,20,0,0.62); }
+body.light-mode .nj-cta { background: linear-gradient(135deg,#c8960f,#b8860b); color: #fff; box-shadow: 0 4px 16px rgba(184,134,11,0.3); }
+body.light-mode .nj-dot { background: rgba(184,134,11,0.2); border-color: rgba(184,134,11,0.3); }
+body.light-mode .nj-close { border-color: rgba(184,134,11,0.3); color: var(--gold-dim); }
+body.light-mode .nj-chapter { border-bottom-color: rgba(184,134,11,0.15); }
 
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
@@ -3103,6 +3201,18 @@ window.NIRONAIService = {
 </script>
 </head>
 <body>
+<!-- ══ NIRON JOURNEY OVERLAY ══ -->
+<div id="nj-overlay">
+  <div class="nj-progress" id="nj-progress"></div>
+  <div class="nj-shell">
+    <div class="nj-topbar">
+      <div class="nj-brand">NIRON JOURNEY<small>ADAPTIVE LANGUAGE INTELLIGENCE</small></div>
+      <button class="nj-close" onclick="NJourney.close()">✕</button>
+    </div>
+    <div id="nj-content"><!-- rendered by JS --></div>
+  </div>
+</div>
+
 <!-- VOCAB HUB OVERLAY -->
 <div id="vh-overlay">
   <div class="vh-shell">
@@ -3185,6 +3295,7 @@ window.NIRONAIService = {
         <div class="nav-lang-option" onclick="setNavLang('TR')">TR</div>
       </div>
     </div>
+    <button class="nj-trigger" onclick="NJourney.open()">✦ Journey</button>
     <button class="vh-trigger" onclick="VocabHub.open()">📚 Vocab Hub</button>
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
       <span class="theme-toggle-icon" id="theme-icon">☀</span>
@@ -3314,6 +3425,9 @@ window.NIRONAIService = {
 
     <!-- Learning Tools -->
     <span class="mob-section-lbl">Learning Tools</span>
+    <button class="mob-item" onclick="closeMobMenu();NJourney.open();">
+      <span class="mob-item-icon">✦</span>NIRON Journey<span class="mob-item-arrow">›</span>
+    </button>
     <button class="mob-item" onclick="closeMobMenu();VocabHub.open();">
       <span class="mob-item-icon">📚</span>Vocabulary Hub<span class="mob-item-arrow">›</span>
     </button>
@@ -4908,7 +5022,17 @@ var VocabHub = {
   generate: async function() {
     var val = document.getElementById('vh-value');
     this.state.value = val ? val.value.trim() : '';
-    if (!this.state.value) { return; }
+    if (!this.state.value) {
+      if (val) {
+        val.classList.remove('vh-error-field');
+        void val.offsetWidth;
+        val.classList.add('vh-error-field');
+        val.focus();
+      }
+      var errEl = document.getElementById('vh-value-error');
+      if (errEl) errEl.classList.add('vh-show');
+      return;
+    }
 
     this.state.phase = 'loading';
     this.render();
@@ -4985,9 +5109,10 @@ var VocabHub = {
         '</div></div>' +
         '<div class="vh-field"><label class="vh-label">' +
           (s.source_type==='topic'?'Topic':(s.source_type==='phrase'?'Phrase':'Word')) +
-          '</label><input class="vh-input" id="vh-value" placeholder="' +
+          '</label><input class="vh-input" id="vh-value" oninput="var e=document.getElementById(\'vh-value-error\');if(e)e.classList.remove(\'vh-show\');this.classList.remove(\'vh-error-field\');" placeholder="' +
           (s.source_type==='topic'?'e.g. technology, travel, environment':(s.source_type==='phrase'?'e.g. break the ice':'e.g. sustainable')) +
-          '" value="' + this._esc(s.value) + '"></div>' +
+          '" value="' + this._esc(s.value) + '">' +
+          '<div class="vh-input-error" id="vh-value-error">Please enter a ' + (s.source_type==='topic'?'topic':(s.source_type==='phrase'?'phrase':'word')) + ' to continue</div></div>' +
         '<div class="vh-count-wrap' + (s.source_type==='topic'?' vh-show':'') + '">' +
           '<div class="vh-field"><label class="vh-label">Number of Words</label><div class="vh-seg">' +
             cntBtn(3,s.count) + cntBtn(5,s.count) + cntBtn(7,s.count) +
@@ -5088,6 +5213,173 @@ document.addEventListener('keydown', function(e) {
     if (ov && ov.classList.contains('vh-open')) VocabHub.close();
   }
 });
+
+/* ===== NIRON JOURNEY ===== */
+/* ═══════════════ NIRON JOURNEY — data-driven, future-ready ═══════════════ */
+var NJourney = {
+  // Add a chapter object here to extend the journey — no layout changes needed.
+  chapters: [
+    {
+      num: '01', title: 'What is NIRON?',
+      quote: 'AI does not learn for you. It helps you see what to improve next.',
+      text: 'NIRON is a <b>specialized language intelligence system</b> — not a tutor, not a course. It is a diagnostic engine for English precision, built on CEFR alignment and IELTS mapping.',
+      points: ['Lexical intelligence', 'Grammar pattern recognition', 'Adaptive diagnosis, not generic practice']
+    },
+    {
+      num: '02', title: 'How Intelligence Works',
+      text: 'Enter any word, phrase, or grammar structure. NIRON analyses it against your <b>CEFR level</b> and <b>IELTS target</b>, then returns a structured intelligence report — precise, measurable, level-aware.',
+      points: ['CEFR alignment (A1 → C2)', 'IELTS band mapping (5 → 9)', 'Lexical & grammatical analysis']
+    },
+    {
+      num: '03', title: 'The Five Intelligence Tabs',
+      text: 'Every analysis is delivered across five diagnostic layers — each revealing a different dimension of your language precision.',
+      flow: ['Diagnosis', 'Analysis', 'Practice', 'Pathway', 'Definitions']
+    },
+    {
+      num: '04', title: 'Intelligence Modules', type: 'modules',
+      text: 'NIRON is a focused, evolving intelligence — built around two core domains of English precision.',
+      modules: [
+        { name: 'Vocabulary Hub', tag: 'Lexical Intelligence', status: 'available',
+          desc: 'Adaptive vocabulary intelligence. Generate CEFR-aligned word sets with meanings, collocations, register, and IELTS relevance.' },
+        { name: 'Grammar Hub', tag: 'Pattern Recognition', status: 'soon',
+          desc: 'Grammar pattern intelligence — structural diagnosis and error-pattern recognition. Currently in development.' }
+      ]
+    },
+    {
+      num: '05', title: 'Precision Learning Philosophy',
+      text: 'NIRON measures, diagnoses, and targets. The clearer your input, the sharper the diagnosis.',
+      points: ['Be specific: one word or structure at a time', 'Set your real CEFR level for accurate mapping', 'Use the pathway to target gaps, not memorise lists']
+    }
+  ],
+
+  open: function() {
+    var ov = document.getElementById('nj-overlay');
+    if (!ov) return;
+    ov.classList.add('nj-open');
+    document.body.style.overflow = 'hidden';
+    this.render();
+    var sh = ov.querySelector('.nj-shell');
+    if (sh) sh.scrollTop = 0;
+    ov.scrollTop = 0;
+  },
+
+  close: function() {
+    var ov = document.getElementById('nj-overlay');
+    if (ov) ov.classList.remove('nj-open');
+    document.body.style.overflow = '';
+    if (this._observer) { this._observer.disconnect(); this._observer = null; }
+  },
+
+  _esc: function(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+
+  _chapterHTML: function(ch, i) {
+    var inner = '<div class="nj-num">' + ch.num + '</div>' +
+                '<div class="nj-title">' + this._esc(ch.title) + '</div>';
+    if (ch.quote) inner += '<div class="nj-quote">"' + this._esc(ch.quote) + '"</div>';
+    if (ch.text)  inner += '<div class="nj-text">' + ch.text + '</div>';
+
+    if (ch.flow) {
+      var f = '<div class="nj-flow">';
+      for (var k = 0; k < ch.flow.length; k++) {
+        f += '<span class="nj-flow-item">' + this._esc(ch.flow[k]) + '</span>';
+        if (k < ch.flow.length - 1) f += '<span class="nj-flow-arrow">→</span>';
+      }
+      f += '</div>';
+      inner += f;
+    }
+
+    if (ch.points) {
+      var p = '<ul class="nj-points">';
+      for (var j = 0; j < ch.points.length; j++) p += '<li class="nj-point">' + this._esc(ch.points[j]) + '</li>';
+      p += '</ul>';
+      inner += p;
+    }
+
+    if (ch.type === 'modules' && ch.modules) {
+      var m = '<div class="nj-modules">';
+      for (var n = 0; n < ch.modules.length; n++) {
+        var mod = ch.modules[n];
+        var avail = mod.status === 'available';
+        m += '<div class="nj-module ' + (avail ? 'nj-available' : 'nj-soon') + '"' +
+             (avail ? ' onclick="NJourney.launchVocab()"' : '') + '>' +
+               '<div class="nj-badge ' + (avail ? '' : 'nj-soon-badge') + '">' + (avail ? 'Available' : 'Coming Soon') + '</div>' +
+               '<div class="nj-mod-name">' + this._esc(mod.name) + '</div>' +
+               '<div class="nj-mod-tag">' + this._esc(mod.tag) + '</div>' +
+               '<div class="nj-mod-desc">' + this._esc(mod.desc) + '</div>' +
+               (avail ? '<span class="nj-mod-open">Open module →</span>' : '') +
+             '</div>';
+      }
+      m += '</div>';
+      inner += m;
+    }
+    return '<div class="nj-chapter" data-ch="' + i + '">' + inner + '</div>';
+  },
+
+  launchVocab: function() {
+    this.close();
+    if (window.VocabHub && VocabHub.open) VocabHub.open();
+  },
+
+  render: function() {
+    var content = document.getElementById('nj-content');
+    var prog = document.getElementById('nj-progress');
+    if (!content) return;
+
+    var html = '';
+    for (var i = 0; i < this.chapters.length; i++) html += this._chapterHTML(this.chapters[i], i);
+    html += '<button class="nj-cta" onclick="NJourney.close()">Begin Learning →</button>';
+    content.innerHTML = html;
+
+    // progress dots — count derived from chapters length (scalable)
+    if (prog) {
+      var dots = '';
+      for (var d = 0; d < this.chapters.length; d++) {
+        dots += '<button class="nj-dot' + (d===0?' nj-active':'') + '" data-dot="' + d + '" onclick="NJourney.scrollTo(' + d + ')" aria-label="Chapter ' + (d+1) + '"></button>';
+      }
+      prog.innerHTML = dots;
+    }
+
+    this._observe();
+  },
+
+  scrollTo: function(i) {
+    var el = document.querySelector('.nj-chapter[data-ch="' + i + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+
+  _observe: function() {
+    var self = this;
+    if (this._observer) this._observer.disconnect();
+    if (!('IntersectionObserver' in window)) {
+      // fallback: reveal all
+      var all = document.querySelectorAll('.nj-chapter');
+      for (var a = 0; a < all.length; a++) all[a].classList.add('nj-visible');
+      return;
+    }
+    this._observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('nj-visible');
+          var idx = en.target.getAttribute('data-ch');
+          var dots = document.querySelectorAll('.nj-dot');
+          for (var x = 0; x < dots.length; x++) dots[x].classList.toggle('nj-active', dots[x].getAttribute('data-dot') === idx);
+        }
+      });
+    }, { threshold: 0.4 });
+    var chapters = document.querySelectorAll('.nj-chapter');
+    for (var c = 0; c < chapters.length; c++) this._observer.observe(chapters[c]);
+  }
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var ov = document.getElementById('nj-overlay');
+    if (ov && ov.classList.contains('nj-open')) NJourney.close();
+  }
+});
+
 </script>
 </body>
 </html>
