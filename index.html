@@ -2647,6 +2647,61 @@ body {
   opacity: 1;
   animation: fadeUp 0.3s ease both;
 }
+
+/* ===== VOCAB HUB CSS ===== */
+
+/* ══ VOCAB HUB — all selectors namespaced vh- to avoid collisions ══ */
+#vh-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#vh-overlay.vh-open { display: block; }
+.vh-shell { max-width: 640px; margin: 0 auto; min-height: 100%; padding: 1.5rem 1.2rem 4rem; box-sizing: border-box; }
+.vh-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.8rem; }
+.vh-brand { font-family: 'Orbitron', monospace; font-size: 15px; font-weight: 700; letter-spacing: 3px; color: var(--gold); }
+.vh-brand small { display: block; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--white-dim); margin-top: 3px; }
+.vh-close { background: transparent; border: 1px solid var(--border); color: var(--white-dim); width: 34px; height: 34px; cursor: pointer; font-size: 16px; clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); transition: all 0.18s ease; }
+.vh-close:hover { border-color: var(--gold); color: var(--gold); }
+.vh-field { margin-bottom: 1.3rem; }
+.vh-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--white-dim); margin-bottom: 8px; }
+.vh-seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.vh-seg-btn { flex: 1; min-width: 80px; padding: 9px 10px; background: var(--black-3); border: 1px solid var(--border); color: var(--white-dim); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.18s ease; clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); }
+.vh-seg-btn:hover { border-color: var(--white-faint); }
+.vh-seg-btn.vh-active { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.vh-input { width: 100%; background: var(--black-3); border: 1px solid var(--border); color: var(--white); font-family: 'Inter', sans-serif; font-size: 15px; padding: 11px 14px; outline: none; box-sizing: border-box; transition: border-color 0.18s ease, box-shadow 0.18s ease; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+.vh-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-glow); }
+.vh-count-wrap { display: none; }
+.vh-count-wrap.vh-show { display: block; }
+.vh-generate { width: 100%; padding: 13px; margin-top: 0.6rem; background: var(--gold); color: var(--black); font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; border: none; cursor: pointer; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); transition: opacity 0.18s ease; }
+.vh-generate:hover { opacity: 0.88; }
+.vh-generate:disabled { opacity: 0.5; cursor: default; }
+.vh-loading { text-align: center; padding: 4rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--gold); }
+.vh-loading-ring { width: 36px; height: 36px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; margin: 0 auto 1.2rem; animation: vh-spin 0.8s linear infinite; }
+@keyframes vh-spin { to { transform: rotate(360deg); } }
+.vh-learn-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 10px; }
+.vh-progress { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--white-dim); }
+.vh-mode-switch { display: flex; gap: 4px; }
+.vh-mode-btn { padding: 5px 10px; background: var(--black-3); border: 1px solid var(--border); color: var(--white-dim); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; cursor: pointer; transition: all 0.18s ease; }
+.vh-mode-btn.vh-active { border-color: var(--gold); color: var(--gold); }
+.vh-card { background: var(--black-3); border: 1px solid var(--border); padding: 1.5rem 1.4rem; margin-bottom: 1rem; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); animation: fadeUp 0.4s ease both; }
+.vh-card-word { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 1px; margin-bottom: 4px; }
+.vh-card-pos { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--white-dim); font-style: italic; margin-bottom: 1rem; }
+.vh-card-section { margin-bottom: 0.9rem; }
+.vh-card-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 4px; }
+.vh-card-text { font-family: 'Inter', sans-serif; font-size: 14px; color: var(--white); line-height: 1.6; }
+.vh-card-example { font-style: italic; color: var(--white-dim); }
+.vh-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.vh-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 9px; background: var(--gold-glow); color: var(--gold); border: 1px solid var(--border); }
+.vh-meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--white-faint); }
+.vh-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--white-dim); }
+.vh-meta b { color: var(--gold); font-weight: 700; }
+.vh-reveal-btn { width: 100%; padding: 10px; background: transparent; border: 1px dashed var(--gold-dim); color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; }
+.vh-nav { display: flex; gap: 8px; margin-top: 1rem; }
+.vh-nav-btn { flex: 1; padding: 11px; background: var(--black-4); border: 1px solid var(--border); color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.18s ease; clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px)); }
+.vh-nav-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.vh-nav-btn:disabled { opacity: 0.35; cursor: default; }
+.vh-error { text-align: center; padding: 3rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #e07b77; letter-spacing: 1px; }
+.vh-trigger { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; cursor: pointer; clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px)); transition: all 0.18s ease; }
+.vh-trigger:hover { background: var(--gold-glow); }
+@media (max-width: 900px) { .vh-trigger { display: none; } }
+
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -2914,6 +2969,17 @@ window.NIRONAIService = {
 </script>
 </head>
 <body>
+<!-- VOCAB HUB OVERLAY -->
+<div id="vh-overlay">
+  <div class="vh-shell">
+    <div class="vh-topbar">
+      <div class="vh-brand">VOCABULARY HUB<small>NIR ACADEMY · NIRON</small></div>
+      <button class="vh-close" onclick="VocabHub.close()">✕</button>
+    </div>
+    <div id="vh-body"><!-- rendered by JS --></div>
+  </div>
+</div>
+
 
 
 
@@ -2985,6 +3051,7 @@ window.NIRONAIService = {
         <div class="nav-lang-option" onclick="setNavLang('TR')">TR</div>
       </div>
     </div>
+    <button class="vh-trigger" onclick="VocabHub.open()">📚 Vocab Hub</button>
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
       <span class="theme-toggle-icon" id="theme-icon">☀</span>
       <span id="theme-label">Light</span>
@@ -4636,6 +4703,243 @@ function hideAccount() {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+/* ===== VOCAB HUB JS ===== */
+var VocabHub = {
+  state: {
+    phase: 'config',          // config | loading | learn | error
+    source_type: 'topic',     // word | phrase | topic
+    value: '',
+    cefr_level: 'B1',
+    count: 5,                  // 3 | 5 | 7
+    words: [],
+    index: 0,
+    mode: 'passive',          // passive | active | ielts
+    revealed: false,
+    errorMsg: ''
+  },
+
+  open: function() {
+    var ov = document.getElementById('vh-overlay');
+    if (!ov) return;
+    this.state.phase = 'config';
+    this.state.words = [];
+    this.state.index = 0;
+    this.state.revealed = false;
+    ov.classList.add('vh-open');
+    document.body.style.overflow = 'hidden';
+    this.render();
+  },
+
+  close: function() {
+    var ov = document.getElementById('vh-overlay');
+    if (ov) ov.classList.remove('vh-open');
+    document.body.style.overflow = '';
+  },
+
+  setSource: function(t) { this.state.source_type = t; this.render(); },
+  setCefr:   function(c) { this.state.cefr_level = c; this.render(); },
+  setCount:  function(n) { this.state.count = n; this.render(); },
+
+  setMode: function(m) {
+    this.state.mode = m;
+    this.state.revealed = (m !== 'active');
+    this.render();
+  },
+
+  reveal: function() { this.state.revealed = true; this.render(); },
+  next: function() {
+    if (this.state.index < this.state.words.length - 1) {
+      this.state.index++;
+      this.state.revealed = (this.state.mode !== 'active');
+      this.render();
+    }
+  },
+  prev: function() {
+    if (this.state.index > 0) {
+      this.state.index--;
+      this.state.revealed = (this.state.mode !== 'active');
+      this.render();
+    }
+  },
+
+  generate: async function() {
+    var val = document.getElementById('vh-value');
+    this.state.value = val ? val.value.trim() : '';
+    if (!this.state.value) { return; }
+
+    this.state.phase = 'loading';
+    this.render();
+
+    var payload = {
+      source_type: this.state.source_type,
+      value: this.state.value,
+      cefr_level: this.state.cefr_level,
+      count: this.state.count,
+      mother_language: window._selectedLang || null
+    };
+
+    try {
+      var res = await fetch('/api/vocab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var data = await res.json();
+      if (data.status === 'ok' && Array.isArray(data.words) && data.words.length) {
+        this.state.words = data.words;
+        this.state.index = 0;
+        this.state.revealed = (this.state.mode !== 'active');
+        this.state.phase = 'learn';
+      } else {
+        this.state.errorMsg = (data && data.error) ? data.error : 'No vocabulary returned.';
+        this.state.phase = 'error';
+      }
+    } catch (e) {
+      this.state.errorMsg = 'Network error. Please try again.';
+      this.state.phase = 'error';
+    }
+    this.render();
+  },
+
+  _esc: function(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  },
+
+  _speak: function(encoded) {
+    if (!('speechSynthesis' in window)) return;
+    var w = decodeURIComponent(encoded);
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(w);
+    u.lang = 'en-US'; u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  },
+
+  render: function() {
+    var body = document.getElementById('vh-body');
+    if (!body) return;
+    var s = this.state;
+
+    // ── CONFIG ──
+    if (s.phase === 'config') {
+      var segBtn = function(t, lbl, cur) {
+        return '<button class="vh-seg-btn' + (cur===t?' vh-active':'') +
+               '" onclick="VocabHub.setSource(\'' + t + '\')">' + lbl + '</button>';
+      };
+      var cefrBtn = function(c, cur) {
+        return '<button class="vh-seg-btn' + (cur===c?' vh-active':'') +
+               '" onclick="VocabHub.setCefr(\'' + c + '\')">' + c + '</button>';
+      };
+      var cntBtn = function(n, cur) {
+        return '<button class="vh-seg-btn' + (cur===n?' vh-active':'') +
+               '" onclick="VocabHub.setCount(' + n + ')">' + n + '</button>';
+      };
+      var levels = ['A1','A2','B1','B2','C1','C2'];
+      body.innerHTML =
+        '<div class="vh-field"><label class="vh-label">Input Type</label><div class="vh-seg">' +
+          segBtn('word','Word',s.source_type) + segBtn('phrase','Phrase',s.source_type) + segBtn('topic','Topic',s.source_type) +
+        '</div></div>' +
+        '<div class="vh-field"><label class="vh-label">' +
+          (s.source_type==='topic'?'Topic':(s.source_type==='phrase'?'Phrase':'Word')) +
+          '</label><input class="vh-input" id="vh-value" placeholder="' +
+          (s.source_type==='topic'?'e.g. technology, travel, environment':(s.source_type==='phrase'?'e.g. break the ice':'e.g. sustainable')) +
+          '" value="' + this._esc(s.value) + '"></div>' +
+        '<div class="vh-count-wrap' + (s.source_type==='topic'?' vh-show':'') + '">' +
+          '<div class="vh-field"><label class="vh-label">Number of Words</label><div class="vh-seg">' +
+            cntBtn(3,s.count) + cntBtn(5,s.count) + cntBtn(7,s.count) +
+          '</div></div></div>' +
+        '<div class="vh-field"><label class="vh-label">CEFR Level</label><div class="vh-seg">' +
+          levels.map(function(l){return cefrBtn(l,s.cefr_level);}).join('') +
+        '</div></div>' +
+        '<button class="vh-generate" onclick="VocabHub.generate()">✦ Generate Vocabulary</button>';
+      return;
+    }
+
+    // ── LOADING ──
+    if (s.phase === 'loading') {
+      body.innerHTML = '<div class="vh-loading"><div class="vh-loading-ring"></div>Building your vocabulary set…</div>';
+      return;
+    }
+
+    // ── ERROR ──
+    if (s.phase === 'error') {
+      body.innerHTML = '<div class="vh-error">⚠ ' + this._esc(s.errorMsg) +
+        '<br><br><button class="vh-nav-btn" onclick="VocabHub.open()">← Back</button></div>';
+      return;
+    }
+
+    // ── LEARN ──
+    if (s.phase === 'learn') {
+      var w = s.words[s.index];
+      var total = s.words.length;
+      var modeBtn = function(m, lbl, cur) {
+        return '<button class="vh-mode-btn' + (cur===m?' vh-active':'') +
+               '" onclick="VocabHub.setMode(\'' + m + '\')">' + lbl + '</button>';
+      };
+      var head =
+        '<div class="vh-learn-head">' +
+          '<span class="vh-progress">' + (s.index+1) + ' / ' + total + '</span>' +
+          '<span class="vh-mode-switch">' +
+            modeBtn('passive','Passive',s.mode) + modeBtn('active','Active',s.mode) + modeBtn('ielts','IELTS',s.mode) +
+          '</span>' +
+        '</div>';
+
+      var speaker = ('speechSynthesis' in window)
+        ? '<button class="vh-close" style="width:30px;height:30px;font-size:13px;border:none;" onclick="VocabHub._speak(\'' + encodeURIComponent(w.word||'') + '\')" title="Pronounce">🔊</button>'
+        : '';
+
+      var card = '<div class="vh-card">';
+      card += '<div style="display:flex;align-items:center;gap:8px;"><div class="vh-card-word">' + this._esc(w.word) + '</div>' + speaker + '</div>';
+      card += '<div class="vh-card-pos">' + this._esc(w.pos) + '</div>';
+
+      // Active mode: hide meaning until revealed
+      if (s.mode === 'active' && !s.revealed) {
+        card += '<button class="vh-reveal-btn" onclick="VocabHub.reveal()">Tap to reveal meaning</button>';
+      } else {
+        // IELTS mode focuses collocations + ielts_relevance; passive shows all
+        if (s.mode !== 'ielts') {
+          card += '<div class="vh-card-section"><div class="vh-card-lbl">Meaning</div><div class="vh-card-text">' + this._esc(w.meaning) + '</div></div>';
+        }
+        card += '<div class="vh-card-section"><div class="vh-card-lbl">Example</div><div class="vh-card-text vh-card-example">"' + this._esc(w.example) + '"</div></div>';
+        if (w.collocations && w.collocations.length) {
+          card += '<div class="vh-card-section"><div class="vh-card-lbl">Collocations</div><div class="vh-chips">' +
+            w.collocations.map(function(c){return '<span class="vh-chip">'+VocabHub._esc(c)+'</span>';}).join('') +
+          '</div></div>';
+        }
+        if (s.mode === 'ielts' && w.ielts_relevance) {
+          card += '<div class="vh-card-section"><div class="vh-card-lbl">IELTS Relevance</div><div class="vh-card-text">' + this._esc(w.ielts_relevance) + '</div></div>';
+        }
+        if (w.translation) {
+          card += '<div class="vh-card-section"><div class="vh-card-lbl">Translation</div><div class="vh-card-text" style="color:var(--gold-dim);direction:auto;unicode-bidi:plaintext;text-align:start;">' + this._esc(w.translation) + '</div></div>';
+        }
+        card += '<div class="vh-meta-row">' +
+          '<span class="vh-meta">REGISTER <b>' + this._esc(w.register||'—') + '</b></span>' +
+          '<span class="vh-meta">CEFR <b>' + this._esc(w.cefr||'—') + '</b></span>' +
+        '</div>';
+      }
+      card += '</div>';
+
+      var nav = '<div class="vh-nav">' +
+        '<button class="vh-nav-btn" onclick="VocabHub.prev()"' + (s.index===0?' disabled':'') + '>← Prev</button>' +
+        '<button class="vh-nav-btn" onclick="VocabHub.open()">+ New Set</button>' +
+        '<button class="vh-nav-btn" onclick="VocabHub.next()"' + (s.index===total-1?' disabled':'') + '>Next →</button>' +
+      '</div>';
+
+      body.innerHTML = head + card + nav;
+      return;
+    }
+  }
+};
+
+// Close overlay on ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var ov = document.getElementById('vh-overlay');
+    if (ov && ov.classList.contains('vh-open')) VocabHub.close();
+  }
+});
 </script>
 </body>
 </html>
