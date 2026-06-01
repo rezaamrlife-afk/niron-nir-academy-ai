@@ -2958,6 +2958,36 @@ body.light-mode .nj-dot { background: rgba(184,134,11,0.2); border-color: rgba(1
 body.light-mode .nj-close { border-color: rgba(184,134,11,0.3); color: var(--gold-dim); }
 body.light-mode .nj-chapter { border-bottom-color: rgba(184,134,11,0.15); }
 
+/* ═══════════════ ECOSYSTEM GRID (8 apps) ═══════════════ */
+.eco-subhook { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; color: var(--white-dim); max-width: 540px; margin: 0.8rem auto 2.4rem; text-align: center; }
+.eco-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 1100px; margin: 0 auto; }
+.eco-app { position: relative; background: var(--black-3); border: 1px solid var(--border); padding: 1.4rem 1.1rem; text-align: left; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; text-decoration: none; display: block; }
+.eco-app.eco-live { cursor: pointer; }
+.eco-app.eco-live:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+.eco-app.eco-here { border-color: var(--gold-dim); background: linear-gradient(180deg, var(--gold-glow), var(--black-3)); }
+.eco-app.eco-soon { opacity: 0.7; }
+.eco-app-status { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 5px; }
+.eco-live .eco-app-status { color: var(--gold); }
+.eco-here .eco-app-status { color: var(--gold); }
+.eco-soon .eco-app-status { color: var(--white-dim); }
+.eco-dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px var(--gold); display: inline-block; }
+.eco-dot-soon { width: 6px; height: 6px; border-radius: 50%; background: var(--white-dim); display: inline-block; animation: eco-pulse 2.4s ease-in-out infinite; }
+@keyframes eco-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+.eco-app-name { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--gold); margin-bottom: 3px; }
+.eco-app-role { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white-dim); margin-bottom: 0.7rem; }
+.eco-app-hook { font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.55; color: var(--white-dim); }
+.eco-app.eco-here .eco-app-hook { color: var(--white); }
+@media (max-width: 900px) { .eco-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+@media (max-width: 480px) { .eco-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .eco-app { transition: none; } .eco-dot-soon { animation: none; } }
+/* light mode */
+body.light-mode .eco-subhook { color: rgba(30,20,0,0.7); }
+body.light-mode .eco-app { background: linear-gradient(180deg,#fff,#fbf7ef); border-color: rgba(184,134,11,0.22); box-shadow: 0 4px 14px rgba(120,90,10,0.07); }
+body.light-mode .eco-app.eco-here { background: linear-gradient(180deg,#fff7e6,#fbeecb); border-color: var(--gold); }
+body.light-mode .eco-app-name { color: var(--gold-dim); }
+body.light-mode .eco-app-role, body.light-mode .eco-app-hook { color: rgba(30,20,0,0.62); }
+body.light-mode .eco-app.eco-here .eco-app-hook { color: #1a1200; }
+
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -3709,29 +3739,10 @@ window.NIRONAIService = {
 <section class="ecosystem-section" id="ecosystem">
   <div class="eco-inner">
     <div class="eco-label">NIR Academy Ecosystem</div>
-    <h2 class="eco-title">ONE ORIGIN. TWO MISSIONS.</h2>
+    <h2 class="eco-title">ONE ORIGIN. EIGHT INTELLIGENCES.</h2>
+    <p class="eco-subhook">Not one AI doing everything — a focused ecosystem of specialists, each mastering one dimension of language.</p>
 
-    <div class="siblings-row">
-      <div class="sibling-card active-card">
-        <div class="sibling-label">⬡ Brother App · Active</div>
-        <div class="sibling-name">NIRON</div>
-        <div class="sibling-mission">Adaptive Language Intelligence System<br>Vocabulary + Grammar · CEFR A1–C2 · IELTS 5–9</div>
-      </div>
-
-      <div class="dna-bridge">
-        <div class="dna-bridge-node"></div>
-        <div class="dna-bridge-line"></div>
-        <div class="dna-bridge-label">NIR ACADEMY</div>
-        <div class="dna-bridge-line"></div>
-        <div class="dna-bridge-node"></div>
-      </div>
-
-      <a href="https://nir-academy-ai.vercel.app/" target="_blank" class="sibling-card" style="text-decoration:none;display:block;cursor:pointer;transition:border-color 0.3s;" onmouseover="this.style.borderColor='var(--green-light)'" onmouseout="this.style.borderColor=''">
-        <div class="sibling-label">⬡ Sister App · Click to Visit</div>
-        <div class="sibling-name nira-name">NIRA</div>
-        <div class="sibling-mission">AI-Powered ELT Platform<br>Prompt Generator · IELTS Tasks · Lesson Planner</div>
-      </a>
-    </div>
+    <div class="eco-grid" id="eco-grid"><!-- rendered by JS --></div>
 
     <div class="mother-tag">
       <span class="mother-tag-label">Created by</span>
@@ -5261,7 +5272,56 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-/* ===== NIRON JOURNEY ===== */
+/* ═══════════════ ECOSYSTEM GRID — data-driven (8 apps) ═══════════════ */
+var NIREcosystem = {
+  apps: [
+    { name: 'NIRON', role: 'Language Intelligence', status: 'here', url: null,
+      hook: 'Diagnoses your English against CEFR & IELTS — vocabulary and grammar precision.' },
+    { name: 'NIRA', role: 'Teacher AI Assistant', status: 'live', url: 'https://nir-academy-ai.vercel.app/',
+      hook: 'Builds lessons, prompts, and IELTS tasks — your teaching co-pilot.' },
+    { name: 'NIRVO', role: 'Speaking AI', status: 'live', url: 'https://nirvo-nir-academy-ai.vercel.app/',
+      hook: 'Real-time fluency analysis — pronunciation, pace, and confidence.' },
+    { name: 'NIRVE', role: 'Writing AI', status: 'live', url: 'https://nirve-nir-academy-ai.vercel.app/',
+      hook: 'Coherence, structure, and band-targeted feedback on every paragraph.' },
+    { name: 'NIRIX', role: 'Reading AI', status: 'soon', url: null,
+      hook: 'Strategic comprehension training built for exam-speed reading.' },
+    { name: 'NIRAL', role: 'Listening AI', status: 'soon', url: null,
+      hook: 'Trains your ear for accents, detail, and IELTS audio precision.' },
+    { name: 'NIRIEL', role: 'IELTS AI', status: 'soon', url: null,
+      hook: 'Full IELTS simulation — four skills, one band score, zero guesswork.' },
+    { name: 'NIREV', role: 'Assessment AI', status: 'soon', url: null,
+      hook: 'Instant diagnostic scoring that maps exactly where you stand.' }
+  ],
+  _esc: function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); },
+  render: function() {
+    var grid = document.getElementById('eco-grid');
+    if (!grid) return;
+    var html = '';
+    for (var i = 0; i < this.apps.length; i++) {
+      var a = this.apps[i];
+      var statusLabel, dotClass, cls, tag, attrs;
+      if (a.status === 'here') { statusLabel = 'Active · You are here'; dotClass = ''; cls = 'eco-here'; }
+      else if (a.status === 'live') { statusLabel = 'Active · Visit'; dotClass = 'eco-dot-live'; cls = 'eco-live'; }
+      else { statusLabel = 'Coming Soon'; dotClass = 'eco-dot-soon'; cls = 'eco-soon'; }
+
+      var dot = dotClass ? '<span class="' + dotClass + '"></span>' : '';
+      var inner =
+        '<div class="eco-app-status">' + dot + this._esc(statusLabel) + '</div>' +
+        '<div class="eco-app-name">' + this._esc(a.name) + '</div>' +
+        '<div class="eco-app-role">' + this._esc(a.role) + '</div>' +
+        '<div class="eco-app-hook">' + this._esc(a.hook) + '</div>';
+
+      if (a.status === 'live' && a.url) {
+        html += '<a class="eco-app ' + cls + '" href="' + this._esc(a.url) + '" target="_blank" rel="noopener">' + inner + '</a>';
+      } else {
+        html += '<div class="eco-app ' + cls + '">' + inner + '</div>';
+      }
+    }
+    grid.innerHTML = html;
+  }
+};
+(function(){ if (document.getElementById('eco-grid')) NIREcosystem.render(); })();
+
 /* ═══════════════ NIRON JOURNEY — data-driven, future-ready ═══════════════ */
 var NJourney = {
   // Add a chapter object here to extend the journey — no layout changes needed.
