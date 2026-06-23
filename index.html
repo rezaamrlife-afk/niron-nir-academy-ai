@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIRON — Adaptive Language Intelligence System</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0A0E1A">
+<meta name="description" content="Adaptive Language Intelligence System for English learning — CEFR diagnosis, vocabulary, grammar, and IELTS preparation powered by AI.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NIRON">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -5625,6 +5634,16 @@ function showToast(message, type) {
     toast.classList.add('toast-hide');
     setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 320);
   }, dur);
+}
+
+
+/* ═══════════════ PWA SERVICE WORKER ═══════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(err) {
+      console.warn('[NIRON] SW registration failed:', err);
+    });
+  });
 }
 
 </script>
