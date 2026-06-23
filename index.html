@@ -9,42 +9,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --black: #080808;
-  --black-2: #0e0e0e;
-  --black-3: #141414;
-  --black-4: #1a1a1a;
-  --gold: #4fc3f7;
-  --gold-light: #81d4fa;
-  --gold-dim: #0288d1;
-  --gold-glow: rgba(79,195,247,0.07);
-  --green: #b8860b;
-  --green-light: #ffd700;
-  --green-glow: rgba(255,215,0,0.07);
-  --white: #e0f4ff;
-  --white-dim: rgba(220,235,255,0.82);
-  --white-faint: rgba(200,235,255,0.07);
-  --border: rgba(79,195,247,0.18);
-  --border-green: rgba(255,215,0,0.25);
+  --black: #0A0E1A;
+  --black-2: #111725;
+  --black-3: #161D2E;
+  --black-4: #1C2538;
+  --gold: #5B9DFF;
+  --gold-light: #7DB3FF;
+  --gold-dim: #3B7DD8;
+  --gold-glow: rgba(91,157,255,0.08);
+  --green: #D4A017;
+  --green-light: #F5C542;
+  --green-glow: rgba(212,160,23,0.08);
+  --white: #F1F5F9;
+  --white-dim: rgba(241,245,249,0.70);
+  --white-faint: rgba(241,245,249,0.07);
+  --border: #252D3D;
+  --border-green: rgba(212,160,23,0.25);
 }
 
 /* ══════════════════ LIGHT MODE ══════════════════ */
 body.light-mode {
-  --black: #f5f0e8;
-  --black-2: #edeae0;
-  --black-3: #e4e0d5;
-  --black-4: #d8d3c7;
-  --gold: #b8860b;
-  --gold-light: #d4a017;
-  --gold-dim: #8a6408;
-  --gold-glow: rgba(184,134,11,0.12);
-  --green: #2a7a4b;
-  --green-light: #2a7a4b;
-  --green-glow: rgba(42,122,75,0.12);
-  --white: #1a1200;
-  --white-dim: rgba(30,20,0,0.76);
-  --white-faint: rgba(30,20,0,0.08);
-  --border: rgba(184,134,11,0.25);
-  --border-green: rgba(42,122,75,0.25);
+  --black: #FAFBFC;
+  --black-2: #F1F4F8;
+  --black-3: #FFFFFF;
+  --black-4: #F1F4F8;
+  --gold: #2563EB;
+  --gold-light: #3B82F6;
+  --gold-dim: #1D4ED8;
+  --gold-glow: rgba(37,99,235,0.10);
+  --green: #B8860B;
+  --green-light: #D4A017;
+  --green-glow: rgba(37,99,235,0.12);
+  --white: #0F172A;
+  --white-dim: rgba(15,23,42,0.70);
+  --white-faint: rgba(15,23,42,0.07);
+  --border: #E2E8F0;
+  --border-green: rgba(37,99,235,0.25);
 }
 
 body.light-mode #dna-canvas { opacity: 0.15; }
@@ -55,7 +55,7 @@ body.light-mode .navbar {
 
 body.light-mode .input-select option {
   background: #e4e0d5;
-  color: #1a1200;
+  color: #0F172A;
 }
 
 /* Theme toggle button */
@@ -1042,7 +1042,7 @@ body {
 .content-label:first-child { margin-top: 0; }
 
 .content-text {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
   line-height: 1.8;
   color: var(--white);
@@ -1596,7 +1596,7 @@ body {
 
   /* Tags */
   .tag { font-size: 10px; padding: 3px 8px; }
-  .content-text { font-size: 13px; }
+  .content-text { font-size: 14px; }
   .ib-title { font-size: 10px; letter-spacing: 1px; }
 
   /* ── engines section has inline style="padding:4rem 3rem" — needs !important ── */
@@ -2740,7 +2740,7 @@ body.light-mode #vh-overlay {
 }
 body.light-mode .vh-brand {
   color: var(--gold-dim);
-  text-shadow: 0 0 18px rgba(184,134,11,0.15);
+  text-shadow: 0 0 18px rgba(37,99,235,0.15);
 }
 body.light-mode .vh-brand small { color: rgba(30,20,0,0.55); }
 body.light-mode .vh-label {
@@ -2749,84 +2749,84 @@ body.light-mode .vh-label {
 }
 body.light-mode .vh-seg-btn,
 body.light-mode .vh-input {
-  background: #fbf8f2;
-  border-color: rgba(184,134,11,0.28);
-  box-shadow: 0 1px 3px rgba(120,90,10,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
-  color: #2a1d00;
+  background: #F1F4F8;
+  border-color: rgba(37,99,235,0.28);
+  box-shadow: 0 1px 3px rgba(30,58,138,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  color: #0F172A;
 }
 body.light-mode .vh-seg-btn:hover {
   border-color: var(--gold);
-  box-shadow: 0 2px 8px rgba(184,134,11,0.14);
+  box-shadow: 0 2px 8px rgba(37,99,235,0.14);
   transform: translateY(-1px);
 }
 body.light-mode .vh-seg-btn.vh-active {
-  background: linear-gradient(180deg, #fff7e6, #fbeecb);
+  background: linear-gradient(180deg, #EFF4FF, #DBEAFE);
   border-color: var(--gold);
   color: var(--gold-dim);
-  box-shadow: 0 2px 10px rgba(184,134,11,0.20), inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow: 0 2px 10px rgba(37,99,235,0.20), inset 0 1px 0 rgba(255,255,255,0.7);
 }
 body.light-mode .vh-input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(184,134,11,0.15), 0 2px 8px rgba(184,134,11,0.12);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15), 0 2px 8px rgba(37,99,235,0.12);
 }
 body.light-mode .vh-generate {
-  background: linear-gradient(135deg, #c8960f, #b8860b);
+  background: linear-gradient(135deg, #2563EB, #2563EB);
   color: #fff;
-  box-shadow: 0 4px 16px rgba(184,134,11,0.30);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.30);
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 body.light-mode .vh-generate:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(184,134,11,0.38);
+  box-shadow: 0 6px 22px rgba(37,99,235,0.38);
   opacity: 1;
 }
 body.light-mode .vh-card {
-  background: linear-gradient(180deg, #ffffff, #fbf7ef);
-  border-color: rgba(184,134,11,0.22);
-  box-shadow: 0 6px 24px rgba(120,90,10,0.10), inset 0 1px 0 rgba(255,255,255,0.8);
+  background: linear-gradient(180deg, #ffffff, #FFFFFF);
+  border-color: rgba(37,99,235,0.22);
+  box-shadow: 0 6px 24px rgba(30,58,138,0.10), inset 0 1px 0 rgba(255,255,255,0.8);
 }
 body.light-mode .vh-card-word {
   color: var(--gold-dim);
-  text-shadow: 0 0 16px rgba(184,134,11,0.12);
+  text-shadow: 0 0 16px rgba(37,99,235,0.12);
 }
-body.light-mode .vh-card-lbl { color: #a87908; }
-body.light-mode .vh-card-text { color: #2a1d00; }
+body.light-mode .vh-card-lbl { color: #1D4ED8; }
+body.light-mode .vh-card-text { color: #0F172A; }
 body.light-mode .vh-card-example { color: rgba(30,20,0,0.62); }
 body.light-mode .vh-chip {
-  background: linear-gradient(180deg, #fff7e6, #fbeecb);
-  border-color: rgba(184,134,11,0.30);
+  background: linear-gradient(180deg, #EFF4FF, #DBEAFE);
+  border-color: rgba(37,99,235,0.30);
   color: var(--gold-dim);
-  box-shadow: 0 1px 2px rgba(120,90,10,0.08);
+  box-shadow: 0 1px 2px rgba(30,58,138,0.08);
 }
 body.light-mode .vh-mode-btn,
 body.light-mode .vh-nav-btn {
-  background: #fbf8f2;
-  border-color: rgba(184,134,11,0.25);
+  background: #F1F4F8;
+  border-color: rgba(37,99,235,0.25);
   color: rgba(30,20,0,0.7);
 }
 body.light-mode .vh-mode-btn.vh-active {
   border-color: var(--gold);
   color: var(--gold-dim);
-  background: linear-gradient(180deg, #fff7e6, #fbeecb);
+  background: linear-gradient(180deg, #EFF4FF, #DBEAFE);
 }
 body.light-mode .vh-nav-btn:hover:not(:disabled) {
   border-color: var(--gold);
   color: var(--gold-dim);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(184,134,11,0.12);
+  box-shadow: 0 2px 8px rgba(37,99,235,0.12);
 }
 body.light-mode .vh-meta { color: rgba(30,20,0,0.6); }
 body.light-mode .vh-progress { color: rgba(30,20,0,0.6); }
 body.light-mode .vh-close {
-  border-color: rgba(184,134,11,0.3);
+  border-color: rgba(37,99,235,0.3);
   color: var(--gold-dim);
 }
-body.light-mode .vh-close:hover { border-color: var(--gold); color: var(--gold); background: rgba(184,134,11,0.08); }
+body.light-mode .vh-close:hover { border-color: var(--gold); color: var(--gold); background: rgba(37,99,235,0.08); }
 body.light-mode .vh-reveal-btn {
-  border-color: rgba(184,134,11,0.45);
+  border-color: rgba(37,99,235,0.45);
   color: var(--gold-dim);
 }
-body.light-mode .vh-reveal-btn:hover { background: rgba(184,134,11,0.06); }
+body.light-mode .vh-reveal-btn:hover { background: rgba(37,99,235,0.06); }
 
 /* ═══ VOCAB HUB — INPUT VALIDATION ═══ */
 @keyframes vh-shake {
@@ -2885,11 +2885,11 @@ body.light-mode .vh-input-error { color: #c0392b; }
 }
 /* Light-mode contrast: track visible, fill with warm depth */
 body.light-mode .vh-progress-bar {
-  background: rgba(184,134,11,0.15);
+  background: rgba(37,99,235,0.15);
 }
 body.light-mode .vh-progress-fill {
-  background: linear-gradient(90deg, #b8860b, #d4a017);
-  box-shadow: 0 0 6px rgba(184,134,11,0.35);
+  background: linear-gradient(90deg, #2563EB, #3B82F6);
+  box-shadow: 0 0 6px rgba(37,99,235,0.35);
 }
 
 
@@ -2950,19 +2950,19 @@ body.light-mode .nj-topbar { background: linear-gradient(180deg, rgba(242,237,22
 body.light-mode .nj-brand { color: var(--gold-dim); }
 body.light-mode .nj-brand small { color: rgba(30,20,0,0.55); }
 body.light-mode .nj-num { color: var(--gold-dim); opacity: 0.28; }
-body.light-mode .nj-title { color: #1a1200; text-shadow: 0 0 18px rgba(184,134,11,0.12); }
+body.light-mode .nj-title { color: #0F172A; text-shadow: 0 0 18px rgba(37,99,235,0.12); }
 body.light-mode .nj-quote { color: #8a6408; border-left-color: var(--gold); }
 body.light-mode .nj-text { color: rgba(30,20,0,0.72); }
-body.light-mode .nj-text b { color: #1a1200; }
-body.light-mode .nj-point { color: #2a1d00; }
-body.light-mode .nj-flow-item { background: linear-gradient(180deg,#fff7e6,#fbeecb); border-color: rgba(184,134,11,0.3); color: var(--gold-dim); }
-body.light-mode .nj-module { background: linear-gradient(180deg,#fff,#fbf7ef); border-color: rgba(184,134,11,0.22); box-shadow: 0 4px 16px rgba(120,90,10,0.08); }
+body.light-mode .nj-text b { color: #0F172A; }
+body.light-mode .nj-point { color: #0F172A; }
+body.light-mode .nj-flow-item { background: linear-gradient(180deg,#EFF4FF,#DBEAFE); border-color: rgba(37,99,235,0.3); color: var(--gold-dim); }
+body.light-mode .nj-module { background: linear-gradient(180deg,#fff,#FFFFFF); border-color: rgba(37,99,235,0.22); box-shadow: 0 4px 16px rgba(30,58,138,0.08); }
 body.light-mode .nj-mod-name { color: var(--gold-dim); }
 body.light-mode .nj-mod-desc, body.light-mode .nj-mod-tag { color: rgba(30,20,0,0.62); }
-body.light-mode .nj-cta { background: linear-gradient(135deg,#c8960f,#b8860b); color: #fff; box-shadow: 0 4px 16px rgba(184,134,11,0.3); }
-body.light-mode .nj-dot { background: rgba(184,134,11,0.2); border-color: rgba(184,134,11,0.3); }
-body.light-mode .nj-close { border-color: rgba(184,134,11,0.3); color: var(--gold-dim); }
-body.light-mode .nj-chapter { border-bottom-color: rgba(184,134,11,0.15); }
+body.light-mode .nj-cta { background: linear-gradient(135deg,#2563EB,#2563EB); color: #fff; box-shadow: 0 4px 16px rgba(37,99,235,0.3); }
+body.light-mode .nj-dot { background: rgba(37,99,235,0.2); border-color: rgba(37,99,235,0.3); }
+body.light-mode .nj-close { border-color: rgba(37,99,235,0.3); color: var(--gold-dim); }
+body.light-mode .nj-chapter { border-bottom-color: rgba(37,99,235,0.15); }
 
 /* ═══════════════ ECOSYSTEM GRID (8 apps) ═══════════════ */
 .eco-subhook { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; color: var(--white-dim); max-width: 540px; margin: 0.8rem auto 2.4rem; text-align: center; }
@@ -2988,11 +2988,69 @@ body.light-mode .nj-chapter { border-bottom-color: rgba(184,134,11,0.15); }
 @media (prefers-reduced-motion: reduce) { .eco-app { transition: none; } .eco-dot-soon { animation: none; } }
 /* light mode */
 body.light-mode .eco-subhook { color: rgba(30,20,0,0.7); }
-body.light-mode .eco-app { background: linear-gradient(180deg,#fff,#fbf7ef); border-color: rgba(184,134,11,0.22); box-shadow: 0 4px 14px rgba(120,90,10,0.07); }
-body.light-mode .eco-app.eco-here { background: linear-gradient(180deg,#fff7e6,#fbeecb); border-color: var(--gold); }
+body.light-mode .eco-app { background: linear-gradient(180deg,#fff,#FFFFFF); border-color: rgba(37,99,235,0.22); box-shadow: 0 4px 14px rgba(30,58,138,0.07); }
+body.light-mode .eco-app.eco-here { background: linear-gradient(180deg,#EFF4FF,#DBEAFE); border-color: var(--gold); }
 body.light-mode .eco-app-name { color: var(--gold-dim); }
 body.light-mode .eco-app-role, body.light-mode .eco-app-hook { color: rgba(30,20,0,0.62); }
-body.light-mode .eco-app.eco-here .eco-app-hook { color: #1a1200; }
+body.light-mode .eco-app.eco-here .eco-app-hook { color: #0F172A; }
+
+/* ═══════════════ TOAST SYSTEM — namespace toast- ═══════════════ */
+#toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 360px;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--black-3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--toast-accent, #5B9DFF);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
+}
+.toast.toast-show { opacity: 1; transform: translateX(0); }
+.toast.toast-hide { opacity: 0; transform: translateX(20px); }
+.toast-icon { font-size: 15px; flex-shrink: 0; line-height: 1; }
+.toast-msg { flex: 1; }
+.toast-success { --toast-accent: #34D399; }
+.toast-success .toast-icon { color: #34D399; }
+.toast-info    { --toast-accent: #5B9DFF; }
+.toast-info .toast-icon { color: #5B9DFF; }
+.toast-warning { --toast-accent: #FBBF24; }
+.toast-warning .toast-icon { color: #FBBF24; }
+.toast-error   { --toast-accent: #F87171; }
+.toast-error .toast-icon { color: #F87171; }
+body.light-mode .toast {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  color: #0F172A;
+  box-shadow: 0 6px 20px rgba(15,23,42,0.12);
+}
+@media (max-width: 600px) {
+  #toast-container { bottom: 1.2rem; right: 50%; transform: translateX(50%); align-items: center; width: calc(100% - 2rem); max-width: 400px; }
+  .toast { width: 100%; box-sizing: border-box; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: opacity 0.2s ease; transform: none; }
+  .toast.toast-show, .toast.toast-hide { transform: none; }
+}
 
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
@@ -3252,12 +3310,49 @@ window.NIRONAIService = {
     } catch (networkErr) {
       // Network failure (offline, Vercel down, etc.) → fall back to mock
       console.warn('[NIRON] Network error: ' + networkErr.message + ' — using mock fallback.');
+      if (typeof showToast === 'function') showToast('Offline — showing sample results', 'warning');
       return { status: 'ok', output: buildMockOutput(params), saved: false, id: null };
     }
   }
 };
 
 })();
+/* ═══════════════ TOAST SYSTEM ═══════════════ */
+function showToast(message, type) {
+  type = type || 'info';
+  var durations = { success: 2500, info: 3000, warning: 4000, error: 5000 };
+  var icons = { success: '\u2713', info: '\u2139', warning: '\u26A0', error: '\u2715' };
+  var container = document.getElementById('toast-container');
+  if (!container) return;
+
+  var toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+
+  var icon = document.createElement('span');
+  icon.className = 'toast-icon';
+  icon.textContent = icons[type] || icons.info;
+
+  var msg = document.createElement('span');
+  msg.className = 'toast-msg';
+  msg.textContent = message;
+
+  toast.appendChild(icon);
+  toast.appendChild(msg);
+  container.appendChild(toast);
+
+  // trigger animation
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { toast.classList.add('toast-show'); });
+  });
+
+  var dur = durations[type] || 3000;
+  setTimeout(function() {
+    toast.classList.remove('toast-show');
+    toast.classList.add('toast-hide');
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 320);
+  }, dur);
+}
+
 </script>
 </head>
 <body>
@@ -3317,6 +3412,7 @@ window.NIRONAIService = {
 </div>
 
 <div class="copy-feedback" id="copy-feedback">COPIED ✓</div>
+<div id="toast-container"></div>
 
 <!-- ══ FOCUS EXIT BAR ══ -->
 <div class="focus-exit-bar" id="focus-exit-bar">
@@ -3969,6 +4065,7 @@ async function saveOutput() {
     btn.textContent = '✓';
     btn.classList.add('saved');
     btn.title = 'Saved ✓';
+    showToast('Output saved', 'success');
     setTimeout(() => {
       btn.disabled    = false;
       btn.textContent = '↓';
@@ -3981,6 +4078,7 @@ async function saveOutput() {
     btn.disabled    = false;
     btn.textContent = '↓';
     btn.title = 'Save failed — try again';
+    showToast('Could not save — please try again', 'error');
     setTimeout(() => { btn.title = 'Save'; }, 3000);
   }
 }
@@ -4077,6 +4175,7 @@ async function runNiron() {
 
     showLoading(false);
     renderTabContent('diagnosis', response.output);
+    showToast('Content generated', 'success');
 
     // Show save indicator if saved to Supabase
     if (response.saved) {
@@ -4086,6 +4185,7 @@ async function runNiron() {
   } catch (err) {
     console.error('[NIRON] runNiron error:', err);
     showLoading(false);
+    showToast('Generation failed — please try again', 'error');
     showContent(`<div style="padding:2rem;text-align:center;">
       <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:#c94c4c;">
         ⚠ INTELLIGENCE PROCESSING ERROR<br><br>
@@ -4930,7 +5030,7 @@ function dismissInstall() {
 
 function installApp() {
   dismissInstall();
-  alert('To install:\n\nOn mobile: tap Share \u2192 "Add to Home Screen"\nOn desktop: use browser menu \u2192 "Save as shortcut"');
+  showToast('To install: tap Share \u2192 "Add to Home Screen" (mobile) or use browser menu (desktop)', 'info');
 }
 // ───────────────────────────────────────────────
 
@@ -5487,6 +5587,43 @@ document.addEventListener('keydown', function(e) {
     if (ov && ov.classList.contains('nj-open')) NJourney.close();
   }
 });
+
+
+/* ═══════════════ TOAST SYSTEM ═══════════════ */
+function showToast(message, type) {
+  type = type || 'info';
+  var durations = { success: 2500, info: 3000, warning: 4000, error: 5000 };
+  var icons = { success: '\u2713', info: '\u2139', warning: '\u26A0', error: '\u2715' };
+  var container = document.getElementById('toast-container');
+  if (!container) return;
+
+  var toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+
+  var icon = document.createElement('span');
+  icon.className = 'toast-icon';
+  icon.textContent = icons[type] || icons.info;
+
+  var msg = document.createElement('span');
+  msg.className = 'toast-msg';
+  msg.textContent = message;
+
+  toast.appendChild(icon);
+  toast.appendChild(msg);
+  container.appendChild(toast);
+
+  // trigger animation
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { toast.classList.add('toast-show'); });
+  });
+
+  var dur = durations[type] || 3000;
+  setTimeout(function() {
+    toast.classList.remove('toast-show');
+    toast.classList.add('toast-hide');
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 320);
+  }, dur);
+}
 
 </script>
 </body>
