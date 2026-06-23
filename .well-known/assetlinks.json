@@ -1,12 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.niracademy.niron",
-      "sha256_cert_fingerprints": [
-        "REPLACE_WITH_SHA256_FROM_PLAY_CONSOLE"
-      ]
-    }
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.niracademy.niron",
+    "sha256_cert_fingerprints": ["E3:6B:0E:47:3B:11:16:10:D5:EE:55:6B:28:EE:50:23:AD:01:FD:41:3F:F3:51:DC:70:D6:D8:40:E7:79:DB:9D"]
   }
-]
+}]
