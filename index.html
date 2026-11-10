@@ -2127,6 +2127,11 @@ body.light-mode .pw-eye:hover { color: var(--gold-dim); }
 }
 
 /* ══════════════════ MOBILE HAMBURGER MENU ══════════════════ */
+.mob-theme-btn { display:none; align-items:center; justify-content:center; width:40px; height:40px; margin-left:auto; margin-right:8px; background:var(--white-faint); border:1px solid var(--border); border-radius:12px; color:var(--white-dim); cursor:pointer; font-size:16px; }
+.mob-theme-btn::before { content:'☀'; }
+body.light-mode .mob-theme-btn::before { content:'☾'; }
+.mob-theme-btn:hover { border-color:var(--gold); color:var(--gold); }
+@media (max-width: 1024px) { .mob-theme-btn { display:inline-flex; } }
 .hamburger-btn {
   display: none;
   flex-direction: column;
@@ -4155,6 +4160,7 @@ function showToast(message, type) {
       </div>
     </div>
   </div>
+  <button class="mob-theme-btn" id="mob-theme-btn" onclick="toggleTheme();updateMobThemeToggle();" aria-label="Toggle light/dark theme"></button>
   <!-- Hamburger — mobile only -->
   <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobMenu()" aria-label="Menu">
     <span class="bar"></span>
