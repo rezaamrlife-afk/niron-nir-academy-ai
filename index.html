@@ -2314,6 +2314,14 @@ body.light-mode .mob-theme-btn::before { content:'☾'; }
 #account-view.show { display: block; }
 #saved-view { display:none; max-width:760px; margin:0 auto; padding:110px 1.2rem 3rem; }
 #saved-view.show { display:block; }
+#dash-view { display:none; max-width:760px; margin:0 auto; padding:110px 1.2rem 3rem; }
+#dash-view.show { display:block; }
+.dv-total { font-size:44px; font-weight:700; color:var(--white); line-height:1; }
+.dv-bar-row { display:flex; align-items:center; gap:10px; padding:.45rem 0; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--white-dim); }
+.dv-bar-lbl { width:110px; flex-shrink:0; word-break:break-word; }
+.dv-bar { flex:1; height:8px; border-radius:4px; background:var(--white-faint); overflow:hidden; }
+.dv-bar > i { display:block; height:100%; background:var(--gold); }
+.dv-bar-n { width:32px; text-align:right; color:var(--white); }
 .sv-item { padding:.9rem 0; border-bottom:1px solid var(--border); }
 .sv-item:last-child { border-bottom:0; }
 .sv-topic { font-weight:600; color:var(--white); word-break:break-word; }
@@ -4147,9 +4155,9 @@ function showToast(message, type) {
             <span class="ud-item-icon">👤</span>My Account
           </a>
           <a class="ud-item" onclick="showSaved()">
-            <span class="ud-item-icon">🔖</span>Saved Prompts
+            <span class="ud-item-icon">🔖</span>Saved Outputs
           </a>
-          <a class="ud-item" onclick="closeDropdown()">
+          <a class="ud-item" onclick="showDashboard()">
             <span class="ud-item-icon">📊</span>Dashboard
           </a>
           <div class="ud-divider"></div>
@@ -4204,9 +4212,9 @@ function showToast(message, type) {
         <span class="mob-item-arrow">›</span>
       </button>
       <button class="mob-item" onclick="showSaved()">
-        <span class="mob-item-icon">🔖</span>Saved Prompts<span class="mob-item-arrow">›</span>
+        <span class="mob-item-icon">🔖</span>Saved Outputs<span class="mob-item-arrow">›</span>
       </button>
-      <button class="mob-item">
+      <button class="mob-item" onclick="showDashboard()">
         <span class="mob-item-icon">📊</span>Dashboard<span class="mob-item-arrow">›</span>
       </button>
       <div class="mob-divider"></div>
@@ -4628,6 +4636,15 @@ function showToast(message, type) {
     <div id="sv-list"><div class="sv-msg">Loading…</div></div>
   </div>
   <button class="acct-back-btn" onclick="hideSaved()">← Back to App</button>
+</div>
+
+<div id="dash-view">
+  <div class="acct-header">
+    <div class="acct-tag">My Library</div>
+    <h1 class="acct-title">DASHBOARD</h1>
+  </div>
+  <div id="dv-body"><div class="acct-card"><div class="sv-msg">Loading…</div></div></div>
+  <button class="acct-back-btn" onclick="hideDashboard()">← Back to App</button>
 </div>
 
 </div><!-- end page-wrap -->
@@ -5832,8 +5849,9 @@ function showAccount() {
   if (statsBar) statsBar.style.display = 'none';
   if (footer)   footer.style.display   = 'none';
 
-  // Close Saved Outputs view if open
+  // Close Saved Outputs / Dashboard views if open
   document.getElementById('saved-view').classList.remove('show');
+  document.getElementById('dash-view').classList.remove('show');
 
   // Show account view
   document.getElementById('account-view').classList.add('show');
@@ -5861,6 +5879,7 @@ async function showSaved() {
   if (statsBar) statsBar.style.display = 'none';
   if (footer)   footer.style.display   = 'none';
   document.getElementById('account-view').classList.remove('show');
+  document.getElementById('dash-view').classList.remove('show');
   document.getElementById('saved-view').classList.add('show');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -5887,6 +5906,85 @@ async function showSaved() {
     list.innerHTML = '<div class="sv-msg">Could not load saved outputs.</div>';
     if (typeof showToast === 'function') showToast('Could not load saved outputs', 'error');
   }
+}
+
+async function showDashboard() {
+  closeDropdown();
+  closeMobMenu();
+  if (!_authUser) { openAuth('login'); return; }
+
+  _ACCT_HIDE_IDS.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const statsBar = document.querySelector('.stats-bar');
+  const footer   = document.querySelector('.footer');
+  if (statsBar) statsBar.style.display = 'none';
+  if (footer)   footer.style.display   = 'none';
+  document.getElementById('account-view').classList.remove('show');
+  document.getElementById('saved-view').classList.remove('show');
+  document.getElementById('dash-view').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const body = document.getElementById('dv-body');
+  const msg = function(t) { body.innerHTML = '<div class="acct-card"><div class="sv-msg">' + t + '</div></div>'; };
+  msg('Loading…');
+  try {
+    const { data: { session } } = await window._sb.auth.getSession();
+    if (!session) { openAuth('login'); return; }
+
+    // Read-only; RLS already limits rows to the owner, user_id filter is a second guard
+    const { data, error, count } = await window._sb
+      .from('saved_outputs')
+      .select('id, topic, output_type, created_at', { count: 'exact' })
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    const rows  = data || [];
+    const total = (typeof count === 'number') ? count : rows.length;
+    if (!total) { msg('No saved outputs yet. Save a result with the ↓ button to see stats here.'); return; }
+
+    const byType = {};
+    rows.forEach(function(r) { const k = r.output_type || 'unknown'; byType[k] = (byType[k] || 0) + 1; });
+    const types = Object.keys(byType).sort(function(a, b) { return byType[b] - byType[a]; });
+    const max = byType[types[0]] || 1;
+
+    const partial = total > rows.length
+      ? '<div class="sv-meta">Type counts and recent list use the latest ' + rows.length + ' of ' + total + ' outputs.</div>' : '';
+
+    body.innerHTML =
+      '<div class="acct-card"><div class="acct-card-title">⬡ Total Saved</div><div class="dv-total">' + total + '</div>' + partial + '</div>' +
+      '<div class="acct-card"><div class="acct-card-title">⬡ By Type</div>' +
+        types.map(function(k) {
+          return '<div class="dv-bar-row"><span class="dv-bar-lbl">' + _svEsc(k) + '</span>' +
+            '<span class="dv-bar"><i style="width:' + Math.round(byType[k] / max * 100) + '%"></i></span>' +
+            '<span class="dv-bar-n">' + byType[k] + '</span></div>';
+        }).join('') + '</div>' +
+      '<div class="acct-card"><div class="acct-card-title">⬡ Recent Outputs</div>' +
+        rows.slice(0, 5).map(function(r) {
+          const d = r.created_at ? new Date(r.created_at).toLocaleDateString() : '';
+          return '<div class="sv-item"><div class="sv-topic">' + _svEsc(r.topic || '—') + '</div>' +
+            '<div class="sv-meta">' + [r.output_type, d].filter(Boolean).map(_svEsc).join(' · ') + '</div></div>';
+        }).join('') + '</div>';
+  } catch (err) {
+    console.error('[NIRON] Load dashboard error:', err);
+    msg('Could not load dashboard.');
+    if (typeof showToast === 'function') showToast('Could not load dashboard', 'error');
+  }
+}
+
+function hideDashboard() {
+  document.getElementById('dash-view').classList.remove('show');
+  _ACCT_HIDE_IDS.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  const statsBar = document.querySelector('.stats-bar');
+  const footer   = document.querySelector('.footer');
+  if (statsBar) statsBar.style.display = '';
+  if (footer)   footer.style.display   = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function hideSaved() {
