@@ -3347,6 +3347,26 @@ body:not(.light-mode) .btn-signin { color: #0A0E1A; }
   .hero-actions { justify-content: flex-start; margin-top: 1.8rem; }
 }
 @media (max-width: 768px) { .hero-headline { font-size: clamp(40px, 14vw, 60px) !important; letter-spacing: 5px !important; } .hero-tagline { font-size: 11.5px !important; } .hero-logo-wrap { margin-top: .4rem; } }
+
+.auth-close { width: 40px; height: 40px; }
+.auth-tab { min-height: 44px; }
+.vh-close { width: 40px; height: 40px; }
+.pw-eye { min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+.auth-forgot { min-height: 36px; }
+/* ═════════ RESPONSIVE AUDIT FIXES ═════════ */
+.auth-overlay { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; align-items: flex-start; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+.auth-box { margin: auto; max-width: 100%; }
+.mob-lang-btn { min-height: 40px; min-width: 40px; }
+.mob-menu-close { width: 40px; height: 40px; }
+.vh-seg-btn, .vh-mode-btn, .vh-nav-btn { min-height: 42px; }
+.nj-dot { position: relative; }
+.nj-dot::after { content: ''; position: absolute; inset: -14px; }
+.output-body { overflow-wrap: anywhere; }
+.output-body pre, .output-body table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.output-body img, .output-body svg { max-width: 100%; height: auto; }
+@media (max-width: 1024px) { .act-btn { width: 40px; height: 40px; } }
+@media (max-width: 768px) { .auth-input, .vh-input, .input-field, .input-select { font-size: 16px; } .auth-body { padding-left: 1.2rem; padding-right: 1.2rem; } }
+@media (max-height: 480px) and (orientation: landscape) { .hero { min-height: auto; padding-top: 76px; padding-bottom: 36px; } .auth-body { padding-top: 1rem; padding-bottom: 1.2rem; } .section, .main-interface { padding-top: 2.5rem; padding-bottom: 2.5rem; } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
