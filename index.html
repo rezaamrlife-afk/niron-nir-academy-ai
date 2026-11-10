@@ -3557,6 +3557,86 @@ body.light-mode #vh-overlay .vh-seg:has(.vh-seg-btn:nth-child(6)) .vh-seg-btn.vh
   #vh-overlay .vh-nav { position: sticky; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 4; padding: 8px; margin: 0 -4px; border-radius: 22px; border: 1px solid var(--border); background: color-mix(in srgb, var(--black) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: var(--sh, none); }
 }
 @media (prefers-reduced-motion: reduce) { #vh-overlay *, #vh-overlay *::before, #vh-overlay *::after { animation: none !important; transition: none !important; } }
+/* ═════════ MOBILE MENU 3.0 — modern floating glass drawer (visual only; markup & JS untouched) ═════════ */
+.hamburger-btn { position: relative; width: 44px; height: 44px; padding: 0; gap: 4.5px; align-items: flex-end; justify-content: center; padding-right: 12px; border-radius: 14px; clip-path: none; background: var(--white-faint); border: 1px solid var(--border); -webkit-tap-highlight-color: transparent; transition: transform .2s, background .3s, border-color .3s, box-shadow .3s; }
+.hamburger-btn .bar { height: 2px; border-radius: 2px; width: 20px; background: var(--white); transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .25s, width .3s, background .3s; }
+.hamburger-btn .bar:nth-child(2) { width: 13px; }
+.hamburger-btn:hover .bar:nth-child(2) { width: 20px; }
+.hamburger-btn:active { transform: scale(.92); }
+.hamburger-btn.open { background: var(--gold-glow); border-color: var(--gold); box-shadow: 0 0 0 4px var(--gold-glow); align-items: center; padding-right: 0; }
+.hamburger-btn.open .bar { width: 20px; }
+.hamburger-btn:focus-visible, .mob-menu button:focus-visible, .mob-menu a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+body:has(#mob-menu.open) { overflow: hidden; }
+.mob-menu-overlay { z-index: 9100; } .mob-menu { z-index: 9101; }
+/* page-wrap forms a stacking context, so the fixed tab bar / banner / back-to-top would draw over the drawer: fade them while it is open */
+.n-tabbar, #install-banner, .n-top { transition: opacity .25s, visibility .25s; }
+body:has(#mob-menu.open) .n-tabbar, body:has(#mob-menu.open) #install-banner, body:has(#mob-menu.open) .n-top { opacity: 0 !important; visibility: hidden; pointer-events: none; }
+.mob-menu-overlay { background: rgba(4,7,16,.55); backdrop-filter: blur(10px) saturate(1.2); -webkit-backdrop-filter: blur(10px) saturate(1.2); }
+.mob-menu-overlay.show { animation: mmFade .35s ease both; }
+@keyframes mmFade { from { opacity: 0; } }
+.mob-menu { top: max(10px, env(safe-area-inset-top)); bottom: max(10px, env(safe-area-inset-bottom)); right: -110%; width: min(350px, calc(100vw - 20px)); border: 1px solid var(--border-green); border-radius: 28px; overflow: hidden; overscroll-behavior: contain;
+  background: radial-gradient(120% 50% at 100% 0%, color-mix(in srgb, var(--gold) 16%, transparent), transparent 65%), color-mix(in srgb, var(--black-2) 90%, transparent);
+  backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4); box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); transition: right .55s cubic-bezier(.22,1,.36,1); }
+.mob-menu.open { right: 10px; }
+.mob-menu-header { padding: 16px 16px 14px 18px; border-bottom: 1px solid var(--white-faint); }
+.mob-menu-brand { gap: 12px; }
+.mob-menu-brand img { width: 42px; height: 42px; border-radius: 14px; object-fit: cover; border: 1px solid var(--border-green); filter: none; box-shadow: 0 8px 22px color-mix(in srgb, var(--gold) 28%, transparent); }
+.mob-menu-name { font-size: 16px; letter-spacing: 4px; background: linear-gradient(120deg, var(--gold), var(--green-light)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.mob-menu-close { width: 42px; height: 42px; border-radius: 50%; clip-path: none; background: var(--white-faint); font-size: 14px; transition: transform .3s cubic-bezier(.22,1,.36,1), background .2s, color .2s, border-color .2s; }
+.mob-menu-close:hover { transform: rotate(90deg); background: var(--gold-glow); }
+.mob-menu-close:active { transform: scale(.9); }
+.mob-menu-body { padding: 8px 12px 14px; overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.mob-menu-body::-webkit-scrollbar { display: none; }
+.mob-menu.open .mob-menu-body > * { animation: mmIn .5s cubic-bezier(.22,1,.36,1) both; }
+@keyframes mmIn { from { opacity: 0; transform: translateX(22px); } }
+#mob-menu.open .mob-menu-body > :nth-child(1) { animation-delay: 0.115s; }
+#mob-menu.open .mob-menu-body > :nth-child(2) { animation-delay: 0.150s; }
+#mob-menu.open .mob-menu-body > :nth-child(3) { animation-delay: 0.185s; }
+#mob-menu.open .mob-menu-body > :nth-child(4) { animation-delay: 0.220s; }
+#mob-menu.open .mob-menu-body > :nth-child(5) { animation-delay: 0.255s; }
+#mob-menu.open .mob-menu-body > :nth-child(6) { animation-delay: 0.290s; }
+#mob-menu.open .mob-menu-body > :nth-child(7) { animation-delay: 0.325s; }
+#mob-menu.open .mob-menu-body > :nth-child(8) { animation-delay: 0.360s; }
+#mob-menu.open .mob-menu-body > :nth-child(9) { animation-delay: 0.395s; }
+#mob-menu.open .mob-menu-body > :nth-child(10) { animation-delay: 0.430s; }
+#mob-menu.open .mob-menu-body > :nth-child(11) { animation-delay: 0.465s; }
+#mob-menu.open .mob-menu-body > :nth-child(12) { animation-delay: 0.500s; }
+#mob-menu.open .mob-menu-body > :nth-child(13) { animation-delay: 0.535s; }
+#mob-menu.open .mob-menu-body > :nth-child(14) { animation-delay: 0.570s; }
+#mob-menu.open .mob-menu-body > :nth-child(15) { animation-delay: 0.605s; }
+#mob-menu.open .mob-menu-body > :nth-child(16) { animation-delay: 0.640s; }
+.mob-section-lbl { display: flex; align-items: center; gap: 10px; padding: 14px 8px 6px; font-size: 10px; letter-spacing: 2.5px; color: var(--white-dim); }
+.mob-section-lbl::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+.mob-item { position: relative; min-height: 52px; margin: 3px 0; padding: 8px 12px 8px 8px; gap: 12px; border: 1px solid transparent; border-radius: 16px; font-size: 14px; font-weight: 500; letter-spacing: .2px; text-transform: none; color: var(--white); box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: background .2s, border-color .2s, transform .15s, color .2s; }
+.mob-item-icon { display: inline-grid; place-items: center; min-width: 38px; width: 38px; height: 38px; border-radius: 12px; font-size: 16px; background: var(--gold-glow); border: 1px solid var(--border-green); color: var(--gold); transition: transform .25s cubic-bezier(.22,1,.36,1), background .2s; }
+.mob-item-arrow { margin-left: auto; font-size: 20px; line-height: 1; color: var(--white-dim); transition: transform .25s, color .2s; }
+.mob-item:hover, .mob-item.active-item { color: var(--white); background: var(--white-faint); border-color: var(--border); }
+.mob-item:hover .mob-item-icon { transform: scale(1.08) rotate(-4deg); }
+.mob-item:hover .mob-item-arrow { transform: translateX(4px); color: var(--gold); }
+.mob-item:active { transform: scale(.975); }
+.mob-item.active-item { background: linear-gradient(135deg, var(--gold-glow), transparent), var(--white-faint); border-color: var(--border-green); }
+.mob-item.danger { color: #ef6b6b; }
+.mob-item.danger .mob-item-icon { background: rgba(224,85,85,.1); border-color: rgba(224,85,85,.25); color: #ef6b6b; }
+.mob-item.danger:hover { background: rgba(224,85,85,.1); border-color: rgba(224,85,85,.3); color: #ef6b6b; }
+.mob-divider { margin: 8px 8px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+.mob-toggle-row { min-height: 56px; margin: 3px 0; padding: 8px 14px 8px 8px; border-radius: 16px; background: var(--white-faint); border: 1px solid var(--border); }
+.mob-toggle-lbl { gap: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: .2px; text-transform: none; color: var(--white); }
+.mob-toggle-lbl .mob-item-icon { display: inline-grid; }
+.mob-pill-toggle { width: 52px; height: 30px; border-radius: 999px; background: var(--white-faint); border: 1px solid var(--border); -webkit-tap-highlight-color: transparent; transition: background .3s, border-color .3s, box-shadow .3s; }
+.mob-pill-toggle::after { top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); transition: left .35s cubic-bezier(.22,1,.36,1), background .3s, width .2s; }
+.mob-pill-toggle:active::after { width: 27px; }
+.mob-pill-toggle.on { background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 68%, #fff)); border-color: transparent; box-shadow: 0 6px 16px color-mix(in srgb, var(--gold) 35%, transparent); }
+.mob-pill-toggle.on::after { left: calc(100% - 25px); background: #fff; }
+.mob-pill-toggle.on:active::after { left: calc(100% - 30px); }
+.mob-lang-grid { gap: 6px; padding: 6px 0 8px; }
+.mob-lang-btn { min-height: 46px; padding: 0 4px; border-radius: 14px; clip-path: none; background: var(--white-faint); font-size: 12px; font-weight: 600; letter-spacing: 1px; -webkit-tap-highlight-color: transparent; transition: transform .15s, background .2s, border-color .2s, color .2s, box-shadow .25s; }
+.mob-lang-btn:active { transform: scale(.93); }
+.mob-lang-btn:hover { background: var(--gold-glow); }
+.mob-lang-btn.active-lang { color: var(--black); border-color: transparent; background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 68%, #fff)); box-shadow: 0 6px 16px color-mix(in srgb, var(--gold) 32%, transparent); }
+.mob-menu-footer { padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px) * 0); border-top: 1px solid var(--white-faint); background: linear-gradient(0deg, var(--gold-glow), transparent); }
+.mob-footer-txt { font-size: 10px; color: var(--white-dim); letter-spacing: 1.8px; }
+@media (prefers-reduced-motion: reduce) { .mob-menu, .mob-menu *, .mob-menu-overlay, .hamburger-btn, .hamburger-btn * { animation: none !important; transition-duration: .01ms !important; } }
+
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
