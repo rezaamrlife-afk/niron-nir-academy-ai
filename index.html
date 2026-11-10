@@ -2130,6 +2130,10 @@ body.light-mode .pw-eye:hover { color: var(--gold-dim); }
 .mob-theme-btn { display:none; align-items:center; justify-content:center; width:40px; height:40px; margin-left:auto; margin-right:8px; background:var(--white-faint); border:1px solid var(--border); border-radius:12px; color:var(--white-dim); cursor:pointer; font-size:16px; }
 .mob-theme-btn::before { content:'☀'; }
 body.light-mode .mob-theme-btn::before { content:'☾'; }
+.mob-vocab-btn::before, body.light-mode .mob-vocab-btn::before { content:none; }
+.mob-theme-btn { flex-shrink:0; width:34px; margin-right:-12px; }
+.mob-vocab-btn { margin-left:auto; }
+.mob-vocab-btn + .mob-theme-btn { margin-left:0; }
 .mob-theme-btn:hover { border-color:var(--gold); color:var(--gold); }
 @media (max-width: 1024px) { .mob-theme-btn { display:inline-flex; } }
 .hamburger-btn {
@@ -4168,6 +4172,7 @@ function showToast(message, type) {
       </div>
     </div>
   </div>
+  <button class="mob-theme-btn mob-vocab-btn" id="mob-vocab-btn" onclick="VocabHub.open()" aria-label="Vocab Hub">📚</button>
   <button class="mob-theme-btn" id="mob-theme-btn" onclick="toggleTheme();updateMobThemeToggle();" aria-label="Toggle light/dark theme"></button>
   <!-- Hamburger — mobile only -->
   <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobMenu()" aria-label="Menu">
