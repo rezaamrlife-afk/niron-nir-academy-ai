@@ -3161,6 +3161,70 @@ body.light-mode .toast {
 }
 .splash-tagline.splash-in { opacity: 1; }
 
+
+/* ═════════ NIRON UI 2.0 — additive premium layer (both themes) ═════════ */
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body { -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; font-variant-numeric: tabular-nums; }
+:root { --r: 18px; --ease: cubic-bezier(.22,.8,.3,1);
+  --sh: 0 1px 2px rgba(0,0,0,.35), 0 14px 40px rgba(0,0,0,.35); --sh-up: 0 2px 4px rgba(0,0,0,.4), 0 22px 54px rgba(91,157,255,.14);
+  --surf: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,0) 55%), var(--black-2); }
+body.light-mode { --sh: 0 1px 2px rgba(30,27,75,.05), 0 12px 32px rgba(30,27,75,.07); --sh-up: 0 2px 4px rgba(30,27,75,.06), 0 20px 44px rgba(67,56,202,.16);
+  --surf: linear-gradient(160deg, #FFFFFF, #F4F5FC); }
+/* Hero: ambient mesh, glass badge, gradient wordmark */
+.hero { background:
+  radial-gradient(70% 55% at 50% 0%, var(--gold-glow), transparent 70%),
+  radial-gradient(45% 40% at 90% 85%, var(--green-glow), transparent 70%); }
+.hero-badge { border-radius: 999px; clip-path: none; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.hero-logo { animation: nFloat 7s ease-in-out infinite; filter: drop-shadow(0 18px 30px rgba(0,0,0,.28)); }
+.hero-headline { background: linear-gradient(120deg, var(--white) 20%, var(--gold) 60%, var(--green-light) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+@keyframes nFloat { 50% { transform: translateY(-8px); } }
+/* Buttons: touch-friendly, soft corners */
+.btn-primary, .btn-ghost, .btn-signin, .generate-btn { clip-path: none; border-radius: 14px; min-height: 48px; justify-content: center; }
+.btn-primary:active, .btn-ghost:active, .generate-btn:active { transform: scale(.97); }
+/* Stats: floating glass tiles */
+.stats-bar { gap: 12px; padding: 14px; border: 0; background: transparent; }
+.stat-item { border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); box-shadow: var(--sh); }
+.stat-num { background: linear-gradient(120deg, var(--gold), var(--green-light)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+/* Sections & headings */
+.section-tag { display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border-green); background: var(--gold-glow); }
+.section-title { text-wrap: balance; }
+/* Cards: depth, rounded, lift on hover */
+.engines-grid { gap: 14px; background: transparent; border: 0; }
+.engine-card, .acct-card, .auth-box, .diag-card, .sibling-card, .eco-app, .nj-module, .i-output {
+  clip-path: none; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); box-shadow: var(--sh); }
+.engine-card, .eco-app, .sibling-card { transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s; }
+.engine-card:hover, .eco-app:hover, .sibling-card:hover { transform: translateY(-4px); box-shadow: var(--sh-up); border-color: var(--gold); }
+.engine-card::before { border-radius: var(--r) var(--r) 0 0; }
+.engine-num { opacity: .9; }
+/* Workspace: rounded inputs, segmented tabs */
+.input-select, .input-field, .auth-input { clip-path: none; border-radius: 12px; min-height: 46px; }
+.output-topbar { border-radius: var(--r) var(--r) 0 0; }
+.out-tab { border-radius: 10px; min-height: 40px; }
+.out-tab.active { box-shadow: 0 2px 10px var(--gold-glow); }
+.act-btn { border-radius: 10px; }
+/* Scroll-reveal (progressive; no JS) */
+@supports (animation-timeline: view()) {
+  .section-header, .engine-card, .stat-item, .eco-app, .sibling-card { animation: nReveal linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+  @keyframes nReveal { from { opacity: 0; transform: translateY(22px) scale(.985); } to { opacity: 1; transform: none; } }
+}
+/* App-style bottom tab bar (mobile only) */
+.n-tabbar { display: none; }
+@media (max-width: 768px) {
+  body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  .stats-bar { gap: 10px; padding: 12px; }
+  .section { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .n-tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 150; padding: 6px; border-radius: 22px;
+    background: rgba(17,23,37,.82); border: 1px solid var(--border); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); box-shadow: 0 12px 36px rgba(0,0,0,.45); }
+  body.light-mode .n-tabbar { background: rgba(255,255,255,.88); box-shadow: 0 12px 32px rgba(30,27,75,.16); }
+  .n-tabbar a { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; justify-content: center; border-radius: 16px; color: var(--white-dim); text-decoration: none; font: 600 10px/1 'Inter', sans-serif; letter-spacing: .4px; transition: background .25s, color .25s, transform .2s; }
+  .n-tabbar a svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .n-tabbar a:active { transform: scale(.94); }
+  .n-tabbar a.on { color: var(--gold); background: var(--gold-glow); }
+  #install-banner { bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important; }
+  .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+}
+body.focus-mode .n-tabbar { display: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -5789,5 +5853,14 @@ if ('serviceWorker' in navigator) {
 })();
 
 </script>
+<nav class="n-tabbar" aria-label="Primary">
+  <a href="#system" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>System</a>
+  <a href="#engines"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Engines</a>
+  <a href="#interface"><svg viewBox="0 0 24 24"><path d="M12 3l2.1 5.4L20 10l-4.5 3.6L17 20l-5-3.2L7 20l1.5-6.4L4 10l5.9-1.6z"/></svg>Intelligence</a>
+  <a href="#ecosystem"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/></svg>Ecosystem</a>
+</nav>
+<script>(function(){var l=[].slice.call(document.querySelectorAll('.n-tabbar a'));if(!('IntersectionObserver' in window))return;
+var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){l.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+x.target.id)})}})},{rootMargin:'-45% 0px -50% 0px'});
+l.forEach(function(a){var t=document.getElementById(a.getAttribute('href').slice(1));if(t)o.observe(t)})})();</script>
 </body>
 </html>
