@@ -3355,7 +3355,8 @@ body:not(.light-mode) .btn-signin { color: #0A0E1A; }
 .auth-forgot { min-height: 36px; }
 /* ═════════ RESPONSIVE AUDIT FIXES ═════════ */
 .auth-overlay { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; align-items: flex-start; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
-.auth-box { margin: auto; max-width: 100%; }
+.auth-box { margin: auto; width: 100%; max-width: 440px; }
+@media (max-width: 480px) { .auth-box { max-width: 100%; } .auth-header { padding-left: 1.2rem; padding-right: 1.2rem; } .auth-brand-sub { font-size: 9px; letter-spacing: 1.5px; } }
 .mob-lang-btn { min-height: 40px; min-width: 40px; }
 .mob-menu-close { width: 40px; height: 40px; }
 .vh-seg-btn, .vh-mode-btn, .vh-nav-btn { min-height: 42px; }
