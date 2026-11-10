@@ -3385,6 +3385,68 @@ textarea.input-field, .input-field { min-height: 170px; line-height: 1.6; paddin
 .ecosystem-section, .footer { content-visibility: auto; contain-intrinsic-size: auto 600px; }
 /* Tablet refinements */
 @media (min-width: 769px) and (max-width: 1100px) { .interface-grid { grid-template-columns: 290px 1fr; } .section { padding-left: 2rem !important; padding-right: 2rem !important; } .engines-grid { grid-template-columns: repeat(2, 1fr); } .output-topbar { flex-direction: column; align-items: stretch; gap: 8px; } .output-tabs { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; } .output-tabs::-webkit-scrollbar { display: none; } .out-tab { flex-shrink: 0; white-space: nowrap; } }
+
+/* ═════════ UX PACK: icons · map · skeleton/typing · CEFR · palette ═════════ */
+.engine-ico { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 1; width: 46px; height: 46px; padding: 11px; border-radius: 14px; color: var(--gold); background: var(--gold-glow); border: 1px solid var(--border-green); transition: transform .35s var(--ease); }
+.engine-card.green-card .engine-ico { color: var(--green-light); background: var(--green-glow); border-color: var(--green-glow); }
+.engine-card:hover .engine-ico { transform: rotate(-6deg) scale(1.08); }
+body.light-mode .engine-card.green-card .engine-ico { color: var(--green); }
+/* Architecture map */
+.n-map { max-width: 1200px; margin: 3.5rem auto 0; padding: 1.4rem; border: 1px solid var(--border); border-radius: 22px; background: var(--surf); box-shadow: var(--sh); }
+.n-map h3 { font: 700 15px 'Orbitron', monospace; letter-spacing: 3px; color: var(--gold); margin: 0 0 6px; }
+.n-map > p { font-size: 14px; color: var(--white-dim); margin: 0 0 1rem; }
+.n-map svg.n-svg { display: block; width: 100%; height: auto; }
+.n-edge { fill: none; stroke: var(--border); stroke-width: 2; transition: stroke .25s, opacity .25s; }
+.n-edge.on { stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 7 6; animation: nFlow 1.1s linear infinite; }
+@keyframes nFlow { to { stroke-dashoffset: -26; } }
+.n-node { cursor: pointer; outline: none; transition: opacity .25s; }
+.n-node rect { fill: var(--black-3); stroke: var(--border); stroke-width: 1.5; transition: stroke .25s, fill .25s; }
+.n-node use { color: var(--gold); }
+.n-node.g use { color: var(--green-light); }
+.n-node text { fill: var(--white); font: 600 11.5px 'JetBrains Mono', monospace; letter-spacing: .6px; pointer-events: none; }
+.n-node:hover rect, .n-node:focus-visible rect { stroke: var(--gold); }
+.n-node:focus-visible rect { stroke-width: 3; }
+.n-node.on rect { stroke: var(--gold); fill: var(--gold-glow); stroke-width: 2.5; }
+.n-node.rel rect { stroke: var(--gold-dim); }
+.n-map.sel .n-node:not(.on):not(.rel), .n-map.sel .n-edge:not(.on) { opacity: .3; }
+.n-detail { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 16px; border: 1px dashed var(--border-green); background: var(--gold-glow); font-size: 14px; color: var(--white-dim); min-height: 64px; }
+.n-detail b { display: block; color: var(--white); font: 700 13px 'Orbitron', monospace; letter-spacing: 2px; margin-bottom: 4px; }
+.n-detail small { display: block; margin: 4px 0 8px; font: 500 11px 'JetBrains Mono', monospace; letter-spacing: 1px; color: var(--gold); }
+.n-detail ul { margin: 0 0 10px; padding-left: 18px; columns: 2; } .n-detail li { margin: 2px 0; break-inside: avoid; }
+.n-detail button { min-height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-green); background: transparent; color: var(--gold); font: 600 11px 'Inter', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+.engine-card.n-flash { box-shadow: 0 0 0 3px var(--gold), var(--sh-up); }
+@media (max-width: 700px) { .n-map { padding: 1rem; margin-top: 2rem; } .n-detail ul { columns: 1; } .n-node text { font-size: 10.5px; } }
+/* Skeleton + typing */
+.n-skel { width: min(420px, 90%); margin: 1.4rem auto 0; display: grid; gap: 10px; }
+.n-skel i, .n-skel b { display: block; height: 12px; border-radius: 8px; background: linear-gradient(90deg, var(--white-faint) 25%, var(--gold-glow) 50%, var(--white-faint) 75%); background-size: 200% 100%; animation: nShim 1.4s linear infinite; }
+.n-skel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; } .n-skel b { height: 64px; border-radius: 14px; }
+@keyframes nShim { to { background-position: -200% 0; } }
+.n-caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: text-bottom; background: var(--gold); animation: nBlink .8s steps(1) infinite; }
+@keyframes nBlink { 50% { opacity: 0; } }
+/* CEFR badges */
+.cefr-badge[data-lvl] { --lc: #34D399; display: inline-flex; align-items: center; justify-content: center; padding: 3px 12px; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 1px; color: var(--lc) !important; -webkit-text-fill-color: var(--lc) !important; background: color-mix(in srgb, var(--lc) 14%, transparent) !important; border: 1px solid color-mix(in srgb, var(--lc) 42%, transparent); }
+.cefr-badge:empty { display: none !important; }
+.cefr-badge[data-lvl=A2] { --lc: #2DD4BF; } .cefr-badge[data-lvl=B1] { --lc: #60A5FA; } .cefr-badge[data-lvl=B2] { --lc: #818CF8; } .cefr-badge[data-lvl=C1] { --lc: #F59E0B; } .cefr-badge[data-lvl=C2] { --lc: #F472B6; }
+body.light-mode .cefr-badge[data-lvl=A1] { --lc: #047857; } body.light-mode .cefr-badge[data-lvl=A2] { --lc: #0F766E; } body.light-mode .cefr-badge[data-lvl=B1] { --lc: #1D4ED8; } body.light-mode .cefr-badge[data-lvl=B2] { --lc: #4338CA; } body.light-mode .cefr-badge[data-lvl=C1] { --lc: #B45309; } body.light-mode .cefr-badge[data-lvl=C2] { --lc: #BE185D; }
+/* Command palette + back-to-top */
+.n-cmd-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; min-width: 38px; padding: 0 11px; border-radius: 12px; background: var(--white-faint); border: 1px solid var(--border); color: var(--white-dim); font: 600 10px 'JetBrains Mono', monospace; letter-spacing: 1px; cursor: pointer; }
+.n-cmd-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; } .n-cmd-btn:hover { border-color: var(--gold); color: var(--gold); }
+.n-cmd-m { display: none; margin-left: auto; margin-right: 8px; width: 40px; height: 40px; padding: 0; }
+@media (max-width: 768px) { .n-cmd-m { display: inline-flex; } .n-cmd-btn kbd { display: none; } }
+.n-pal { position: fixed; inset: 0; z-index: 9800; display: flex; justify-content: center; align-items: flex-start; padding: max(12vh, env(safe-area-inset-top)) 14px 14px; background: rgba(5,8,18,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.n-pal[hidden] { display: none; }
+body.light-mode .n-pal { background: rgba(20,23,43,.38); }
+.n-pal-box { width: min(560px, 100%); max-height: min(70vh, 520px); display: flex; flex-direction: column; border-radius: 20px; border: 1px solid var(--border-green); background: var(--black-3); box-shadow: 0 30px 80px rgba(0,0,0,.5); overflow: hidden; animation: fadeUp .2s ease both; }
+.n-pal-box input { width: 100%; box-sizing: border-box; padding: 16px 18px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--white); font: 500 16px 'Inter', sans-serif; outline: none; }
+.n-pal-box ul { list-style: none; margin: 0; padding: 8px; overflow-y: auto; }
+.n-pal-box li { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 46px; padding: 0 14px; border-radius: 12px; color: var(--white); font: 500 14px 'Inter', sans-serif; cursor: pointer; }
+.n-pal-box li small { color: var(--white-dim); font: 500 10px 'JetBrains Mono', monospace; letter-spacing: 1px; text-transform: uppercase; }
+.n-pal-box li[aria-selected=true] { background: var(--gold-glow); color: var(--gold); }
+.n-pal-foot { padding: 9px 16px; border-top: 1px solid var(--border); font: 500 10px 'JetBrains Mono', monospace; letter-spacing: 1px; color: var(--white-dim); }
+.n-top { position: fixed; right: 16px; bottom: 24px; z-index: 140; width: 46px; height: 46px; border-radius: 14px; border: 1px solid var(--border-green); background: var(--black-3); color: var(--gold); box-shadow: var(--sh-up); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .25s, transform .25s; }
+.n-top.show { opacity: 1; transform: none; pointer-events: auto; } .n-top svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 768px) { .n-top { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); right: 14px; } }
+body.focus-mode .n-top { display: none; }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -3689,6 +3751,7 @@ function showToast(message, type) {
 </script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="ni-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></symbol><symbol id="ni-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7.7 8l8.6-1.2M7 9l4 7.2M17 8l-4 8.2"/></symbol><symbol id="ni-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H6.5A2.5 2.5 0 0 0 4 6.5v2A2.5 2.5 0 0 1 1.5 11 2.5 2.5 0 0 1 4 13.5v4A2.5 2.5 0 0 0 6.5 20H8M16 4h1.5A2.5 2.5 0 0 1 20 6.5v2a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 1-2.5 2.5H16"/></symbol><symbol id="ni-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21 19H3z"/><path d="M12 10v4M12 16.8v.2"/></symbol><symbol id="ni-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H13z"/></symbol><symbol id="ni-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M5 16l4-4 3 3 6-7"/><path d="M15 8h3v3"/></symbol></svg>
 <a class="n-skip" href="#system">Skip to content</a>
 <div class="n-progress" aria-hidden="true"></div>
 <!-- ══ NIRON SPLASH SCREEN ══ -->
@@ -4084,6 +4147,7 @@ function showToast(message, type) {
         <div class="loading-state" id="loading-state">
           <div class="loader-ring"></div>
           <div class="loader-text" id="loader-text">Processing Language Intelligence...</div>
+<div class="n-skel" aria-hidden="true"><i style="width:40%"></i><i></i><i style="width:88%"></i><i style="width:72%"></i><div class="n-skel-grid"><b></b><b></b><b></b></div></div>
         </div>
         <div class="output-content" id="output-content"></div>
       </div>
@@ -4100,7 +4164,7 @@ function showToast(message, type) {
       <p class="section-sub">Seven cognitive engines operating as a unified language intelligence system.</p>
     </div>
     <div class="engines-grid">
-      <div class="engine-card">
+      <div class="engine-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-0"/></svg>
         <div class="engine-num">01</div>
         <div class="engine-name">LEARNER PROFILING ENGINE</div>
         <div class="engine-divider"></div>
@@ -4112,7 +4176,7 @@ function showToast(message, type) {
           <li>Weakness detection layer</li>
         </ul>
       </div>
-      <div class="engine-card">
+      <div class="engine-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-1"/></svg>
         <div class="engine-num">02</div>
         <div class="engine-name">LEXICAL NETWORK ENGINE</div>
         <div class="engine-divider"></div>
@@ -4124,7 +4188,7 @@ function showToast(message, type) {
           <li>Chunks & formulaic language</li>
         </ul>
       </div>
-      <div class="engine-card">
+      <div class="engine-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-2"/></svg>
         <div class="engine-num">03</div>
         <div class="engine-name">GRAMMAR FUNCTION ENGINE</div>
         <div class="engine-divider"></div>
@@ -4136,7 +4200,7 @@ function showToast(message, type) {
           <li>IELTS writing alignment</li>
         </ul>
       </div>
-      <div class="engine-card green-card">
+      <div class="engine-card green-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-3"/></svg>
         <div class="engine-num green-num">04</div>
         <div class="engine-name green-name">ERROR PREDICTION ENGINE</div>
         <div class="engine-divider green-div"></div>
@@ -4148,7 +4212,7 @@ function showToast(message, type) {
           <li>Correction logic system</li>
         </ul>
       </div>
-      <div class="engine-card green-card">
+      <div class="engine-card green-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-4"/></svg>
         <div class="engine-num green-num">05</div>
         <div class="engine-name green-name">PRODUCTION ACTIVATION ENGINE</div>
         <div class="engine-divider green-div"></div>
@@ -4160,7 +4224,7 @@ function showToast(message, type) {
           <li>IELTS simulation tasks</li>
         </ul>
       </div>
-      <div class="engine-card green-card">
+      <div class="engine-card green-card"><svg class="engine-ico" aria-hidden="true"><use href="#ni-5"/></svg>
         <div class="engine-num green-num">06</div>
         <div class="engine-name green-name">PROGRESSION ENGINE</div>
         <div class="engine-divider green-div"></div>
@@ -6032,5 +6096,86 @@ l.forEach(function(a){var t=document.getElementById(a.getAttribute('href').slice
 document.querySelectorAll('.nj-dot').forEach(function(d,i){d.setAttribute('aria-label','Go to page '+(i+1))});
 document.querySelectorAll('.theme-toggle,.mob-pill-toggle,.hamburger-btn').forEach(function(b){b.setAttribute('aria-pressed',document.body.classList.contains('light-mode'))});}
 n();document.addEventListener('click',function(){setTimeout(n,50)});})();</script>
+<script>(function(){
+var $=function(q,r){return (r||document).querySelector(q)},$$=function(q,r){return [].slice.call((r||document).querySelectorAll(q))};
+/* 2. Architecture map — built from the existing engine cards (no invented data) */
+var cards=$$('.engine-card'),host=$('.engines-grid');
+if(cards.length&&host){
+ var E=cards.map(function(c,i){return {i:i,name:($('.engine-name',c)||{textContent:''}).textContent.trim(),items:$$('.engine-list li',c).map(function(l){return l.textContent.trim()}),el:c,g:c.classList.contains('green-card')}});
+ var ED=[[0,1],[0,2],[1,3],[2,3],[3,4],[4,5],[5,0]].filter(function(e){return e[0]<E.length&&e[1]<E.length});
+ var box=document.createElement('div');box.className='n-map';box.innerHTML='<h3>ENGINE ARCHITECTURE</h3><p>Select an engine to see how it connects to the others.</p><div id="n-map-svg"></div><div class="n-detail" id="n-detail" aria-live="polite">Tap or focus an engine node to explore its connections.</div>';
+ host.parentNode.insertBefore(box,host.nextSibling);
+ var mq=matchMedia('(max-width:700px)'),sel=-1,NS='http://www.w3.org/2000/svg';
+ var L={d:{vb:[870,440],w:168,h:64,p:[[105,215],[325,95],[325,335],[545,215],[765,95],[765,335]]},m:{vb:[360,560],w:156,h:58,p:[[180,50],[95,165],[265,165],[180,280],[180,390],[180,500]]}};
+ function mk(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+ function build(){var m=mq.matches,l=m?L.m:L.d,w=l.w,h=l.h,svg=mk('svg',{'class':'n-svg',viewBox:'0 0 '+l.vb[0]+' '+l.vb[1],role:'group','aria-label':'Engine architecture map'});
+  var eg=mk('g',{},svg),ng=mk('g',{},svg);
+  ED.forEach(function(e,k){var a=l.p[e[0]],b=l.p[e[1]],d;
+   if(e[1]<e[0]){d=m?'M'+(a[0]+w/2)+','+a[1]+' C352,'+a[1]+' 352,'+b[1]+' '+(b[0]+w/2)+','+b[1]:'M'+a[0]+','+(a[1]+h/2)+' C'+a[0]+',430 '+b[0]+',430 '+b[0]+','+(b[1]+h/2)}
+   else if(Math.abs(a[0]-b[0])<10||m){d='M'+a[0]+','+(a[1]+h/2)+' C'+a[0]+','+(a[1]+h/2+45)+' '+b[0]+','+(b[1]-h/2-45)+' '+b[0]+','+(b[1]-h/2)}
+   else{var mx=(a[0]+b[0])/2;d='M'+(a[0]+w/2)+','+a[1]+' C'+mx+','+a[1]+' '+mx+','+b[1]+' '+(b[0]-w/2)+','+b[1]}
+   mk('path',{d:d,'class':'n-edge','data-a':e[0],'data-b':e[1]},eg)});
+  E.forEach(function(n,i){var p=l.p[i],g=mk('g',{'class':'n-node'+(n.g?' g':''),tabindex:0,role:'button','aria-label':n.name,'data-i':i},ng),words=n.name.replace(/ ENGINE$/,'').split(' '),l1=words[0],l2=words.slice(1).join(' ');
+   mk('rect',{x:p[0]-w/2,y:p[1]-h/2,width:w,height:h,rx:16},g);mk('use',{href:'#ni-'+(i%6),x:p[0]-w/2+12,y:p[1]-11,width:22,height:22},g);
+   var t=mk('text',{x:p[0]-w/2+44,y:l2?p[1]-3:p[1]+4},g);t.textContent=l1;if(l2){var t2=mk('text',{x:p[0]-w/2+44,y:p[1]+14},g);t2.textContent=l2}
+   g.addEventListener('click',function(ev){ev.stopPropagation();pick(i)});g.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick(i)}})});
+  svg.addEventListener('click',function(){pick(-1)});var c=$('#n-map-svg');c.innerHTML='';c.appendChild(svg);paint()}
+ function paint(){var r=[];ED.forEach(function(e){if(e[0]===sel)r.push(e[1]);if(e[1]===sel)r.push(e[0])});
+  box.classList.toggle('sel',sel>=0);$$('.n-node',box).forEach(function(n){var i=+n.getAttribute('data-i');n.classList.toggle('on',i===sel);n.classList.toggle('rel',r.indexOf(i)>-1)});
+  $$('.n-edge',box).forEach(function(e){e.classList.toggle('on',+e.getAttribute('data-a')===sel||+e.getAttribute('data-b')===sel)})}
+ function pick(i){sel=(i===sel?-1:i);paint();var d=$('#n-detail');if(sel<0){d.textContent='Tap or focus an engine node to explore its connections.';return}
+  var n=E[sel],to=ED.filter(function(e){return e[0]===sel}).map(function(e){return E[e[1]].name}),from=ED.filter(function(e){return e[1]===sel}).map(function(e){return E[e[0]].name});
+  d.innerHTML='';var b=document.createElement('b');b.textContent=n.name;d.appendChild(b);
+  var sm=document.createElement('small');sm.textContent=(from.length?'FED BY: '+from.join(', ')+'  ':'')+(to.length?'→ FEEDS: '+to.join(', '):'');d.appendChild(sm);
+  var ul=document.createElement('ul');n.items.forEach(function(t){var li=document.createElement('li');li.textContent=t;ul.appendChild(li)});d.appendChild(ul);
+  var bt=document.createElement('button');bt.type='button';bt.textContent='Go to engine card';bt.onclick=function(){n.el.scrollIntoView({behavior:'smooth',block:'center'});n.el.classList.add('n-flash');setTimeout(function(){n.el.classList.remove('n-flash')},1600)};d.appendChild(bt)}
+ build();(mq.addEventListener?mq.addEventListener('change',function(){build()}):mq.addListener(function(){build()}));
+}
+/* 3. Typing animation for freshly generated output only (tab switches/history render instantly) */
+var _sl=window.showLoading;if(typeof _sl==='function')window.showLoading=function(s){if(s)window._nType=true;return _sl.apply(this,arguments)};
+var _sc=window.showContent;if(typeof _sc==='function')window.showContent=function(h){var r=_sc.apply(this,arguments);if(window._nType){window._nType=false;try{typeIn($('#output-content'))}catch(e){}}return r};
+function typeIn(el){if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.nodeValue.trim()?1:2}}),ns=[],n;while(n=w.nextNode())ns.push({n:n,t:n.nodeValue});
+ var total=ns.reduce(function(a,x){return a+x.t.length},0);if(!total||total>7000)return;
+ el.style.minHeight=el.offsetHeight+'px';ns.forEach(function(x){x.n.nodeValue=''});
+ var caret=document.createElement('span');caret.className='n-caret';var i=0,c=0,done=false,dur=Math.min(2.4,Math.max(.9,total/700)),per=Math.max(2,Math.ceil(total/(dur*60)));
+ function end(){if(done)return;done=true;ns.forEach(function(x){x.n.nodeValue=x.t});if(caret.parentNode)caret.parentNode.removeChild(caret);el.style.minHeight='';document.removeEventListener('pointerdown',end,true);document.removeEventListener('keydown',end,true)}
+ function step(){if(done)return;if(!el.contains(ns[0].n)){end();return}var k=per+Math.floor(Math.random()*per);
+  while(k>0&&i<ns.length){var x=ns[i],take=Math.min(k,x.t.length-c);c+=take;k-=take;x.n.nodeValue=x.t.slice(0,c);if(c>=x.t.length){i++;c=0}}
+  if(i<ns.length){var cur=ns[i].n;if(cur.parentNode)cur.parentNode.insertBefore(caret,cur.nextSibling);requestAnimationFrame(step)}else end()}
+ document.addEventListener('pointerdown',end,true);document.addEventListener('keydown',end,true);requestAnimationFrame(step)}
+/* 4. CEFR badges (output panel + Vocab Hub) */
+var LV=/^(A1|A2|B1|B2|C1|C2)$/;
+function badges(root){$$('*',root).forEach(function(e){if(e.children.length||e.classList.contains('cefr-badge')||/^(BUTTON|OPTION|SELECT|INPUT|TEXTAREA|SCRIPT|STYLE)$/.test(e.tagName)||e.closest('button,select'))return;var t=e.textContent.trim();if(LV.test(t)){e.classList.add('cefr-badge');e.setAttribute('data-lvl',t)}})}
+var q=0;function sched(r){return function(){if(q)return;q=requestAnimationFrame(function(){q=0;badges(r)})}}
+['output-content','vh-overlay'].forEach(function(id){var r=document.getElementById(id);if(r){new MutationObserver(sched(r)).observe(r,{childList:true,subtree:true});badges(r)}});
+/* 5. Command palette + back-to-top — every command triggers an existing control */
+function click(q){return function(){var e=$(q);if(e)e.click()}}function go(id){return function(){var e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth'})}}
+function shown(q){var e=$(q);return !!e&&getComputedStyle(e).display!=='none'}
+var C=[{t:'Go to System',g:'Navigate',r:go('system')},{t:'Go to Engines',g:'Navigate',r:go('engines')},{t:'Go to Intelligence workspace',g:'Navigate',r:go('interface')},{t:'Go to Ecosystem',g:'Navigate',r:go('ecosystem')},
+ {t:'Open Journey',g:'Open',r:function(){window.NJourney&&NJourney.open()}},{t:'Open Vocab Hub',g:'Open',r:function(){window.VocabHub&&VocabHub.open()}},
+ {t:'Toggle Light / Dark theme',g:'Action',r:click('#theme-toggle')},{t:'Toggle Focus mode',g:'Action',r:click('#focus-btn')},
+ {t:'Language: English',g:'Language',r:function(){window.setNavLang&&setNavLang('EN')}},{t:'Language: Persian (FA)',g:'Language',r:function(){window.setNavLang&&setNavLang('FA')}},{t:'Language: Turkish (TR)',g:'Language',r:function(){window.setNavLang&&setNavLang('TR')}},
+ {t:'Log In',g:'Account',w:function(){return shown('.btn-signin')},r:click('.btn-signin')},{t:'Back to top',g:'Navigate',r:function(){scrollTo({top:0,behavior:'smooth'})}}];
+var pal=document.createElement('div');pal.className='n-pal';pal.id='n-pal';pal.hidden=true;
+pal.innerHTML='<div class="n-pal-box" role="dialog" aria-modal="true" aria-label="Command palette"><input id="n-pal-in" role="combobox" aria-expanded="true" aria-controls="n-pal-list" aria-autocomplete="list" placeholder="Type a command…" autocomplete="off" spellcheck="false"><ul id="n-pal-list" role="listbox"></ul><div class="n-pal-foot">↑↓ navigate · Enter run · Esc close</div></div>';document.body.appendChild(pal);
+var inp=$('#n-pal-in'),ul=$('#n-pal-list'),list=[],act=0,last=null;
+function render(){var v=inp.value.trim().toLowerCase();list=C.filter(function(c){return (!c.w||c.w())&&(!v||(c.t+' '+c.g).toLowerCase().indexOf(v)>-1)});act=Math.min(act,Math.max(0,list.length-1));ul.innerHTML='';
+ list.forEach(function(c,i){var li=document.createElement('li');li.id='n-pal-'+i;li.setAttribute('role','option');li.setAttribute('aria-selected',i===act);li.innerHTML='<span></span><small></small>';li.firstChild.textContent=c.t;li.lastChild.textContent=c.g;li.onclick=function(){run(i)};ul.appendChild(li)});
+ if(!list.length){var li=document.createElement('li');li.textContent='No matching command';ul.appendChild(li)}inp.setAttribute('aria-activedescendant',list.length?'n-pal-'+act:'')}
+function open(){last=document.activeElement;pal.hidden=false;inp.value='';act=0;render();inp.focus()}
+function close(){pal.hidden=true;if(last&&last.focus)last.focus()}
+function run(i){var c=list[i];if(!c)return;pal.hidden=true;setTimeout(c.r,30)}
+inp.addEventListener('input',function(){act=0;render()});
+pal.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();close()}else if(e.key==='ArrowDown'){e.preventDefault();act=Math.min(list.length-1,act+1);render();var a=$('[aria-selected=true]',ul);a&&a.scrollIntoView({block:'nearest'})}else if(e.key==='ArrowUp'){e.preventDefault();act=Math.max(0,act-1);render();var b=$('[aria-selected=true]',ul);b&&b.scrollIntoView({block:'nearest'})}else if(e.key==='Enter'){e.preventDefault();run(act)}else if(e.key==='Tab'){e.preventDefault()}});
+pal.addEventListener('mousedown',function(e){if(e.target===pal)close()});
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();pal.hidden?open():close()}});
+var ico='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+function trig(cls,html){var b=document.createElement('button');b.type='button';b.className='n-cmd-btn '+cls;b.setAttribute('aria-label','Open command palette');b.innerHTML=html;b.onclick=open;return b}
+var ne=$('.nav-ecosystem');if(ne)ne.insertBefore(trig('',ico+'<kbd style="font:inherit">Ctrl K</kbd>'),ne.firstChild);
+var hb=$('.hamburger-btn');if(hb&&hb.parentNode)hb.parentNode.insertBefore(trig('n-cmd-m',ico),hb);
+var top=document.createElement('button');top.type='button';top.className='n-top';top.setAttribute('aria-label','Back to top');top.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';top.onclick=function(){scrollTo({top:0,behavior:'smooth'})};document.body.appendChild(top);
+function sc(){top.classList.toggle('show',scrollY>700)}sc();addEventListener('scroll',sc,{passive:true});
+})();</script>
 </body>
 </html>
