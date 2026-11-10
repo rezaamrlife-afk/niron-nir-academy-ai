@@ -3290,6 +3290,36 @@ body.focus-mode .n-tabbar { display: none; }
   .engine-card:hover { transform: none; }
   .eco-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ═════════ NIRON HEADER 3.0 ═════════ */
+.navbar { height: 64px; padding: 0 clamp(1rem, 2.6vw, 2.5rem); gap: 1.25rem; background: rgba(10,14,26,.74); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6); border-bottom: 0; box-shadow: none; transition: box-shadow .3s, background .3s, height .3s; }
+.navbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none; background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--green-light) 70%, transparent); opacity: .45; }
+.navbar.scrolled { height: 58px; box-shadow: 0 10px 34px rgba(0,0,0,.35); }
+body.light-mode .navbar.scrolled { box-shadow: 0 10px 30px rgba(30,27,75,.10); }
+.nav-brand { gap: 12px; flex-shrink: 0; }
+.nav-logo-img { height: 38px; width: 38px; box-shadow: 0 0 0 3px var(--gold-glow), 0 4px 14px rgba(0,0,0,.25); }
+.nav-name { font-size: 17px; letter-spacing: 4px; background: linear-gradient(120deg, var(--white), var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-sub { font-size: 8px; letter-spacing: 2.4px; color: var(--white-dim); margin-top: 4px; }
+body.light-mode .nav-sub { color: var(--green); }
+/* center pill navigation */
+.nav-links { gap: 2px; padding: 4px; border-radius: 999px; border: 1px solid var(--border); background: var(--white-faint); margin: 0 auto; }
+.nav-links a { font-size: 11.5px; font-weight: 600; letter-spacing: 1.4px; padding: 9px 16px; border-radius: 999px; transition: background .25s, color .25s; }
+.nav-links a::after { display: none; }
+.nav-links a:hover { transform: none; text-shadow: none; background: var(--gold-glow); color: var(--gold); }
+.nav-links a.on { background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #fff; box-shadow: 0 4px 14px var(--gold-glow); }
+/* right-hand action cluster */
+.nav-ecosystem { gap: 8px; flex-wrap: nowrap; flex-shrink: 0; }
+.nav-ecosystem > button, .nav-lang-btn, .theme-toggle, .btn-focus, .nj-trigger, .vh-trigger, .btn-signin { height: 38px; padding: 0 14px; border-radius: 12px; clip-path: none; font-size: 10.5px; letter-spacing: 1.1px; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.nav-lang-btn, .theme-toggle, .btn-focus, .nj-trigger, .vh-trigger { background: var(--white-faint); border: 1px solid var(--border); color: var(--white-dim); }
+.nav-lang-btn:hover, .theme-toggle:hover, .btn-focus:hover, .nj-trigger:hover, .vh-trigger:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.btn-signin { background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #fff; border: 0; font-weight: 700; box-shadow: 0 6px 18px var(--gold-glow); }
+body:not(.light-mode) .btn-signin { color: #0A0E1A; }
+.user-pill { border-radius: 999px; clip-path: none; height: 38px; }
+.nav-lang-dropdown, .user-dropdown { border-radius: 14px; box-shadow: var(--sh-up); }
+@media (max-width: 1400px) { #theme-label, .btn-focus { display: none; } .nav-links a { padding: 9px 12px; letter-spacing: 1.1px; } .nav-ecosystem { gap: 6px; } .nj-trigger, .vh-trigger { padding: 0 11px; } }
+@media (max-width: 1060px) { .nj-trigger, .vh-trigger { padding: 0 10px; } .nav-sub { display: none; } }
+@media (max-width: 768px) { .navbar { height: 56px; } .navbar.scrolled { height: 52px; } .nav-name { font-size: 15px; letter-spacing: 3px; }
+  .hamburger-btn { width: 40px; height: 40px; border-radius: 12px; clip-path: none; background: var(--white-faint); border: 1px solid var(--border); } .hamburger-btn:active { transform: scale(.94); } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -5926,6 +5956,10 @@ if ('serviceWorker' in navigator) {
 </nav>
 <script>(function(){var l=[].slice.call(document.querySelectorAll('.n-tabbar a'));if(!('IntersectionObserver' in window))return;
 var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){l.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+x.target.id)})}})},{rootMargin:'-45% 0px -50% 0px'});
+l.forEach(function(a){var t=document.getElementById(a.getAttribute('href').slice(1));if(t)o.observe(t)})})();</script>
+<script>(function(){var n=document.querySelector('.navbar'),l=[].slice.call(document.querySelectorAll('.nav-links a'));
+function f(){n&&n.classList.toggle('scrolled',window.scrollY>12)}f();window.addEventListener('scroll',f,{passive:true});
+if(!('IntersectionObserver' in window))return;var o=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)l.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+x.target.id)})})},{rootMargin:'-45% 0px -50% 0px'});
 l.forEach(function(a){var t=document.getElementById(a.getAttribute('href').slice(1));if(t)o.observe(t)})})();</script>
 </body>
 </html>
