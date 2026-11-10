@@ -3367,6 +3367,10 @@ body:not(.light-mode) .btn-signin { color: #0A0E1A; }
 @media (max-width: 1024px) { .act-btn { width: 40px; height: 40px; } }
 @media (max-width: 768px) { .auth-input, .vh-input, .input-field, .input-select { font-size: 16px; } .auth-body { padding-left: 1.2rem; padding-right: 1.2rem; } }
 @media (max-height: 480px) and (orientation: landscape) { .hero { min-height: auto; padding-top: 76px; padding-bottom: 36px; } .auth-body { padding-top: 1rem; padding-bottom: 1.2rem; } .section, .main-interface { padding-top: 2.5rem; padding-bottom: 2.5rem; } }
+
+/* Input box: larger writing area */
+textarea.input-field, .input-field { min-height: 170px; line-height: 1.6; padding: 14px 16px; }
+@media (max-width: 768px) { textarea.input-field, .input-field { min-height: 150px; } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
