@@ -4239,6 +4239,62 @@ body.light-mode .nd-entry { background: #fff; color: #14172B; } body.light-mode 
 body.light-mode .nd-hw, body.light-mode .nd-pos, body.light-mode .nd-ex b, body.light-mode .nd-pat-ex b, body.light-mode .nd-pat-p, body.light-mode .nd-toggle, body.light-mode .nd-lv { color: #3730A3; } body.light-mode .nd-num { background: #3730A3; color: #fff; }
 body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, body.light-mode .nd-foot, body.light-mode .nd-syl, body.light-mode .nd-note, body.light-mode .nd-err small, body.light-mode .nd-fam i, body.light-mode .nd-rel b, body.light-mode .nd-reg { color: rgba(20,23,43,.68); } body.light-mode .nd-tr { color: #5b4b16; }
 @media (max-width: 480px) { .nd-entry { padding: 16px 12px 12px; } .nd-sense { grid-template-columns: 22px minmax(0, 1fr); gap: 4px 8px; } .nd-toggle { width: 100%; justify-content: center; } }
+
+/* ═════ NIRON LAB — mobile layout fixes (phones/tablets only; desktop untouched) ═════ */
+@media (max-width: 767px) {
+  /* bottom tab bar: equal columns that can never be widened by their labels */
+  .lab-tabs { grid-template-columns: repeat(6, minmax(0, 1fr)); left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); max-width: 100vw; box-sizing: border-box; }
+  .lab-tab { min-width: 0; padding-left: 1px; padding-right: 1px; justify-content: center; overflow: visible; }
+  .lab-tab span { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
+  .lab-tab i { display: block; }
+  .lab-badge { top: 2px; right: 6px; margin-right: 0; }
+  /* keep content clear of the fixed tab bar incl. home-indicator area */
+  .lab-shell { padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; width: 100%; }
+  #lab-view { min-width: 0; }
+  #lab-view img, #lab-view svg, #lab-view textarea, #lab-view input { max-width: 100%; }
+  .lab-p, .lab-stage-card, .lab-kpi, .lab-plan, .lab-fb, .lab-flag, .lab-rel li { min-width: 0; overflow-wrap: anywhere; }
+  .lab-plan > div, .lab-plan > span:not(.lab-x) { min-width: 0; }
+  .lab-plan { gap: 12px; padding: 12px 14px; }
+  .lab-kpi span { letter-spacing: .06em; overflow-wrap: anywhere; }
+  .lab-row > .lab-btn:not(.sm) { flex: 1 1 140px; }
+  .lab-add { gap: 8px; } .lab-add > * { min-width: 0; }
+  .lab-add button { flex: 1 1 auto; }
+  .lab-seg { max-width: 100%; }
+  .lab-seg button { flex: 1 1 auto; padding: 0 10px; }
+  .lab-net { max-width: 100%; }
+  .lab-legend { gap: 4px 12px; }
+  .lab-opt { min-width: 0; overflow-wrap: anywhere; }
+  .lab-opt kbd { flex: 0 0 auto; }
+  .lab-land-in, .lab-cards, .lab-flow { min-width: 0; }
+  .lab-card { min-width: 0; overflow-wrap: anywhere; }
+}
+@media (max-width: 479px) {
+  /* header: logo + title + close button fit on one row at 320–479px */
+  .lab-top { gap: 10px; }
+  .lab-brand { flex: 1 1 auto; gap: 10px; }
+  .lab-brand > div { min-width: 0; }
+  .lab-logo { width: 38px; height: 38px; border-radius: 12px; font-size: 18px; }
+  .lab-brand b { font-size: 14px; letter-spacing: .16em; white-space: nowrap; }
+  .lab-brand small { white-space: normal; font-size: 9px; letter-spacing: .04em; line-height: 1.35; overflow-wrap: anywhere; }
+  .lab-x { flex: 0 0 auto; width: 40px; height: 40px; }
+  #lab-view { padding-top: 1.2rem; }
+  .lab-stage-card { padding: 1.25rem 1rem; border-radius: 22px; }
+  .lab-p { padding: 1rem .9rem; border-radius: 18px; }
+  .lab-grades { gap: 6px; }
+  .lab-kpis { gap: 8px; }
+  .lab-kpi { padding: 12px 12px 10px; }
+  .lab-in.inline { width: 100%; margin: 6px 0; }
+  .lab-land-cta > * { flex: 1 1 100%; justify-content: center; }
+  .lab-flow li small { max-width: 55%; }
+}
+@media (max-width: 360px) {
+  .lab-tabs { left: 6px; right: 6px; padding: 4px; gap: 1px; }
+  .lab-tab { font-size: 9px; letter-spacing: -.01em; padding-top: 6px; }
+  .lab-tab i { font-size: 16px; }
+  .lab-brand small { font-size: 8.5px; letter-spacing: .02em; }
+  .lab-shell { padding-left: .9rem; padding-right: .9rem; }
+  .lab-top { margin-left: -.9rem; margin-right: -.9rem; padding-left: .9rem; padding-right: .9rem; }
+}
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
