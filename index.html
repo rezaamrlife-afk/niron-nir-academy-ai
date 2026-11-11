@@ -4232,6 +4232,7 @@ body{font-family:var(--f-sans)}
 .nd-err small { display: block; margin-top: 4px; color: var(--white-dim); font-size: 12.5px; }
 .nd-foot { margin-top: 12px; font: 500 11px/1.5 var(--f-sans); color: var(--white-dim); }
 .nd-note { padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--border); font: 500 13px/1.6 var(--f-sans); color: var(--white-dim); margin-bottom: 12px; }
+.nd-sg { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--gold-dim, var(--border)); background: transparent; color: var(--gold); font: 700 13px var(--f-sans); cursor: pointer; } .nd-sg:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .nd-retry { margin-left: 8px; min-height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--gold-dim, var(--border)); background: transparent; color: var(--gold); font: 700 11px var(--f-sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .nd-load { display: grid; gap: 10px; padding: 18px; border: 1px solid var(--border); border-radius: 18px; }
 .nd-load i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--border), transparent, var(--border)); background-size: 200% 100%; animation: ndSh 1.2s linear infinite; }
@@ -4239,7 +4240,7 @@ body{font-family:var(--f-sans)}
 @keyframes ndSh { to { background-position: -200% 0; } }
 body.light-mode .nd-entry { background: #fff; color: #14172B; } body.light-mode .nd-def, body.light-mode .nd-ex li, body.light-mode .nd-ipa, body.light-mode .nd-rel, body.light-mode .nd-spk { color: #14172B; }
 body.light-mode .nd-hw, body.light-mode .nd-pos, body.light-mode .nd-ex b, body.light-mode .nd-pat-ex b, body.light-mode .nd-pat-p, body.light-mode .nd-toggle, body.light-mode .nd-lv { color: #3730A3; } body.light-mode .nd-num { background: #3730A3; color: #fff; }
-body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, body.light-mode .nd-foot, body.light-mode .nd-syl, body.light-mode .nd-note, body.light-mode .nd-err small, body.light-mode .nd-fam i, body.light-mode .nd-rel b, body.light-mode .nd-reg { color: rgba(20,23,43,.68); } body.light-mode .nd-tr, body.light-mode .nd-tx { color: #5b4b16; } body.light-mode .nd-tx-err { color: rgba(20,23,43,.68); }
+body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, body.light-mode .nd-foot, body.light-mode .nd-syl, body.light-mode .nd-note, body.light-mode .nd-err small, body.light-mode .nd-fam i, body.light-mode .nd-rel b, body.light-mode .nd-reg { color: rgba(20,23,43,.68); } body.light-mode .nd-sg { color: #3730A3; border-color: #3730A3; } body.light-mode .nd-tr, body.light-mode .nd-tx { color: #5b4b16; } body.light-mode .nd-tx-err { color: rgba(20,23,43,.68); }
 @media (max-width: 480px) { .nd-entry { padding: 16px 12px 12px; } .nd-sense { grid-template-columns: 22px minmax(0, 1fr); gap: 4px 8px; } .nd-toggle { width: 100%; justify-content: center; } }
 
 /* ═════ NIRON LAB — mobile layout fixes (phones/tablets only; desktop untouched) ═════ */
@@ -7625,7 +7626,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* NIRON Learner's Dictionary — inline entry for Hub cards and Core definitions.
    Data: POST /api/dictionary (new, standalone). If it is unavailable, a basic entry is built from the card's own data. */
 var NIRONDict = (function () {
-  var KEY = 'niron_dict_v2', MAX = 60, openKeys = {}, busy = {};
+  var KEY = 'niron_dict_v2', MAX = 60, openKeys = {}, busy = {}, sugg = {};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function store() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
   function cget(k) { var c = store()[k]; return c && c.e ? c.e : null; }
@@ -7652,6 +7653,8 @@ var NIRONDict = (function () {
       '<button type="button" class="nd-toggle" aria-expanded="false" onclick="NIRONDict.toggle(this)"><span aria-hidden="true">📖</span> <span class="nd-tl">Full dictionary entry</span></button>' +
       '<div class="nd-panel" role="region" aria-label="Dictionary entry" hidden></div></div>';
   }
+  // The word actually looked up: the card's own word, or a suggestion the user picked for a misspelled one.
+  function effSeed(el) { var sd = seedOf(el); if (sd && el.__pick) sd = Object.assign({}, sd, { w: el.__pick }); return sd; }
   function seedOf(el) { try { return JSON.parse(decodeURIComponent(el.getAttribute('data-seed'))); } catch (e) { return null; } }
 
   var REASON = { missing: 'The dictionary service was not found (404). Deploy api/dictionary.js next to vocab.js.', server: 'The dictionary service had a temporary problem.', network: 'Could not reach the dictionary service. Check your connection.', bad: 'The dictionary service sent an unreadable answer.', timeout: 'The dictionary service took too long to answer.' };
@@ -7677,6 +7680,12 @@ var NIRONDict = (function () {
   }
 
   function view(e) {
+    if (e.suggest) {
+      var sg = e.suggestions || [];
+      return '<div class="nd-note" role="status">' + (sg.length
+        ? '“' + esc(e.word) + '” isn’t a word I can find. Did you mean:<div class="nd-chips" style="margin-top:8px">' + sg.map(function (x) { return '<button type="button" class="nd-sg" data-w="' + esc(x) + '" onclick="NIRONDict.pick(this)">' + esc(x) + '</button>'; }).join('') + '</div>'
+        : '“' + esc(e.word) + '” isn’t a word I can find, and there is no close match. Check the spelling.') + '</div>';
+    }
     if (e.fallback) return '<div class="nd-note" role="status">' + esc(e.reason) + '<button type="button" class="nd-retry" onclick="NIRONDict.retry(this)">Retry</button></div>';
     var h = '<article class="nd-entry" lang="en">';
     h += '<header><h3 class="nd-hw">' + esc(e.headword) + '</h3>';
@@ -7708,16 +7717,17 @@ var NIRONDict = (function () {
   function paint(sl, html) { var p = sl.querySelector('.nd-panel'); if (p) p.innerHTML = html; }
   function safeView(e) { try { return view(e); } catch (x) { return view(fallbackEntry('bad')); } }
   function load(sl, force) {
-    var sd = seedOf(sl); if (!sd) return;
+    var sd = effSeed(sl); if (!sd) return;
     var k = ckey(sd.w, sd.l), hit = force ? null : cget(k);
     if (hit) { paint(sl, safeView(hit)); return; }
+    if (!force && sugg[k]) { paint(sl, safeView(sugg[k])); return; }
     if (busy[k]) { paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>'); return; }
     busy[k] = true;
     paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>');
     var done = function (entry, ok) {
-      busy[k] = false; if (ok) cset(k, entry);
+      busy[k] = false; if (ok) cset(k, entry); if (entry && entry.suggest) sugg[k] = entry;
       var live = document.querySelectorAll('.nd-slot');
-      for (var i = 0; i < live.length; i++) { var o = seedOf(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); }
+      for (var i = 0; i < live.length; i++) { var o = effSeed(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); }
     };
     var body = JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang() });
     function attempt(n) {
@@ -7728,6 +7738,8 @@ var NIRONDict = (function () {
           clearTimeout(to); var j = null; try { j = JSON.parse(t); } catch (x) {}
           var e = j && j.status === 'ok' ? clean(j.entry) : null;
           if (e) return done(e, true);
+          // Not a real word: no entry is made; offer up to 3 suggestions instead.
+          if (j && j.status === 'suggest') return done({ suggest: true, word: sd.w, suggestions: A(j.suggestions).slice(0, 3) }, false);
           var why = st === 404 || st === 405 ? 'missing' : (st >= 500 || st === 429 ? 'server' : 'bad');
           if (n < 1 && why === 'server') return setTimeout(function () { attempt(n + 1); }, 1200);
           if (window.console) console.warn('[NIRONDict]', sd.w, 'HTTP', st, j && j.stage ? 'stage=' + j.stage : '', j && j.error ? j.error : t.slice(0, 120));
@@ -7750,12 +7762,13 @@ var NIRONDict = (function () {
   function toggle(btn) { var sl = btn.closest('.nd-slot'); setOpen(sl, sl.querySelector('.nd-panel').hidden); }
   function say(btn) { if (window.speakWord) speakWord(encodeURIComponent(btn.getAttribute('data-w') || '')); }
   function retry(btn) { var sl = btn.closest('.nd-slot'); load(sl, true); }
+  function pick(btn) { var sl = btn.closest('.nd-slot'), w = btn.getAttribute('data-w'); if (!sl || !w) return; sl.__pick = w; load(sl); }
   function init(root) {
     var list = (root.matches && root.matches('.nd-slot')) ? [root] : (root.querySelectorAll ? root.querySelectorAll('.nd-slot') : []);
     for (var i = 0; i < list.length; i++) { var sl = list[i]; if (sl.__nd) continue; sl.__nd = 1; var sd = seedOf(sl); if (sd && (sl.getAttribute('data-auto') === '1' || openKeys[sd.w.toLowerCase()])) setOpen(sl, true); }
   }
   new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) init(n); }); }); }).observe(document.body, { childList: true, subtree: true });
-  return { slot: slot, toggle: toggle, retry: retry, say: say, _view: view };
+  return { slot: slot, toggle: toggle, retry: retry, pick: pick, say: say, _view: view };
 })();
 </script>
 </body>
