@@ -1,4 +1,3 @@
-
 /**
  * NIRON — Learner's Dictionary API Proxy
  * Route: POST /api/dictionary
@@ -6,19 +5,31 @@
  * Independent module. Does NOT touch /api/grok or /api/vocab.
  *
  * Receives: { word, cefr_level, mother_language }
- * Returns: { status:'ok', entry: {...} }
+ *   word:            English word or phrase (max 60 chars)
+ *   cefr_level:      'A1'..'C2'  (default 'B1') — controls definition difficulty
+ *   mother_language: null | 'fa' | 'tr'
  *
- * API key: process.env.GROQ_API_KEY
+ * Returns: { status:'ok', entry: {
+ *   headword, syllables, ipa_uk, ipa_us, cefr, register,
+ *   senses: [ { pos, grammar, cefr, definition, examples[], patterns[{pattern,example}],
+ *               collocations[], synonyms[], antonyms[], translation? } ],
+ *   word_family: [ { word, pos } ],
+ *   usage_notes: [ { wrong, right, note } ]
+ * } }
+ *
+ * API key is read from process.env.GROQ_API_KEY — never exposed to the browser.
  */
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'openai/gpt-oss-120b';
-const CEFR = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const GROQ_MODEL    = 'openai/gpt-oss-120b';
+const CEFR          = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-const BUDGET_MS = 8500;
+// No custom maxDuration: the function runs under the platform default and enforces its own deadline instead.
+// BUDGET_MS is the total wall-clock time for the whole request (every Groq attempt together), measured from handler start.
+const BUDGET_MS    = 8500;
+const MIN_RETRY_MS = 2500;   // never start another Groq attempt with less than this left on the clock
 
 // ── Prompts ──────────────────────────────────────────────────────────────────
-
 function buildSystemPrompt() {
   return `You are the NIRON Learner's Dictionary, an English dictionary for learners (CEFR A1–C2, IELTS).
 You write ORIGINAL dictionary entries as STRICT JSON. Never copy or closely paraphrase any published dictionary.
@@ -42,12 +53,10 @@ LEXICOGRAPHY RULES:
 }
 
 function buildUserPrompt(word, cefr, motherLang, compact) {
-  const hasLang = motherLang === 'fa' || motherLang === 'tr';
+  const hasLang  = motherLang === 'fa' || motherLang === 'tr';
   const langName = motherLang === 'fa' ? 'Persian (Farsi)' : motherLang === 'tr' ? 'Turkish' : '';
-  const trField = hasLang
-    ? `,\n      "translation": "<short ${langName} equivalent or explanation of this sense>"`
-    : '';
-  const trNote = hasLang
+  const trField  = hasLang ? `,\n      "translation": "<short ${langName} equivalent or explanation of this sense>"` : '';
+  const trNote   = hasLang
     ? `Mother Language Mode is ON (${langName}). Add "translation" to every sense only.`
     : 'Mother Language Mode is OFF. Do NOT include any translation field.';
 
@@ -84,82 +93,44 @@ Return ONLY this JSON object:
 }
 
 // ── JSON extractor ───────────────────────────────────────────────────────────
-
 function extractJSON(text) {
-  try {
-    return JSON.parse(text.trim());
-  } catch (_) {}
-
+  try { return JSON.parse(text.trim()); } catch (_) {}
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fenced) {
-    try {
-      return JSON.parse(fenced[1].trim());
-    } catch (_) {}
+    try { return JSON.parse(fenced[1].trim()); } catch (_) {}
   }
-
   const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-
+  const end   = text.lastIndexOf('}');
   if (start !== -1 && end !== -1) {
-    try {
-      return JSON.parse(text.slice(start, end + 1));
-    } catch (_) {}
+    try { return JSON.parse(text.slice(start, end + 1)); } catch (_) {}
   }
-
   return null;
 }
 
-// ── Sanitisation ─────────────────────────────────────────────────────────────
+// ── Sanitise: clamp sizes, coerce types, de-duplicate — the browser can trust it ─
+const str  = (v, n) => (typeof v === 'string' ? v.trim().replace(/\s+/g, ' ').slice(0, n) : '');
+const lvl  = (v, fallback) => (CEFR.includes(String(v).toUpperCase().trim()) ? String(v).toUpperCase().trim() : fallback);
+const norm = (v) => String(v).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
-const str = (v, n) =>
-  typeof v === 'string'
-    ? v.trim().replace(/\s+/g, ' ').slice(0, n)
-    : '';
-
-const lvl = (v, fallback) =>
-  CEFR.includes(String(v).toUpperCase().trim())
-    ? String(v).toUpperCase().trim()
-    : fallback;
-
-const norm = (v) =>
-  String(v).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-
+// Strings only, trimmed, case-insensitively unique; `seen` lets callers dedupe across senses.
 function uniq(v, max, n, seen, banned) {
   const out = [];
-
   (Array.isArray(v) ? v : []).forEach(x => {
-    const t = str(x, n);
-    const k = norm(t);
-
-    if (
-      !t ||
-      !k ||
-      out.length >= max ||
-      (seen && seen.has(k)) ||
-      (banned && banned.has(k)) ||
-      out.some(o => norm(o) === k)
-    ) return;
-
-    out.push(t);
-    if (seen) seen.add(k);
+    const t = str(x, n), k = norm(t);
+    if (!t || !k || out.length >= max || (seen && seen.has(k)) || (banned && banned.has(k)) || out.some(o => norm(o) === k)) return;
+    out.push(t); if (seen) seen.add(k);
   });
-
   return out;
 }
-
-const asObj = (x, key) =>
-  typeof x === 'string'
-    ? { [key]: x }
-    : (x && typeof x === 'object' ? x : {});
+// Accept objects or bare strings ("sustain + noun") for {pattern,example}-style items.
+const asObj = (x, key) => (typeof x === 'string' ? { [key]: x } : (x && typeof x === 'object' ? x : {}));
 
 function sanitiseEntry(raw, word, cefr, hasLang) {
+  // Models sometimes wrap the object: { entry: {...} } / { dictionary_entry: {...} }.
   if (raw && typeof raw === 'object' && !Array.isArray(raw.senses)) {
     raw = raw.entry || raw.dictionary_entry || raw.result || raw;
   }
-
-  if (!raw || typeof raw !== 'object' || !Array.isArray(raw.senses)) {
-    return null;
-  }
+  if (!raw || typeof raw !== 'object' || !Array.isArray(raw.senses)) return null;
 
   const headword = str(raw.headword, 80) || word;
   const self = new Set([norm(headword), norm(word)]);
@@ -167,362 +138,170 @@ function sanitiseEntry(raw, word, cefr, hasLang) {
 
   const senses = raw.senses.slice(0, 4).map(s => {
     if (!s || typeof s !== 'object') return null;
-
     const patSeen = new Set();
-
     const sense = {
-      pos: str(s.pos, 30),
-      grammar: str(s.grammar, 40),
-      cefr: lvl(s.cefr, ''),
+      pos:        str(s.pos, 30),
+      grammar:    str(s.grammar, 40),
+      cefr:       lvl(s.cefr, ''),
       definition: str(s.definition, 400),
-      examples: uniq(s.examples, 3, 300, exSeen),
-
-      patterns: (Array.isArray(s.patterns) ? s.patterns : [])
-        .map(p => asObj(p, 'pattern'))
-        .map(p => ({
-          pattern: str(p.pattern, 80),
-          example: str(p.example, 300),
-        }))
-        .filter(p =>
-          p.pattern &&
-          !patSeen.has(norm(p.pattern)) &&
-          patSeen.add(norm(p.pattern))
-        )
-        .slice(0, 3),
-
+      examples:   uniq(s.examples, 3, 300, exSeen),
+      patterns:   (Array.isArray(s.patterns) ? s.patterns : []).map(p => asObj(p, 'pattern')).map(p => ({
+                    pattern: str(p.pattern, 80), example: str(p.example, 300),
+                  })).filter(p => p.pattern && !patSeen.has(norm(p.pattern)) && patSeen.add(norm(p.pattern))).slice(0, 3),
       collocations: uniq(s.collocations, 6, 60),
-      synonyms: uniq(s.synonyms, 5, 40, null, self),
+      synonyms:     uniq(s.synonyms, 5, 40, null, self),
     };
-
     const synKeys = new Set(sense.synonyms.map(norm));
-
-    sense.antonyms = uniq(
-      s.antonyms,
-      4,
-      40,
-      null,
-      new Set([...self, ...synKeys])
-    );
-
-    if (hasLang) {
-      sense.translation = str(s.translation, 200);
-    }
-
+    sense.antonyms = uniq(s.antonyms, 4, 40, null, new Set([...self, ...synKeys]));   // an antonym is never a synonym
+    if (hasLang) sense.translation = str(s.translation, 200);
     return sense.definition ? sense : null;
   }).filter(Boolean);
 
   if (!senses.length) return null;
 
-  const register = ['formal', 'neutral', 'informal'].includes(
-    String(raw.register).toLowerCase()
-  )
-    ? String(raw.register).toLowerCase()
-    : 'neutral';
+  const register = ['formal', 'neutral', 'informal'].includes(String(raw.register).toLowerCase())
+    ? String(raw.register).toLowerCase() : 'neutral';
 
   const famSeen = new Set(self);
-
-  const word_family = (
-    Array.isArray(raw.word_family) ? raw.word_family : []
-  )
-    .map(f => asObj(f, 'word'))
-    .map(f => ({
-      word: str(f.word, 50),
-      pos: str(f.pos, 30),
-    }))
-    .filter(f =>
-      f.word &&
-      !famSeen.has(norm(f.word)) &&
-      famSeen.add(norm(f.word))
-    )
-    .slice(0, 8);
+  const word_family = (Array.isArray(raw.word_family) ? raw.word_family : []).map(f => asObj(f, 'word')).map(f => ({
+    word: str(f.word, 50), pos: str(f.pos, 30),
+  })).filter(f => f.word && !famSeen.has(norm(f.word)) && famSeen.add(norm(f.word))).slice(0, 8);
 
   const noteSeen = new Set();
-
-  const usage_notes = (
-    Array.isArray(raw.usage_notes) ? raw.usage_notes : []
-  )
-    .map(u => asObj(u, 'note'))
-    .map(u => ({
-      wrong: str(u.wrong, 300),
-      right: str(u.right, 300),
-      note: str(u.note, 300),
-    }))
-    .filter(u =>
-      u.wrong &&
-      u.right &&
-      norm(u.wrong) !== norm(u.right) &&
-      !noteSeen.has(norm(u.wrong)) &&
-      noteSeen.add(norm(u.wrong))
-    )
-    .slice(0, 3);
+  const usage_notes = (Array.isArray(raw.usage_notes) ? raw.usage_notes : []).map(u => asObj(u, 'note')).map(u => ({
+    wrong: str(u.wrong, 300), right: str(u.right, 300), note: str(u.note, 300),
+  })).filter(u => u.wrong && u.right && norm(u.wrong) !== norm(u.right) && !noteSeen.has(norm(u.wrong)) && noteSeen.add(norm(u.wrong))).slice(0, 3);
 
   return {
-    headword,
-    syllables: str(raw.syllables, 80),
-    ipa_uk: str(raw.ipa_uk, 80),
-    ipa_us: str(raw.ipa_us, 80),
-    cefr: lvl(raw.cefr, cefr),
-    register,
-    senses,
-    word_family,
-    usage_notes,
+    headword, syllables: str(raw.syllables, 80), ipa_uk: str(raw.ipa_uk, 80), ipa_us: str(raw.ipa_us, 80),
+    cefr: lvl(raw.cefr, cefr), register, senses, word_family, usage_notes,
   };
 }
 
-// ── Groq call ────────────────────────────────────────────────────────────────
+// ── Groq call (returns a plain result object; never throws) ──────────────────
+// `deadline` is an absolute timestamp (ms). The request is aborted when it passes, which also
+// covers a response body that stalls half-way, and the timer is always cleared.
+async function callGroq(apiKey, messages, { maxTokens, reasoning }, deadline) {
+  const left = deadline - Date.now();
+  if (left < 250) return { ok: false, stage: 'timeout', error: 'Time budget used up before the Groq request could start.' };
 
-async function callGroq(apiKey, messages, {
-  maxTokens,
-  reasoning,
-  timeoutMs,
-}) {
   const payload = {
-    model: GROQ_MODEL,
-    temperature: 0.3,
-    max_tokens: maxTokens,
-    response_format: { type: 'json_object' },
-    messages,
+    model: GROQ_MODEL, temperature: 0.3, max_tokens: maxTokens,
+    response_format: { type: 'json_object' }, messages,
   };
+  // gpt-oss is a reasoning model: reasoning tokens share max_tokens with the answer.
+  // "low" keeps the budget for the JSON itself and cuts latency.
+  if (reasoning) payload.reasoning_effort = 'low';
 
-  if (reasoning) {
-    payload.reasoning_effort = 'low';
-  }
-
-  const ctl = new AbortController();
-
-  const timer = setTimeout(
-    () => ctl.abort(),
-    Math.max(1, timeoutMs)
-  );
-
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), left);
+  const aborted = (e) => !!e && (e.name === 'AbortError' || e.name === 'TimeoutError');
   try {
-    const r = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-      signal: ctl.signal,
-    });
-
+    let r;
+    try {
+      r = await fetch(GROQ_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal,
+      });
+    } catch (e) {
+      if (aborted(e)) return { ok: false, stage: 'timeout', error: 'Groq did not answer within the time budget.' };
+      return { ok: false, stage: 'network', error: `Network error reaching Groq: ${e.message}` };
+    }
     if (!r.ok) {
       const t = await r.text().catch(() => '');
-
-      return {
-        ok: false,
-        stage: 'groq_http',
-        status: r.status,
-        error: `Groq API returned ${r.status}: ${t.slice(0, 200)}`,
-      };
+      return { ok: false, stage: 'groq_http', status: r.status, error: `Groq API returned ${r.status}: ${t.slice(0, 200)}` };
     }
-
-    const d = await r.json();
+    let d;
+    try { d = await r.json(); } catch (e) {
+      if (aborted(e)) return { ok: false, stage: 'timeout', error: 'Groq response did not finish within the time budget.' };
+      return { ok: false, stage: 'groq_json', error: 'Failed to parse Groq API response.' };
+    }
     const choice = d?.choices?.[0];
-
-    return {
-      ok: true,
-      content: choice?.message?.content || '',
-      finish: choice?.finish_reason || '',
-    };
-
-  } catch (e) {
-    return ctl.signal.aborted
-      ? {
-          ok: false,
-          stage: 'timeout',
-          error: 'Groq took too long to answer.',
-        }
-      : {
-          ok: false,
-          stage: 'network',
-          error: `Network error reaching Groq: ${e.message}`,
-        };
-
+    return { ok: true, content: choice?.message?.content || '', finish: choice?.finish_reason || '' };
   } finally {
     clearTimeout(timer);
   }
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
+async function handle(req, res) {
+  const t0       = Date.now();
+  const deadline = t0 + BUDGET_MS;
 
-export default async function handler(req, res) {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    req.headers.origin || '*'
-  );
+  res.setHeader('Access-Control-Allow-Origin',  req.headers.origin || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'POST, OPTIONS'
-  );
-
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type'
-  );
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({
-      status: 'error',
-      error: 'Method not allowed',
-    });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST')    return res.status(405).json({ status: 'error', error: 'Method not allowed' });
 
   const apiKey = process.env.GROQ_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({
-      status: 'error',
-      stage: 'config',
-      error: 'GROQ_API_KEY not configured on server.',
-    });
-  }
+  if (!apiKey) return res.status(500).json({ status: 'error', stage: 'config', error: 'GROQ_API_KEY not configured on server.' });
 
   let body = req.body;
-
-  if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch (_) {
-      body = {};
-    }
-  }
-
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch (_) { body = {}; } }
   let { word, cefr_level, mother_language } = body || {};
 
   // eslint-disable-next-line no-control-regex
-  word = typeof word === 'string'
-    ? word
-        .replace(/[\u0000-\u001f"\\]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-    : '';
-
+  word = typeof word === 'string' ? word.replace(/[\u0000-\u001f"\\]/g, ' ').replace(/\s+/g, ' ').trim() : '';
   if (!word || word.length > 60) {
-    return res.status(400).json({
-      status: 'error',
-      stage: 'input',
-      error: 'Missing or invalid param: word (1–60 characters).',
-    });
+    return res.status(400).json({ status: 'error', stage: 'input', error: 'Missing or invalid param: word (1–60 characters).' });
   }
-
   const cefr = lvl(cefr_level, 'B1');
+  const lang = mother_language === 'fa' || mother_language === 'tr' ? mother_language : null;
 
-  const lang =
-    mother_language === 'fa' || mother_language === 'tr'
-      ? mother_language
-      : null;
-
+  // Attempt plan: full entry → (if truncated / empty / unparseable) compact entry.
+  // A 400 from Groq on the first call usually means an unsupported parameter, so retry once without it.
   const plan = [
-    { compact: false, maxTokens: 4096, reasoning: true },
-    { compact: true, maxTokens: 3000, reasoning: true },
+    { compact: false, maxTokens: 4096, reasoning: true  },
+    { compact: true,  maxTokens: 3000, reasoning: true  },
   ];
-
   let last = null;
-  const t0 = Date.now();
-
   for (let i = 0; i < plan.length; i++) {
-    const remaining = BUDGET_MS - (Date.now() - t0);
-
-    if (i > 0 && remaining < 3000) {
-      break;
-    }
-
-    const p = {
-      ...plan[i],
-      timeoutMs: remaining,
-    };
-
+    const p = plan[i];
     const messages = [
-      {
-        role: 'system',
-        content: buildSystemPrompt(),
-      },
-      {
-        role: 'user',
-        content: buildUserPrompt(word, cefr, lang, p.compact),
-      },
+      { role: 'system', content: buildSystemPrompt() },
+      { role: 'user',   content: buildUserPrompt(word, cefr, lang, p.compact) },
     ];
+    // A retry is only worth starting if enough of the time budget is left to let it finish.
+    if (i > 0 && deadline - Date.now() < MIN_RETRY_MS) break;
 
-    let g = await callGroq(apiKey, messages, p);
-
-    // Retry without reasoning only when enough time remains.
-    const retryRemaining = BUDGET_MS - (Date.now() - t0);
-
-    if (
-      !g.ok &&
-      g.status === 400 &&
-      p.reasoning &&
-      retryRemaining >= 1500
-    ) {
-      g = await callGroq(apiKey, messages, {
-        ...p,
-        reasoning: false,
-        timeoutMs: retryRemaining,
-      });
-    }
-
+    let g = await callGroq(apiKey, messages, p, deadline);
+    if (!g.ok && g.status === 400 && p.reasoning && deadline - Date.now() >= MIN_RETRY_MS) g = await callGroq(apiKey, messages, { ...p, reasoning: false }, deadline);
     if (!g.ok) {
       last = g;
-
-      if (
-        g.stage === 'timeout' ||
-        (
-          g.stage === 'groq_http' &&
-          g.status >= 400 &&
-          g.status < 500 &&
-          g.status !== 429
-        )
-      ) {
-        break;
-      }
-
+      if (g.stage === 'timeout') break;   // the deadline has passed — nothing more can run
+      if (g.stage === 'groq_http' && g.status >= 400 && g.status < 500 && g.status !== 429) break;
       continue;
     }
 
-    const entry = sanitiseEntry(
-      extractJSON(g.content || ''),
-      word,
-      cefr,
-      !!lang
-    );
+    const entry = sanitiseEntry(extractJSON(g.content || ''), word, cefr, !!lang);
+    if (entry) return res.status(200).json({ status: 'ok', entry });
 
-    if (entry) {
-      return res.status(200).json({
-        status: 'ok',
-        entry,
-      });
-    }
-
-    last = {
-      ok: false,
-      stage: g.content ? 'schema' : 'empty',
-      finish: g.finish,
-      error: g.content
-        ? 'Groq response did not match Dictionary schema. Raw: ' +
-          g.content.slice(0, 200)
-        : `Groq returned empty content (finish_reason=${g.finish || 'unknown'}).`,
-    };
-
-    console.error(
-      '[dictionary]',
-      JSON.stringify({
-        attempt: i + 1,
-        word,
-        stage: last.stage,
-        finish: g.finish,
-      })
-    );
+    // Diagnostics for the server log (Vercel → Logs): why did this attempt fail?
+    last = { ok: false, stage: g.content ? 'schema' : 'empty', finish: g.finish,
+             error: g.content ? 'Groq response did not match Dictionary schema. Raw: ' + g.content.slice(0, 200)
+                              : `Groq returned empty content (finish_reason=${g.finish || 'unknown'}).` };
+    console.error('[dictionary]', JSON.stringify({ attempt: i + 1, word, stage: last.stage, finish: g.finish }));
   }
+  if (last?.stage === 'timeout') {
+    console.error('[dictionary]', JSON.stringify({ word, stage: 'timeout', elapsed_ms: Date.now() - t0 }));
+    return res.status(504).json({
+      status: 'error', stage: 'timeout', retryable: true, elapsed_ms: Date.now() - t0,
+      error: `The dictionary took longer than ${BUDGET_MS / 1000} seconds to respond. Please try again.`,
+    });
+  }
+  return res.status(502).json({ status: 'error', stage: last?.stage || 'unknown', error: last?.error || 'Dictionary generation failed.' });
+}
 
-  return res.status(502).json({
-    status: 'error',
-    stage: last?.stage || 'unknown',
-    error: last?.error || 'Dictionary generation failed.',
-  });
+// Entry point: whatever happens inside, the client always receives JSON (never a platform error page).
+export default async function handler(req, res) {
+  try {
+    return await handle(req, res);
+  } catch (e) {
+    console.error('[dictionary] unexpected', e && e.message);
+    if (!res.headersSent) return res.status(500).json({ status: 'error', stage: 'internal', error: 'Unexpected server error.' });
+  }
 }
