@@ -24,6 +24,9 @@ const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL    = 'openai/gpt-oss-120b';
 const CEFR          = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+// A full entry on a reasoning model can outlast Vercel's default function timeout.
+export const config = { maxDuration: 30 };
+
 // ── Prompts ──────────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
   return `You are the NIRON Learner's Dictionary, an English dictionary for learners (CEFR A1–C2, IELTS).
@@ -47,7 +50,7 @@ LEXICOGRAPHY RULES:
 - "register" must be exactly one of: formal, neutral, informal.`;
 }
 
-function buildUserPrompt(word, cefr, motherLang) {
+function buildUserPrompt(word, cefr, motherLang, compact) {
   const hasLang  = motherLang === 'fa' || motherLang === 'tr';
   const langName = motherLang === 'fa' ? 'Persian (Farsi)' : motherLang === 'tr' ? 'Turkish' : '';
   const trField  = hasLang ? `,\n      "translation": "<short ${langName} equivalent or explanation of this sense>"` : '';
@@ -59,6 +62,7 @@ function buildUserPrompt(word, cefr, motherLang) {
 Learner CEFR level: ${cefr}
 ${trNote}
 
+${compact ? 'COMPACT MODE: at most 2 senses, 1–2 examples per sense, at most 2 patterns, 4 collocations, 3 synonyms, 1 usage note. Keep every field short.\n' : ''}
 Return ONLY this JSON object:
 
 {
@@ -101,29 +105,52 @@ function extractJSON(text) {
   return null;
 }
 
-// ── Sanitise: clamp sizes, coerce types, drop junk — the browser can trust it ─
-const str  = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
-const list = (v, max, n) => (Array.isArray(v) ? v.map(x => str(x, n)).filter(Boolean).slice(0, max) : []);
+// ── Sanitise: clamp sizes, coerce types, de-duplicate — the browser can trust it ─
+const str  = (v, n) => (typeof v === 'string' ? v.trim().replace(/\s+/g, ' ').slice(0, n) : '');
 const lvl  = (v, fallback) => (CEFR.includes(String(v).toUpperCase().trim()) ? String(v).toUpperCase().trim() : fallback);
+const norm = (v) => String(v).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+// Strings only, trimmed, case-insensitively unique; `seen` lets callers dedupe across senses.
+function uniq(v, max, n, seen, banned) {
+  const out = [];
+  (Array.isArray(v) ? v : []).forEach(x => {
+    const t = str(x, n), k = norm(t);
+    if (!t || !k || out.length >= max || (seen && seen.has(k)) || (banned && banned.has(k)) || out.some(o => norm(o) === k)) return;
+    out.push(t); if (seen) seen.add(k);
+  });
+  return out;
+}
+// Accept objects or bare strings ("sustain + noun") for {pattern,example}-style items.
+const asObj = (x, key) => (typeof x === 'string' ? { [key]: x } : (x && typeof x === 'object' ? x : {}));
 
 function sanitiseEntry(raw, word, cefr, hasLang) {
+  // Models sometimes wrap the object: { entry: {...} } / { dictionary_entry: {...} }.
+  if (raw && typeof raw === 'object' && !Array.isArray(raw.senses)) {
+    raw = raw.entry || raw.dictionary_entry || raw.result || raw;
+  }
   if (!raw || typeof raw !== 'object' || !Array.isArray(raw.senses)) return null;
+
+  const headword = str(raw.headword, 80) || word;
+  const self = new Set([norm(headword), norm(word)]);
+  const exSeen = new Set();
 
   const senses = raw.senses.slice(0, 4).map(s => {
     if (!s || typeof s !== 'object') return null;
+    const patSeen = new Set();
     const sense = {
-      pos:          str(s.pos, 30),
-      grammar:      str(s.grammar, 40),
-      cefr:         lvl(s.cefr, ''),
-      definition:   str(s.definition, 400),
-      examples:     list(s.examples, 3, 300),
-      patterns:     (Array.isArray(s.patterns) ? s.patterns : []).slice(0, 3).map(p => ({
-                      pattern: str(p && p.pattern, 80), example: str(p && p.example, 300),
-                    })).filter(p => p.pattern),
-      collocations: list(s.collocations, 6, 60),
-      synonyms:     list(s.synonyms, 5, 40),
-      antonyms:     list(s.antonyms, 4, 40),
+      pos:        str(s.pos, 30),
+      grammar:    str(s.grammar, 40),
+      cefr:       lvl(s.cefr, ''),
+      definition: str(s.definition, 400),
+      examples:   uniq(s.examples, 3, 300, exSeen),
+      patterns:   (Array.isArray(s.patterns) ? s.patterns : []).map(p => asObj(p, 'pattern')).map(p => ({
+                    pattern: str(p.pattern, 80), example: str(p.example, 300),
+                  })).filter(p => p.pattern && !patSeen.has(norm(p.pattern)) && patSeen.add(norm(p.pattern))).slice(0, 3),
+      collocations: uniq(s.collocations, 6, 60),
+      synonyms:     uniq(s.synonyms, 5, 40, null, self),
     };
+    const synKeys = new Set(sense.synonyms.map(norm));
+    sense.antonyms = uniq(s.antonyms, 4, 40, null, new Set([...self, ...synKeys]));   // an antonym is never a synonym
     if (hasLang) sense.translation = str(s.translation, 200);
     return sense.definition ? sense : null;
   }).filter(Boolean);
@@ -133,21 +160,50 @@ function sanitiseEntry(raw, word, cefr, hasLang) {
   const register = ['formal', 'neutral', 'informal'].includes(String(raw.register).toLowerCase())
     ? String(raw.register).toLowerCase() : 'neutral';
 
+  const famSeen = new Set(self);
+  const word_family = (Array.isArray(raw.word_family) ? raw.word_family : []).map(f => asObj(f, 'word')).map(f => ({
+    word: str(f.word, 50), pos: str(f.pos, 30),
+  })).filter(f => f.word && !famSeen.has(norm(f.word)) && famSeen.add(norm(f.word))).slice(0, 8);
+
+  const noteSeen = new Set();
+  const usage_notes = (Array.isArray(raw.usage_notes) ? raw.usage_notes : []).map(u => asObj(u, 'note')).map(u => ({
+    wrong: str(u.wrong, 300), right: str(u.right, 300), note: str(u.note, 300),
+  })).filter(u => u.wrong && u.right && norm(u.wrong) !== norm(u.right) && !noteSeen.has(norm(u.wrong)) && noteSeen.add(norm(u.wrong))).slice(0, 3);
+
   return {
-    headword:    str(raw.headword, 80) || word,
-    syllables:   str(raw.syllables, 80),
-    ipa_uk:      str(raw.ipa_uk, 80),
-    ipa_us:      str(raw.ipa_us, 80),
-    cefr:        lvl(raw.cefr, cefr),
-    register,
-    senses,
-    word_family: (Array.isArray(raw.word_family) ? raw.word_family : []).slice(0, 8).map(f => ({
-                   word: str(f && f.word, 50), pos: str(f && f.pos, 30),
-                 })).filter(f => f.word),
-    usage_notes: (Array.isArray(raw.usage_notes) ? raw.usage_notes : []).slice(0, 3).map(u => ({
-                   wrong: str(u && u.wrong, 300), right: str(u && u.right, 300), note: str(u && u.note, 300),
-                 })).filter(u => u.wrong && u.right),
+    headword, syllables: str(raw.syllables, 80), ipa_uk: str(raw.ipa_uk, 80), ipa_us: str(raw.ipa_us, 80),
+    cefr: lvl(raw.cefr, cefr), register, senses, word_family, usage_notes,
   };
+}
+
+// ── Groq call (returns a plain result object; never throws) ──────────────────
+async function callGroq(apiKey, messages, { maxTokens, reasoning }) {
+  const payload = {
+    model: GROQ_MODEL, temperature: 0.3, max_tokens: maxTokens,
+    response_format: { type: 'json_object' }, messages,
+  };
+  // gpt-oss is a reasoning model: reasoning tokens share max_tokens with the answer.
+  // "low" keeps the budget for the JSON itself and cuts latency.
+  if (reasoning) payload.reasoning_effort = 'low';
+
+  let r;
+  try {
+    r = await fetch(GROQ_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    return { ok: false, stage: 'network', error: `Network error reaching Groq: ${e.message}` };
+  }
+  if (!r.ok) {
+    const t = await r.text().catch(() => '');
+    return { ok: false, stage: 'groq_http', status: r.status, error: `Groq API returned ${r.status}: ${t.slice(0, 200)}` };
+  }
+  let d;
+  try { d = await r.json(); } catch (_) { return { ok: false, stage: 'groq_json', error: 'Failed to parse Groq API response.' }; }
+  const choice = d?.choices?.[0];
+  return { ok: true, content: choice?.message?.content || '', finish: choice?.finish_reason || '' };
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
@@ -156,78 +212,49 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  if (req.method !== 'POST') {
-    return res.status(405).json({ status: 'error', error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST')    return res.status(405).json({ status: 'error', error: 'Method not allowed' });
 
   const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ status: 'error', error: 'GROQ_API_KEY not configured on server.' });
-  }
+  if (!apiKey) return res.status(500).json({ status: 'error', stage: 'config', error: 'GROQ_API_KEY not configured on server.' });
 
-  let { word, cefr_level, mother_language } = req.body || {};
+  let body = req.body;
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch (_) { body = {}; } }
+  let { word, cefr_level, mother_language } = body || {};
 
   // eslint-disable-next-line no-control-regex
   word = typeof word === 'string' ? word.replace(/[\u0000-\u001f"\\]/g, ' ').replace(/\s+/g, ' ').trim() : '';
   if (!word || word.length > 60) {
-    return res.status(400).json({ status: 'error', error: 'Missing or invalid param: word (1–60 characters).' });
+    return res.status(400).json({ status: 'error', stage: 'input', error: 'Missing or invalid param: word (1–60 characters).' });
   }
-  const cefr    = lvl(cefr_level, 'B1');
-  const lang    = mother_language === 'fa' || mother_language === 'tr' ? mother_language : null;
+  const cefr = lvl(cefr_level, 'B1');
+  const lang = mother_language === 'fa' || mother_language === 'tr' ? mother_language : null;
 
-  let groqResponse;
-  try {
-    groqResponse = await fetch(GROQ_ENDPOINT, {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model:       GROQ_MODEL,
-        temperature: 0.3,
-        max_tokens:  3000,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          { role: 'user',   content: buildUserPrompt(word, cefr, lang) },
-        ],
-      }),
-    });
-  } catch (networkErr) {
-    return res.status(502).json({ status: 'error', error: `Network error reaching Groq: ${networkErr.message}` });
+  // Attempt plan: full entry → (if truncated / empty / unparseable) compact entry.
+  // A 400 from Groq on the first call usually means an unsupported parameter, so retry once without it.
+  const plan = [
+    { compact: false, maxTokens: 4096, reasoning: true  },
+    { compact: true,  maxTokens: 3000, reasoning: true  },
+  ];
+  let last = null;
+  for (let i = 0; i < plan.length; i++) {
+    const p = plan[i];
+    const messages = [
+      { role: 'system', content: buildSystemPrompt() },
+      { role: 'user',   content: buildUserPrompt(word, cefr, lang, p.compact) },
+    ];
+    let g = await callGroq(apiKey, messages, p);
+    if (!g.ok && g.status === 400 && p.reasoning) g = await callGroq(apiKey, messages, { ...p, reasoning: false });
+    if (!g.ok) { last = g; if (g.stage === 'groq_http' && g.status >= 400 && g.status < 500 && g.status !== 429) break; continue; }
+
+    const entry = sanitiseEntry(extractJSON(g.content || ''), word, cefr, !!lang);
+    if (entry) return res.status(200).json({ status: 'ok', entry });
+
+    // Diagnostics for the server log (Vercel → Logs): why did this attempt fail?
+    last = { ok: false, stage: g.content ? 'schema' : 'empty', finish: g.finish,
+             error: g.content ? 'Groq response did not match Dictionary schema. Raw: ' + g.content.slice(0, 200)
+                              : `Groq returned empty content (finish_reason=${g.finish || 'unknown'}).` };
+    console.error('[dictionary]', JSON.stringify({ attempt: i + 1, word, stage: last.stage, finish: g.finish }));
   }
-
-  if (!groqResponse.ok) {
-    const errText = await groqResponse.text().catch(() => '');
-    return res.status(502).json({
-      status: 'error',
-      error:  `Groq API returned ${groqResponse.status}: ${errText.slice(0, 200)}`,
-    });
-  }
-
-  let groqData;
-  try {
-    groqData = await groqResponse.json();
-  } catch (_) {
-    return res.status(502).json({ status: 'error', error: 'Failed to parse Groq API response.' });
-  }
-
-  const rawContent = groqData?.choices?.[0]?.message?.content;
-  if (!rawContent) {
-    return res.status(502).json({ status: 'error', error: 'Groq returned empty content.' });
-  }
-
-  const entry = sanitiseEntry(extractJSON(rawContent), word, cefr, !!lang);
-  if (!entry) {
-    return res.status(502).json({
-      status: 'error',
-      error:  'Groq response did not match Dictionary schema. Raw: ' + rawContent.slice(0, 200),
-    });
-  }
-
-  return res.status(200).json({ status: 'ok', entry });
+  return res.status(502).json({ status: 'error', stage: last?.stage || 'unknown', error: last?.error || 'Dictionary generation failed.' });
 }
