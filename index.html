@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&family=DM+Serif+Display:ital@0;1&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --black: #0A0E1A;
@@ -3735,10 +3736,10 @@ body.focus-mode .vhs, body:has(#account-view.show) .vhs { display: none; }
 @media (prefers-reduced-motion: reduce) { .vhs *, .stat-item, .stat-item::after { transition: none !important; } .vhs-card { transform: none !important; } }
 
 
-/* Header fit: tighter spacing (all labels kept) so the added Lab button never overflows */
-@media (min-width: 1025px) and (max-width: 1620px) { .nav-links a { padding: 9px 9px; letter-spacing: .8px; font-size: 11px; } .nav-ecosystem { gap: 4px; } .nj-trigger, .vh-trigger { padding: 0 8px; font-size: 11px; letter-spacing: .3px; } .navbar { gap: 8px; } }
-@media (min-width: 1025px) and (max-width: 1340px) { .nav-links a { padding: 9px 7px; letter-spacing: .4px; font-size: 10.5px; } .nav-brand .nav-sub, .nav-sub { display: none; } .nj-trigger, .vh-trigger { padding: 0 7px; font-size: 10.5px; } }
-@media (min-width: 1025px) and (max-width: 1180px) { .navbar { padding-left: 12px; padding-right: 12px; gap: 6px; } .nav-brand { gap: 8px; } .nav-links { padding: 3px; } .nav-links a { padding: 8px 6px; letter-spacing: .2px; font-size: 10px; } .nav-ecosystem { gap: 3px; } .nj-trigger, .vh-trigger, .btn-focus, .btn-signin, .nav-lang-btn { padding-left: 6px; padding-right: 6px; font-size: 10px; letter-spacing: 0; } .n-cmd-btn { padding-left: 8px; padding-right: 8px; } .theme-toggle { padding-left: 8px; padding-right: 8px; } }
+/* Header fit (all labels kept): specificity matches the base header rules so the compaction really applies */
+@media (min-width: 1025px) and (max-width: 1620px) { .navbar { gap: 8px; } .navbar .nav-links a { padding: 9px 10px; letter-spacing: .8px; font-size: 11px; } .navbar .nav-ecosystem { gap: 4px; } .navbar .nav-ecosystem > button, .navbar .nav-ecosystem .nav-lang-btn { padding: 0 10px; font-size: 10.5px; letter-spacing: .3px; } }
+@media (min-width: 1025px) and (max-width: 1340px) { .navbar .nav-links a { padding: 9px 8px; letter-spacing: .4px; } .navbar .nav-ecosystem > button, .navbar .nav-ecosystem .nav-lang-btn { padding: 0 8px; } .nav-sub { display: none; } }
+@media (min-width: 1025px) and (max-width: 1130px) { .navbar { padding-left: 12px; padding-right: 12px; gap: 6px; } .navbar .nav-links { padding: 3px; } .navbar .nav-links a { padding: 8px 6px; letter-spacing: 0; font-size: 10px; } .navbar .nav-ecosystem { gap: 3px; } .navbar .nav-ecosystem > button, .navbar .nav-ecosystem .nav-lang-btn { padding: 0 7px; font-size: 10px; letter-spacing: 0; } }
 /* ═════════ NIRON LEARNING LAB — isolated academic-editorial module (all selectors prefixed lab-) ═════════ */
 body.lab-open { overflow: hidden; }
 #lab-overlay { --serif: 'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif; position: fixed; inset: 0; z-index: 9550; display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; }
@@ -3900,6 +3901,99 @@ body.focus-mode .lab-land, body:has(#account-view.show) .lab-land { display: non
 .lab-top { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding-left: max(1.1rem, calc(50vw - 50%)); padding-right: max(1.1rem, calc(50vw - 50%)); }
 .lab-stage { padding: 12px 3px 10px; } .lab-stage span { font-size: 7.6px; letter-spacing: 0; overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .lab-path { gap: 5px; }
+
+/* ═════ Lab final polish: responsive, theme-safe, FA/TR content ═════ */
+#lab-overlay { overflow-x: hidden; }
+.lab-top { margin-left: -1.1rem; margin-right: -1.1rem; padding-left: 1.1rem; padding-right: 1.1rem; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 0; }
+.lab-top::before { content: ''; position: absolute; z-index: -1; top: 0; bottom: 0; left: -100vw; right: -100vw; pointer-events: none; background: color-mix(in srgb, var(--black) 78%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--white-faint); }
+@media (min-width: 640px) { .lab-top { margin-left: -1.6rem; margin-right: -1.6rem; padding-left: 1.6rem; padding-right: 1.6rem; } }
+.lab-net .due { stroke: var(--white); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.lab-net .sel circle:first-child, .lab-net g.node:focus-visible circle:first-child { stroke: var(--white); }
+.lab-seg button, .lab-btn.sm { min-height: 44px; }
+.lab-kpi:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 640px) { .lab-kpi:last-child:nth-child(odd) { grid-column: auto; } }
+@media (min-width: 420px) { .lab-stage span { font-size: 8.4px; } }
+@media (min-width: 640px) { .lab-stage span { font-size: 10px; letter-spacing: .3px; } }
+@media (max-width: 480px) { .lab-meter[style*="grid-template-columns"] { grid-template-columns: minmax(0,1fr) 44px !important; } .lab-meter[style*="grid-template-columns"] > span { grid-column: 1 / -1; } .lab-h2 { flex-wrap: wrap; } .lab-h2 small { margin-left: 0; width: 100%; } }
+.lab-fb { overflow-wrap: anywhere; }
+.lab-tr { display: block; }
+.lab-fb .lab-tr { margin-top: 4px; }
+.lab-tr[lang="fa"], .lab-tr[lang="fa"] * { font-family: 'Vazirmatn', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, 'Geeza Pro', sans-serif; line-height: 1.9; letter-spacing: 0; }
+.lab-tr[lang="tr"] { line-height: 1.6; }
+.lab-tr { unicode-bidi: plaintext; }
+.lab-full { display: block; margin-bottom: 6px; }
+
+/* header: no overflow between 1025–1130px, logged-in or logged-out */
+@media (min-width: 1025px) and (max-width: 1130px) {
+  .navbar .nav-links { flex: 0 1 auto; min-width: 0; }
+  .navbar .nav-links a { white-space: nowrap; }
+  .navbar .user-name { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .navbar .user-pill { padding-left: 8px; padding-right: 8px; gap: 5px; }
+  .navbar .nav-name { font-size: 15px; letter-spacing: 3px; }
+  .navbar .nav-brand { gap: 8px; }
+}
+
+/* ═════ Lab typography: Plus Jakarta Sans (body/UI) · DM Serif Display (headings) · Cinzel (labels/buttons) ═════ */
+#lab-overlay, .lab-land, .lab-add {
+  --lab-sans: 'Plus Jakarta Sans', 'Vazirmatn', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, 'Geeza Pro', system-ui, -apple-system, sans-serif;
+  --lab-display: 'DM Serif Display', 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Noto Naskh Arabic', 'Times New Roman', serif;
+  --lab-label: 'Cinzel', 'Trajan Pro', 'Iowan Old Style', Georgia, 'Noto Naskh Arabic', serif;
+  --serif: var(--lab-display);
+  font-synthesis: none;
+}
+#lab-overlay, .lab-land, .lab-add, .lab-in, .lab-opt, .lab-plan, .lab-card, .lab-tab, .lab-net text { font-family: var(--lab-sans); }
+/* body / UI */
+.lab-lead, .lab-note, .lab-why, .lab-sec p, .lab-fb, .lab-rel li, .lab-flag, .lab-live, .lab-card span, .lab-plan span, .lab-empty p, .lab-gap, .lab-orig { font-family: var(--lab-sans); }
+.lab-lead { font-weight: 400; line-height: 1.75; }
+.lab-note, .lab-why { font-weight: 500; letter-spacing: 0; }
+.lab-why { font-size: 12px; }
+.lab-orig { font-style: italic; font-weight: 500; line-height: 1.6; }
+.lab-ex { font-family: var(--lab-sans); font-style: italic; font-weight: 500; font-size: 17px !important; line-height: 1.7; }
+.lab-in { font-weight: 500; }
+.lab-opt { font-weight: 600; }
+.lab-tab { font-weight: 600; letter-spacing: 0; }
+.lab-badge { font-family: var(--lab-sans); font-weight: 700; }
+.lab-plan b, .lab-rel b, .lab-flag b { font-family: var(--lab-sans); font-weight: 700; }
+.lab-opt kbd, .lab-days span, .lab-legend, .lab-meter, .lab-meter span, .lab-meter em, .lab-chips span, .lab-pos { font-family: var(--lab-sans); font-weight: 600; letter-spacing: .01em; }
+.lab-legend, .lab-days span { font-size: 11px; } .lab-meter { font-size: 12px; } .lab-chips span, .lab-pos { font-size: 12.5px; }
+.lab-kpi b, .lab-meter em, .lab-lv, .lab-stage b { font-variant-numeric: tabular-nums lining-nums; }
+.lab-net text { font-weight: 600; } .lab-net .hub text { font-family: var(--lab-sans); font-weight: 700; font-size: 10.5px; }
+/* headings & card titles: DM Serif Display has one weight, so never fake bold */
+.lab-h1, .lab-h2, .lab-kpi b, .lab-stage b, .lab-word, .lab-empty h3, .lab-card b, .lab-p h3, .lab-flow li::before, .lab-land .section-title, .lab-land h2 { font-family: var(--lab-display); font-weight: 400; font-synthesis: none; }
+.lab-h1 { font-size: clamp(30px, 6.6vw, 50px); line-height: 1.08; letter-spacing: -.005em; }
+.lab-h1 em { font-style: italic; }
+.lab-h2 { font-size: 24px; letter-spacing: 0; } .lab-h2::before { font-family: var(--lab-display); }
+.lab-word { letter-spacing: 0; line-height: 1.1; }
+.lab-card b { font-size: 22px; line-height: 1.25; letter-spacing: 0; }
+.lab-empty h3 { font-size: 26px; }
+.lab-kpi b { letter-spacing: 0; }
+/* labels, buttons, uppercase text: Cinzel (wide, so tighter tracking and no tiny sizes) */
+.lab-kick, .lab-brand b, .lab-brand small, .lab-kpi span, .lab-h2 small, .lab-sec > b, .lab-btn, .lab-add button, .lab-seg button, .lab-grade, .lab-fb strong, .lab-card em, .lab-flow li, .lab-land .section-tag { font-family: var(--lab-label); font-weight: 600; font-synthesis: none; }
+.lab-kick { font-size: 11px; letter-spacing: .16em; }
+.lab-brand b { font-size: 15px; font-weight: 700; letter-spacing: .22em; } .lab-brand small { font-size: 10.5px; font-weight: 500; letter-spacing: .12em; }
+.lab-kpi span { font-size: 11px; letter-spacing: .1em; }
+.lab-h2 small { font-size: 11px; letter-spacing: .1em; font-weight: 500; }
+.lab-sec > b { font-size: 11px; letter-spacing: .14em; }
+.lab-btn { font-size: 12.5px; font-weight: 700; letter-spacing: .1em; } .lab-btn.sm { font-size: 11.5px; letter-spacing: .08em; }
+.lab-add button { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+.lab-seg button { font-size: 12px; letter-spacing: .08em; }
+.lab-grade { font-size: 14px; letter-spacing: .06em; } .lab-grade small { font-family: var(--lab-sans); font-weight: 600; letter-spacing: 0; font-size: 11px; }
+.lab-fb strong { font-size: 12.5px; letter-spacing: .12em; }
+.lab-card em { font-size: 11px; letter-spacing: .12em; }
+.lab-flow li { font-size: 12px; letter-spacing: .1em; } .lab-flow small { font-family: var(--lab-sans); font-weight: 500; }
+.lab-lv { font-family: var(--lab-label); font-weight: 700; font-size: 12.5px; letter-spacing: .06em; }
+.lab-stage span { font-family: var(--lab-sans); font-weight: 700; }
+@media (min-width: 640px) { .lab-stage span { font-family: var(--lab-label); font-weight: 600; font-size: 10px; letter-spacing: .06em; } }
+.lab-land .section-tag { letter-spacing: .18em; }
+/* Persian / Arabic script: Latin faces have no glyphs, so use a dedicated stack with relaxed leading and no tracking */
+.lab-tr, .lab-tr[lang="fa"], .lab-tr[lang="fa"] * { font-family: 'Vazirmatn', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, 'Geeza Pro', var(--lab-sans); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.lab-tr[lang="fa"] { font-size: 1.08em; line-height: 1.95; }
+.lab-tr[lang="tr"] { font-family: var(--lab-sans); }
+.lab-grid > *, .lab-path > *, .lab-kpis > * { min-width: 0; }
+@media (max-width: 479px) { .lab-brand small { font-size: 9.5px; letter-spacing: .05em; white-space: nowrap; } .lab-brand b { letter-spacing: .18em; } }
+.lab-tab { font-size: 10px; }
+@media (min-width: 768px) { .lab-tab { font-size: 12.5px; } }
+@media (max-width: 639px) { .lab-stage span { font-size: 8px; letter-spacing: 0; overflow-wrap: anywhere; } .lab-days span { font-size: 9.5px; } }
 </style>
 <!-- NIRON AI Service Layer (inline mock) -->
 <script>
@@ -4570,7 +4664,7 @@ function showToast(message, type) {
     <ol class="lab-flow" aria-label="How the Learning Lab works">
       <li>Generate<small>Vocabulary Hub</small></li><li>Collect<small>Add to your Lab</small></li><li>Recall<small>Spaced repetition</small></li><li>Use<small>Context &amp; writing</small></li><li>Diagnose<small>Fix what is weak</small></li>
     </ol>
-    <div class="lab-cards"><button type="button" class="lab-card" onclick="NIRONLab.open('dash')"><i aria-hidden="true">▦</i><b>Adaptive dashboard &amp; CEFR progress</b><span>A daily plan computed from your own practice: what is due, what is weak and what to do next, with CEFR evidence from your answers.</span><em>Open dashboard →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('review')"><i aria-hidden="true">⟳</i><b>Smart spaced repetition</b><span>Every rating reschedules the word. Forgotten words return within minutes; secure ones come back after weeks.</span><em>Start reviewing →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('context')"><i aria-hidden="true">❝</i><b>Contextual acquisition &amp; production</b><span>Fill the gap in real example sentences, then write your own sentence and compare it with a model.</span><em>Practise in context →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('network')"><i aria-hidden="true">✳</i><b>Intelligent vocabulary network</b><span>See how your words connect through shared collocation terms, the sets they came from and word families.</span><em>Explore the network →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('grammar')"><i aria-hidden="true">§</i><b>Grammar intelligence lab</b><span>Key-word-style sentence transformations across eight structures from B1 to C2, with rules and known-error feedback.</span><em>Open the lab →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('diag')"><i aria-hidden="true">✚</i><b>Personalised error diagnosis</b><span>Recurring error patterns, difficult words and your weakest skill, found from your own answers, not guessed.</span><em>See my diagnosis →</em></button></div>
+    <div class="lab-cards"><button type="button" class="lab-card" onclick="NIRONLab.open('dash')"><i aria-hidden="true">▦</i><b>Adaptive dashboard &amp; CEFR progress</b><span>A daily plan computed from your own practice: what is due, what is weak and what to do next, with CEFR evidence from your answers.</span><em>Open dashboard →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('review')"><i aria-hidden="true">⟳</i><b>Smart spaced repetition</b><span>Every rating reschedules the word. Forgotten words return within minutes; secure ones come back after weeks.</span><em>Start reviewing →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('context')"><i aria-hidden="true">❝</i><b>Contextual acquisition &amp; production</b><span>Fill the gap in real example sentences, then write your own sentence and compare it with a model.</span><em>Practise in context →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('network')"><i aria-hidden="true">✳</i><b>Intelligent vocabulary network</b><span>See how your words connect through shared collocation terms, the sets they came from and word families.</span><em>Explore the network →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('grammar')"><i aria-hidden="true">§</i><b>Grammar intelligence lab</b><span>Sentence transformations across eight structures from B1 to C2, with the rule behind each answer and feedback on common mistakes.</span><em>Open the lab →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('diag')"><i aria-hidden="true">✚</i><b>Personalised error diagnosis</b><span>Recurring error patterns, difficult words and your weakest skill, found from your own answers, not guessed.</span><em>See my diagnosis →</em></button></div>
     <p class="lab-live" id="lab-live" aria-live="polite"></p>
     <div class="lab-land-cta"><button type="button" class="vhs-cta" onclick="NIRONLab.open('dash')"><span aria-hidden="true">◈</span> Open Learning Lab <span class="vhs-arrow" aria-hidden="true">→</span></button><button type="button" class="lab-btn ghost" onclick="VocabHub.open()">📚 Generate words first</button></div>
     <p class="lab-note" style="margin-top:1rem">Your progress is stored in this browser on this device. You can export and import a backup from the dashboard.</p>
@@ -6930,14 +7024,14 @@ els.forEach(function(el){o.observe(el)})})();
       <button type="button" class="lab-x" data-act="close" aria-label="Close Learning Lab">✕</button>
     </header>
     <nav class="lab-tabs" role="tablist" aria-label="Learning Lab sections">
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="dash"><i aria-hidden="true">▦</i><span>Dashboard</span></button>
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="review"><i aria-hidden="true">⟳</i><span>Review</span><em class="lab-badge" id="lab-due-badge" hidden>0</em></button>
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="context"><i aria-hidden="true">❝</i><span>Context</span></button>
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="network"><i aria-hidden="true">✳</i><span>Network</span></button>
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="grammar"><i aria-hidden="true">§</i><span>Grammar</span></button>
-      <button type="button" role="tab" class="lab-tab" data-act="tab" data-tab="diag"><i aria-hidden="true">✚</i><span>Diagnosis</span></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="dash"><i aria-hidden="true">▦</i><span>Dashboard</span></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="review"><i aria-hidden="true">⟳</i><span>Review</span><em class="lab-badge" id="lab-due-badge" hidden>0</em></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="context"><i aria-hidden="true">❝</i><span>Context</span></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="network"><i aria-hidden="true">✳</i><span>Network</span></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="grammar"><i aria-hidden="true">§</i><span>Grammar</span></button>
+      <button type="button" role="tab" aria-controls="lab-view" class="lab-tab" data-act="tab" data-tab="diag"><i aria-hidden="true">✚</i><span>Diagnosis</span></button>
     </nav>
-    <main id="lab-view" tabindex="-1" aria-live="polite"></main>
+    <div id="lab-view" role="tabpanel" tabindex="-1"></div>
   </div>
 </div>
 <script>
@@ -6952,25 +7046,30 @@ function now(){return Date.now()}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function pct(a,b){return b?Math.round(100*a/b):0}
 /* ── storage ── */
-function fixCard(c,k){c=c||{};c.key=k;['word','pos','meaning','example','translation','register','cefr','ielts','set'].forEach(function(f){c[f]=typeof c[f]==='string'?c[f]:''});
- c.colloc=Array.isArray(c.colloc)?c.colloc.filter(function(x){return typeof x==='string'}).slice(0,8):[];c.added=+c.added||now();
+var BAD={'__proto__':1,'constructor':1,'prototype':1};
+function fixCard(c,k){c=(c&&typeof c==='object')?c:{};c.key=k;['word','pos','meaning','example','translation','register','cefr','ielts','set','lang'].forEach(function(f){c[f]=typeof c[f]==='string'?c[f]:''});
+ c.colloc=Array.isArray(c.colloc)?c.colloc.filter(function(x){return typeof x==='string'&&x}).slice(0,8):[];c.added=+c.added||now();c.cefr=(c.cefr.toUpperCase().match(/^[ABC][12]$/)||[''])[0];c.lang=/^(fa|tr)$/.test(c.lang)?c.lang:'';
  var s=c.srs=c.srs||{};s.ease=+s.ease||2.5;s.int=+s.int||0;s.reps=+s.reps||0;s.lapses=+s.lapses||0;s.due=+s.due||c.added;s.last=+s.last||0;
  c.cl=c.cl||{};c.cl.ok=+c.cl.ok||0;c.cl.bad=+c.cl.bad||0;c.pr=c.pr||{};c.pr.n=+c.pr.n||0;c.pr.ok=+c.pr.ok||0;return c}
 function fresh(){return{v:1,words:{},log:[],gram:{},traps:{}}}
 function load(){try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){D=null}
  if(!D||D.v!==1||typeof D.words!=='object')D=fresh();D.log=Array.isArray(D.log)?D.log:[];D.gram=D.gram||{};D.traps=D.traps||{};
- Object.keys(D.words).forEach(function(k){D.words[k]=fixCard(D.words[k],k)})}
+ var W={};Object.keys(D.words).forEach(function(k){if(!BAD[k])W[k]=fixCard(D.words[k],k)});D.words=W;
+ var G2={};Object.keys(D.gram).forEach(function(k){var g=D.gram[k];if(!BAD[k]&&g&&typeof g==='object')G2[k]={ok:+g.ok||0,bad:+g.bad||0,last:+g.last?1:0,t:+g.t||0}});D.gram=G2;
+ var T2={};Object.keys(D.traps).forEach(function(k){var t=D.traps[k];if(!BAD[k]&&t&&typeof t==='object')T2[k]={n:+t.n||0,c:Math.max(0,Math.min(7,+t.c||0))}});D.traps=T2;
+ D.log=D.log.filter(function(x){return x&&isFinite(+x.t)&&/^(rev|cloze|prod|gram)$/.test(x.k)}).map(function(x){return{t:+x.t,k:x.k,ok:+x.ok?1:0}}).slice(-3000)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast('Browser storage is full or blocked — progress could not be saved.','warning')}live();badge()}
 function logIt(k,ok){D.log.push({t:now(),k:k,ok:ok?1:0});if(D.log.length>3000)D.log=D.log.slice(-3000)}
 function words(){return Object.keys(D.words).map(function(k){return D.words[k]})}
 function dueList(){var t=now();return words().filter(function(c){return c.srs.due<=t}).sort(function(a,b){return a.srs.due-b.srs.due})}
-function addWords(list,set){var a=0,d=0;(list||[]).forEach(function(w){if(!w||!w.word)return;var k=String(w.word).toLowerCase().trim();if(!k)return;if(D.words[k]){d++;return}
- D.words[k]=fixCard({word:String(w.word).trim(),pos:w.pos||'',meaning:w.meaning||'',example:w.example||'',translation:w.translation||'',register:w.register||'',cefr:String(w.cefr||'').toUpperCase().slice(0,2),ielts:w.ielts_relevance||'',colloc:w.collocations||[],set:set||'',added:now()},k);a++});
+function addWords(list,set){var a=0,d=0;(list||[]).forEach(function(w){if(!w||!w.word)return;var k=String(w.word).toLowerCase().trim().slice(0,80);if(!k||BAD[k])return;if(D.words[k]){d++;return}
+ var tr=typeof w.translation==='string'?w.translation:(w.translation&&typeof w.translation==='object'?String(Object.keys(w.translation).map(function(k){return w.translation[k]}).filter(function(x){return typeof x==='string'})[0]||''):'');tr=tr.trim();var cl0=Array.isArray(w.collocations)?w.collocations:(typeof w.collocations==='string'?w.collocations.split(/[;,\n]+/):[]);cl0=cl0.map(function(x){return String(x==null?'':x).trim()}).filter(Boolean);
+ D.words[k]=fixCard({word:String(w.word).trim().slice(0,80),pos:String(w.pos||'').slice(0,30),meaning:String(w.meaning||'').slice(0,400),example:String(w.example||'').slice(0,400),translation:tr.slice(0,200),register:String(w.register||'').slice(0,40),cefr:(String(w.cefr||'').toUpperCase().match(/[ABC][12]/)||[''])[0],ielts:String(w.ielts_relevance||'').slice(0,400),colloc:cl0.map(function(x){return x.slice(0,80)}),set:set||'',lang:/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(tr)?'fa':((/[çğışöüÇĞİŞÖÜ]/.test(tr)||(window._selectedLang==='tr'&&tr))?'tr':''),added:now()},k);a++});
  if(a)save();return{added:a,dup:d}}
 /* ── learning science helpers ── */
 function sched(c,g){var s=c.srs,e=s.ease,r=s.reps,iv=s.int,d;
- if(g===0)return{days:10/1440,ease:Math.max(1.3,e-.2),reps:0,lapse:1};
- if(r===0)d=[0,1,1,3][g];else if(r===1)d=[0,2,3,5][g];else d=g===1?Math.max(1,Math.round(iv*1.2)):g===2?Math.round(iv*e):Math.round(iv*e*1.3);
+ if(g===0)return{days:10/1440,ease:r>0?Math.max(1.3,e-.2):e,reps:0,lapse:r>0?1:0};
+ if(r===0)d=[0,1,1,3][g];else if(r===1)d=[0,2,3,5][g];else d=g===1?Math.max(iv+1,Math.round(iv*1.2)):g===2?Math.round(iv*e):Math.round(iv*e*1.3);
  return{days:Math.max(1,d),ease:Math.max(1.3,e+(g===1?-.15:g===3?.15:0)),reps:r+1,lapse:0}}
 function lab(days){if(days<1)return Math.max(1,Math.round(days*1440))+'m';if(days<30)return Math.round(days)+'d';return Math.round(days/30)+'mo'}
 function mastery(c){var s=c.srs,a=Math.min(1,Math.log(1+s.int)/Math.log(31))*60,b=Math.max(0,Math.min(20,c.cl.ok*10-c.cl.bad*3)),p=Math.min(20,c.pr.ok*10);return Math.round(a+b+p)}
@@ -6978,7 +7077,7 @@ var STAGES=['Recognition','Controlled','Semi-controlled','Free production','Cons
 function stage(c){if(c.pr.ok>0&&c.srs.int>=21)return 4;if(c.pr.ok>0)return 3;if(c.srs.reps>=3&&c.cl.ok>=1)return 2;if(c.srs.reps>=1||c.cl.ok>=1)return 1;return 0}
 function dkey(t){var d=new Date(t);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()}
 function activity(){var m={};D.log.forEach(function(x){var k=dkey(x.t);m[k]=(m[k]||0)+1});return m}
-function streak(){var m=activity(),t=now(),n=0;if(!m[dkey(t)])t-=DAY;while(m[dkey(t)]){n++;t-=DAY}return n}
+function streak(){var m=activity(),d=new Date(),n=0;if(!m[dkey(d.getTime())])d.setDate(d.getDate()-1);while(m[dkey(d.getTime())]){n++;d.setDate(d.getDate()-1)}return n}
 function wre(c,fl){var w=c.word.toLowerCase().trim(),e=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
  if(/\s/.test(w))return new RegExp('\\b'+e.replace(/\s+/g,'\\s+')+'\\b',fl);
  if(w.length<=4)return new RegExp('\\b'+e+'(?:s|es|ed|d|ing)?\\b',fl);
@@ -7027,7 +7126,7 @@ function plan(){var P=[],due=dueList(),ws=words();
 function vDash(){var ws=words(),due=dueList(),n=ws.length,t=now(),cons=ws.filter(function(c){return c.srs.int>=21}).length;
  var l7=D.log.filter(function(x){return x.t>=t-7*DAY}),ok7=l7.filter(function(x){return x.ok}).length;
  var P=plan().map(function(p){return '<button class="lab-plan" data-act="'+(p.act||'tab')+'"'+(p.tab?' data-tab="'+p.tab+'"':'')+'><i aria-hidden="true">'+p.i+'</i><div><b>'+esc(p.t)+'</b><span>'+esc(p.s)+'</span></div></button>'}).join('');
- var act=activity(),bars='',days='',mx=1,i,arr=[];for(i=13;i>=0;i--){var d=t-i*DAY,v=act[dkey(d)]||0;arr.push({v:v,d:new Date(d)});if(v>mx)mx=v}
+ var act=activity(),bars='',days='',mx=1,i,arr=[];for(i=13;i>=0;i--){var dd=new Date(t);dd.setDate(dd.getDate()-i);var v=act[dkey(dd.getTime())]||0;arr.push({v:v,d:dd});if(v>mx)mx=v}
  arr.forEach(function(x){bars+='<div class="lab-bar'+(x.v?'':' z')+'" title="'+x.v+' answers"><i style="height:'+Math.max(4,Math.round(x.v/mx*100))+'%"></i></div>';days+='<span>'+'SMTWTFS'.charAt(x.d.getDay())+'</span>'});
  var sc=[0,0,0,0,0];ws.forEach(function(c){sc[stage(c)]++});
  var path=STAGES.map(function(nm,k){return '<div class="lab-stage'+(sc[k]?' on':'')+'"><b>'+sc[k]+'</b><span>'+nm+'</span></div>'}).join('');
@@ -7046,7 +7145,7 @@ function vDash(){var ws=words(),due=dueList(),n=ws.length,t=now(),cons=ws.filter
 function emptyDeck(msg){return '<div class="lab-empty"><h3>Your deck is empty</h3><p>'+(msg||'Generate a vocabulary set in the Vocabulary Hub and press “Add to Learning Lab”. Your words will appear here, scheduled for review.')+'</p><button class="lab-btn" data-act="hub">📚 Open Vocabulary Hub</button></div>'}
 function startRev(ahead){var t=now(),l=ahead?words().filter(function(c){return c.srs.due>t}).sort(function(a,b){return a.srs.due-b.srs.due}).slice(0,10):dueList().slice(0,20);S.rev={q:l.map(function(c){return c.key}),i:0,shown:false,done:0,ok:0}}
 function vRev(){if(!words().length)return head('Smart spaced repetition','Recall, <em>then</em> reveal.')+emptyDeck();
- if(!S.rev)startRev(false);var R=S.rev,t=now();
+ if(!S.rev)startRev(false);var R=S.rev,t=now();R.q=R.q.filter(function(k){return D.words[k]});if(R.i>R.q.length)R.i=R.q.length;
  if(!R.q.length){var nx=words().map(function(c){return c.srs.due}).sort(function(a,b){return a-b})[0],mins=Math.max(1,Math.round((nx-t)/6e4));
   return head('Smart spaced repetition','You’re <em>caught up.</em>')+'<div class="lab-empty"><h3>Nothing is due</h3><p>Your next word is due in '+(mins<60?mins+' min':mins<1440?Math.round(mins/60)+' h':Math.round(mins/1440)+' d')+'. You can still review ahead — ratings schedule words exactly as usual.</p><button class="lab-btn" data-act="ahead">Review ahead</button></div>'}
  if(R.i>=R.q.length)return head('Smart spaced repetition','Session <em>complete.</em>')+'<div class="lab-stage-card"><div class="lab-kpis" style="grid-template-columns:repeat(3,1fr)"><div class="lab-kpi"><b>'+R.done+'</b><span>Reviewed</span></div><div class="lab-kpi"><b>'+pct(R.ok,R.done)+'%</b><span>Recalled</span></div><div class="lab-kpi"><b>'+dueList().length+'</b><span>Still due</span></div></div><div class="lab-row" style="margin-top:1.2rem"><button class="lab-btn" data-act="restart">Continue</button><button class="lab-btn ghost" data-act="tab" data-tab="dash">Dashboard</button></div></div>';
@@ -7056,7 +7155,7 @@ function vRev(){if(!words().length)return head('Smart spaced repetition','Recall
  if(!R.shown)return h+'<p class="lab-note" style="margin:1.4rem 0">Try to recall the meaning and a sentence before you reveal it.</p><button class="lab-btn" data-act="show" style="width:100%">Show answer · Space</button></div>';
  h+='<div class="lab-sec"><b>Meaning</b><p>'+esc(c.meaning)+'</p></div><div class="lab-sec"><b>Example</b><p class="lab-ex">“'+hl(c.example,c)+'”</p></div>';
  if(c.colloc.length)h+='<div class="lab-sec"><b>Collocations</b><div class="lab-chips">'+c.colloc.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div></div>';
- if(c.translation)h+='<div class="lab-sec"><b>Translation</b><p class="lab-tr">'+esc(c.translation)+'</p></div>';
+ if(c.translation)h+='<div class="lab-sec"><b>Translation</b><p class="lab-tr" dir="auto" lang="'+esc(c.lang)+'">'+esc(c.translation)+'</p></div>';
  var nm=['Again','Hard','Good','Easy'];h+='<div class="lab-grades">'+nm.map(function(n,g){return '<button class="lab-grade" data-act="grade" data-g="'+g+'">'+n+'<small>'+lab(sched(c,g).days)+' · '+(g+1)+'</small></button>'}).join('')+'</div></div>';return h}
 function head(k,h,l){return '<div class="lab-kick">'+k+'</div><h1 class="lab-h1">'+h+'</h1>'+(l?'<p class="lab-lead">'+l+'</p>':'')}
 function usable(){return words().filter(function(c){return c.example&&wre(c,'i').test(c.example)})}
@@ -7069,17 +7168,17 @@ function vCtx(){var h=head('Contextual vocabulary acquisition','Meaning lives in
  if(!words().length)return h+emptyDeck();if(!usable().length)return h+emptyDeck('None of your saved words has an example sentence that contains the word, so context practice is not possible yet. Add a new set from the Vocabulary Hub.');
  h+='<div class="lab-row" style="margin-bottom:1rem"><div class="lab-seg" role="group" aria-label="Exercise type"><button data-act="sub" data-v="cloze" aria-pressed="'+(S.sub==='cloze')+'">Fill the gap</button><button data-act="sub" data-v="produce" aria-pressed="'+(S.sub==='produce')+'">Write a sentence</button></div>';
  if(S.sub==='cloze')h+='<div class="lab-seg" role="group" aria-label="Answer mode"><button data-act="cm" data-v="choose" aria-pressed="'+(S.cm==='choose')+'">Choose</button><button data-act="cm" data-v="type" aria-pressed="'+(S.cm==='type')+'">Type</button></div>';h+='</div>';
- if(S.sub==='cloze'){if(!S.q){var c=pickCtx();S.q=c?mkQ(c):null}var q=S.q;if(S.cm==='choose'&&!q.opts){S.cm='type';q.opts=null;h+='<p class="lab-note">You need at least 4 words in your deck for multiple choice, so this question uses typing.</p>'}
+ if(S.sub==='cloze'){if(!S.q){var c=pickCtx();S.q=c?mkQ(c):null}var q=S.q;var mode=S.cm;if(mode==='choose'&&!q.opts){mode='type';h+='<p class="lab-note">You need at least 4 words in your deck for multiple choice, so this question uses typing.</p>'}
   var w=D.words[q.key],r=q.res;h+='<div class="lab-stage-card"><div class="lab-kick">Complete the sentence</div><p class="lab-orig" style="margin:.7rem 0 0">'+esc(q.pre)+(r?'<mark class="lab-hl">'+esc(q.surf)+'</mark>':'<span class="lab-blank">'+esc(q.surf)+'</span>')+esc(q.post)+'</p>';
-  if(!r&&S.cm==='choose'&&q.opts)h+='<div class="lab-opts">'+q.opts.map(function(o,i){return '<button class="lab-opt" data-act="opt" data-i="'+i+'"><kbd>'+(i+1)+'</kbd>'+esc(o)+'</button>'}).join('')+'</div>';
-  else if(!r)h+='<div style="margin-top:1.2rem"><input class="lab-in" id="lab-ans" data-enter="typeans" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type the missing word" aria-label="Missing word"><button class="lab-btn" data-act="typeans" style="width:100%;margin-top:10px">Check</button></div>';
+  if(!r&&mode==='choose'&&q.opts)h+='<div class="lab-opts">'+q.opts.map(function(o,i){return '<button class="lab-opt" data-act="opt" data-i="'+i+'"><kbd>'+(i+1)+'</kbd>'+esc(o)+'</button>'}).join('')+'</div>'+(q.surf.toLowerCase()!==w.word.toLowerCase()?'<p class="lab-note" style="margin:.8rem 0 0">Choose the word — the sentence may use a different grammatical form of it.</p>':'');
+  else if(!r)h+='<div style="margin-top:1.2rem"><input class="lab-in" id="lab-ans" dir="ltr" lang="en" data-enter="typeans" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type the missing word" aria-label="Missing word"><button class="lab-btn" data-act="typeans" style="width:100%;margin-top:10px">Check</button></div>';
   else{if(q.opts&&q.given!=null)h+='<div class="lab-opts">'+q.opts.map(function(o,i){return '<button class="lab-opt'+(o===w.word?' ok':i===q.given?' bad':'')+'" disabled>'+esc(o)+'</button>'}).join('')+'</div>';
-   h+='<div class="lab-fb '+(r.ok?'ok':'bad')+'" role="status"><strong>'+(r.ok?'Correct':'Not quite')+'</strong>The word is <b>'+esc(w.word)+'</b>'+(w.word.toLowerCase()!==q.surf.toLowerCase()?' (used as “'+esc(q.surf)+'”)':'')+'. '+esc(w.meaning)+'</div><button class="lab-btn" data-act="next" style="width:100%;margin-top:1rem">Next sentence</button>'}
+   h+='<div class="lab-fb '+(r.ok?'ok':'bad')+'" role="status"><strong>'+(r.ok?'Correct':'Not quite')+'</strong>The word is <b>'+esc(w.word)+'</b>'+(w.word.toLowerCase()!==q.surf.toLowerCase()?' (used as “'+esc(q.surf)+'”)':'')+'. '+esc(w.meaning)+(w.translation?'<br><span class="lab-tr" dir="auto" lang="'+esc(w.lang)+'">'+esc(w.translation)+'</span>':'')+'</div><button class="lab-btn" data-act="next" style="width:100%;margin-top:1rem">Next sentence</button>'}
   return h+'</div>'}
  if(!S.p){var pool=usable().filter(function(c){return c.pr.ok===0});if(!pool.length)pool=usable();S.p={key:shuffle(pool)[0].key,txt:'',res:null}}
  var p=S.p,c2=D.words[p.key];h+='<div class="lab-stage-card"><div class="lab-kick">Produce</div><p class="lab-orig" style="margin:.6rem 0 .2rem">Write one original sentence using <span style="color:var(--gold)">“'+esc(c2.word)+'”</span>.</p><p class="lab-note" style="margin:0 0 1rem">'+esc(c2.meaning)+'</p>';
  if(c2.colloc.length)h+='<div class="lab-chips" style="margin-bottom:1rem">'+c2.colloc.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>';
- if(!p.res)return h+'<textarea class="lab-in" id="lab-prod" placeholder="Write your sentence here…" aria-label="Your sentence" maxlength="400">'+esc(p.txt)+'</textarea><button class="lab-btn" data-act="pcheck" style="width:100%;margin-top:10px">Check my sentence</button></div>';
+ if(!p.res)return h+'<textarea class="lab-in" id="lab-prod" dir="ltr" lang="en" placeholder="Write your sentence here…" aria-label="Your sentence" maxlength="400">'+esc(p.txt)+'</textarea><button class="lab-btn" data-act="pcheck" style="width:100%;margin-top:10px">Check my sentence</button></div>';
  var r2=p.res;h+='<div class="lab-fb" style="margin-top:0"><strong>Your sentence</strong>'+hl(p.txt,c2)+'<ul class="lab-checks">'+r2.checks.map(function(k){return '<li class="'+(k[0]?'ok':'')+'">'+esc(k[1])+'</li>'}).join('')+'</ul></div><div class="lab-sec"><b>Model sentence</b><p class="lab-ex">“'+hl(c2.example,c2)+'”</p></div><p class="lab-note" style="margin:1rem 0 0">Automatic checks cover form only. Compare the meaning and grammar with the model, then be honest:</p>';
  if(r2.self==null)return h+'<div class="lab-row" style="margin-top:.8rem"><button class="lab-btn" data-act="pself" data-v="1">It sounds natural</button><button class="lab-btn ghost" data-act="pself" data-v="0">Needs more work</button></div></div>';
  return h+'<button class="lab-btn" data-act="pnext" style="width:100%;margin-top:1rem">Next word</button></div>'}
@@ -7109,20 +7208,20 @@ function vNet(){var h=head('Intelligent vocabulary network','See how your words 
  g.E.forEach(function(e){var p=g.map[e.a],q=g.map[e.b],dim=sel&&!(nb[e.a]&&nb[e.b]&&(e.a===sel||e.b===sel));s+='<line class="e'+(e.t==='f'?' fam':'')+(dim?' dim':'')+'" x1="'+p.x.toFixed(1)+'" y1="'+p.y.toFixed(1)+'" x2="'+q.x.toFixed(1)+'" y2="'+q.y.toFixed(1)+'"/>'});
  g.N.forEach(function(n){var dim=sel&&!nb[n.id];
   if(n.type==='h'){var wd=Math.max(44,n.label.length*6.4+16);s+='<g class="hub'+(dim?' dim':'')+(n.id===sel?' sel':'')+'" data-act="node" data-id="'+esc(n.id)+'" tabindex="0" role="button" aria-label="'+esc(n.why+': '+n.label)+'"><rect x="'+(n.x-wd/2).toFixed(1)+'" y="'+(n.y-11).toFixed(1)+'" width="'+wd+'" height="22" rx="11"/><text x="'+n.x.toFixed(1)+'" y="'+(n.y+3.5).toFixed(1)+'" text-anchor="middle">'+esc(n.label)+'</text></g>'}
-  else{var c=n.c;s+='<g class="node'+(dim?' dim':'')+(n.id===sel?' sel':'')+'" data-act="node" data-id="'+esc(n.id)+'" tabindex="0" role="button" aria-label="'+esc(c.word+', mastery '+mastery(c)+' percent')+'"><circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+n.r.toFixed(1)+'" fill="'+(COL[c.cefr]||'#8892a6')+'" fill-opacity=".85" stroke="'+(c.srs.due<=due?'#fff':'none')+'" stroke-width="1.5"'+(c.srs.due<=due?' stroke-dasharray="3 3"':'')+'/><text x="'+n.x.toFixed(1)+'" y="'+(n.y+n.r+13).toFixed(1)+'" text-anchor="middle">'+esc(c.word)+'</text><circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+(n.r+10).toFixed(1)+'" fill="transparent"/></g>'}});
+  else{var c=n.c;s+='<g class="node'+(dim?' dim':'')+(n.id===sel?' sel':'')+'" data-act="node" data-id="'+esc(n.id)+'" tabindex="0" role="button" aria-label="'+esc(c.word+', mastery '+mastery(c)+' percent')+'"><circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+n.r.toFixed(1)+'" fill="'+(COL[c.cefr]||'#8892a6')+'" fill-opacity=".85"'+(c.srs.due<=due?' class="due"':'')+'/><text x="'+n.x.toFixed(1)+'" y="'+(n.y+n.r+13).toFixed(1)+'" text-anchor="middle">'+esc(c.word)+'</text><circle cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="'+(n.r+10).toFixed(1)+'" fill="transparent"/></g>'}});
  s+='</svg>';
  var side='<div class="lab-p"><p class="lab-note" style="margin:0">Select a word or a hub to see what connects to it.</p></div>';
  if(sel){var n=g.map[sel];if(n.type==='w'){var c=n.c,rel=[];g.E.forEach(function(e){var o=e.a===sel?e.b:e.b===sel?e.a:null;if(o&&g.map[o]){var m=g.map[o];rel.push(m.type==='h'?'<li><b>'+esc(m.why)+'</b> “'+esc(m.label)+'” links to '+m.keys.filter(function(k){return k!==c.key}).map(function(k){return esc(D.words[k].word)}).join(', ')+'</li>':'<li><b>word family</b> '+esc(m.c.word)+'</li>')}});
-  side='<div class="lab-p"><div class="lab-word" style="font-size:32px">'+esc(c.word)+'</div><span class="lab-pos">'+esc(c.pos)+'</span>'+(c.cefr?'<span class="lab-lv" data-l="'+esc(c.cefr)+'" style="display:inline-flex;min-width:46px">'+esc(c.cefr)+'</span>':'')+'<p style="margin:.9rem 0;line-height:1.65">'+esc(c.meaning)+'</p><div class="lab-meter" style="--lc:var(--gold)"><span>Mastery</span><div><i style="width:'+mastery(c)+'%"></i></div><em>'+mastery(c)+'%</em></div><div class="lab-row" style="margin:1rem 0"><button class="lab-btn sm" data-act="ctxword" data-k="'+esc(c.key)+'">Practise in context</button></div><h3 class="lab-kick" style="margin:1rem 0 .6rem">Connections</h3><ul class="lab-rel">'+(rel.join('')||'<li>No links yet — add more words on related topics.</li>')+'</ul></div>'}
+  side='<div class="lab-p"><div class="lab-word" style="font-size:32px">'+esc(c.word)+'</div><span class="lab-pos">'+esc(c.pos)+'</span>'+(c.cefr?'<span class="lab-lv" data-l="'+esc(c.cefr)+'" style="display:inline-flex;min-width:46px">'+esc(c.cefr)+'</span>':'')+'<p style="margin:.9rem 0 .5rem;line-height:1.65">'+esc(c.meaning)+'</p>'+(c.translation?'<p class="lab-tr" dir="auto" lang="'+esc(c.lang)+'" style="margin:0 0 .9rem">'+esc(c.translation)+'</p>':'')+'<div class="lab-meter" style="--lc:var(--gold)"><span>Mastery</span><div><i style="width:'+mastery(c)+'%"></i></div><em>'+mastery(c)+'%</em></div><div class="lab-row" style="margin:1rem 0"><button class="lab-btn sm" data-act="ctxword" data-k="'+esc(c.key)+'">Practise in context</button></div><h3 class="lab-kick" style="margin:1rem 0 .6rem">Connections</h3><ul class="lab-rel">'+(rel.join('')||'<li>No links yet — add more words on related topics.</li>')+'</ul></div>'}
   else side='<div class="lab-p"><div class="lab-kick">'+esc(n.why)+'</div><h3 style="margin:.4rem 0 .8rem;font:600 24px var(--serif)">'+esc(n.label)+'</h3><ul class="lab-rel">'+n.keys.map(function(k){return '<li><b>'+esc(D.words[k].word)+'</b> — '+esc(D.words[k].meaning)+'</li>'}).join('')+'</ul></div>'}
- var cnt=g.E.length;return h+'<div class="lab-grid net"><div><div class="lab-net">'+s+'</div><div class="lab-legend"><span style="--c:#60A5FA">Colour = CEFR level</span><span style="--c:#8892a6">Size = mastery</span><span style="--c:#fff">Dashed ring = due</span><span style="--c:var(--gold)">Pill = shared term / set</span><span style="--c:var(--green-light)">Dashed line = word family</span></div><p class="lab-note" style="margin-top:8px">'+g.N.length+' nodes · '+cnt+' links'+(g.total>36?' · showing the 36 most recent of '+g.total+' words':'')+'</p></div><div>'+side+'</div></div>'}
+ var cnt=g.E.length;return h+'<div class="lab-grid net"><div><div class="lab-net">'+s+'</div><div class="lab-legend"><span style="--c:#60A5FA">Colour = CEFR level</span><span style="--c:#8892a6">Size = mastery</span><span style="--c:var(--white)">Dashed ring = due</span><span style="--c:var(--gold)">Pill = shared term / set</span><span style="--c:var(--green-light)">Dashed line = word family</span></div><p class="lab-note" style="margin-top:8px">'+g.N.length+' nodes · '+cnt+' links'+(g.total>36?' · showing the 36 most recent of '+g.total+' words':'')+'</p></div><div>'+side+'</div></div>'}
 /* grammar lab */
 function vGram(){var h=head('Advanced grammar intelligence lab','Rewrite with <em>precision.</em>','Complete the second sentence so it means the same as the first. Items are chosen adaptively from your weakest structures.');
  if(!S.g)S.g={cur:null,res:null,why:'',hint:false,n:0};var g=S.g;if(!g.cur){var p=pickGram(S.cat);g.cur=p.it;g.why=p.why;g.res=null;g.hint=false}
  h+='<div class="lab-row" style="margin-bottom:1rem"><div class="lab-seg" role="group" aria-label="Level filter">'+['All','B1','B2','C1–C2'].map(function(f){return '<button data-act="gf" data-v="'+f+'" aria-pressed="'+(S.gf===f)+'">'+f+'</button>'}).join('')+'</div>'+(S.cat!=null?'<button class="lab-btn ghost sm" data-act="catclr">Focus: '+esc(CATS[S.cat])+' ✕</button>':'')+'</div>';
- var it=g.cur,r=g.res;h+='<div class="lab-stage-card"><div class="lab-row" style="justify-content:space-between"><span class="lab-kick">'+esc(CATS[it.c])+'</span><span class="lab-lv" data-l="'+it.l+'" style="min-width:46px">'+it.l+'</span></div><p class="lab-why">Why this item: '+esc(g.why)+'</p><p class="lab-orig" style="margin:0">'+esc(it.s)+'</p><div class="lab-gap">'+esc(it.a)+' '+(r?'<mark class="lab-hl">'+esc(r.given||'…')+'</mark>':'<input class="lab-in inline" id="lab-g" data-enter="gcheck" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Missing words">')+(it.b.charAt(0)===','?'':' ')+esc(it.b)+'</div>';
+ var it=g.cur,r=g.res;h+='<div class="lab-stage-card"><div class="lab-row" style="justify-content:space-between"><span class="lab-kick">'+esc(CATS[it.c])+'</span><span class="lab-lv" data-l="'+it.l+'" style="min-width:46px">'+it.l+'</span></div><p class="lab-why">Why this item: '+esc(g.why)+'</p><p class="lab-orig" style="margin:0">'+esc(it.s)+'</p><div class="lab-gap">'+esc(it.a)+' '+(r?'<mark class="lab-hl">'+esc(r.given||'…')+'</mark>':'<input class="lab-in inline" id="lab-g" dir="ltr" lang="en" data-enter="gcheck" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Missing words">')+(it.b.charAt(0)===','?'':' ')+esc(it.b)+'</div>';
  if(!r){h+='<div class="lab-row" style="margin-top:1.2rem"><button class="lab-btn" data-act="gcheck">Check</button><button class="lab-btn ghost" data-act="ghint">Hint</button></div>';if(g.hint)h+='<div class="lab-fb" style="margin-top:1rem"><strong>Hint</strong>'+esc(it.r)+'</div>'}
- else{h+='<div class="lab-fb '+(r.ok?'ok':'bad')+'" role="status"><strong>'+(r.ok?'Correct':'Not quite')+'</strong>'+(r.ok?'':(r.trap?esc(r.trap)+'<br>':'')+'Accepted: <b>'+it.ok.map(esc).join('</b> / <b>')+'</b>.<br>')+'<span class="lab-note">'+esc(it.r)+'</span></div><button class="lab-btn" data-act="gnext" style="width:100%;margin-top:1rem">Next adaptive item</button>'}
+ else{var fa=r.ok?r.given:it.ok[0],fs=it.a+' '+fa+(it.b.charAt(0)===','?'':' ')+it.b;h+='<div class="lab-fb '+(r.ok?'ok':'bad')+'" role="status"><strong>'+(r.ok?'Correct':'Not quite')+'</strong><span class="lab-full" dir="ltr">“'+esc(fs)+'”</span>'+(r.ok?'':(r.trap?esc(r.trap)+'<br>':'')+'Accepted: <b>'+it.ok.map(esc).join('</b> / <b>')+'</b>.<br>')+'<span class="lab-note">'+esc(it.r)+'</span></div><button class="lab-btn" data-act="gnext" style="width:100%;margin-top:1rem">Next adaptive item</button>'}
  h+='</div><h2 class="lab-h2">Structures<small>Your accuracy</small></h2><div class="lab-p">'+CATS.map(function(c,i){var s=catStat(i);return '<div class="lab-meter" style="grid-template-columns:150px 1fr 44px"><span>'+esc(c)+'</span><div><i style="width:'+(s.n?Math.round(s.acc*100):0)+'%"></i></div><em>'+(s.n?Math.round(s.acc*100)+'%':'—')+'</em></div>'}).join('')+'</div>';return h}
 function vDiag(){var h=head('Personalised error diagnosis','What’s <em>holding you back.</em>','A diagnosis built only from your own answers: recurring grammar errors, difficult words and the balance between recognising, recalling and producing language.');
  var ga=0,gt=0,ws=words();G.forEach(function(it){var g=D.gram[it.id];if(g){ga+=g.ok;gt+=g.ok+g.bad}});var rv=D.log.filter(function(x){return x.k==='rev'}),cl=D.log.filter(function(x){return x.k==='cloze'}),pr=D.log.filter(function(x){return x.k==='prod'});
@@ -7159,8 +7258,8 @@ function act(a,el){var c,q;switch(a){
   logIt('rev',g>0);R.done++;if(g>0)R.ok++;if(g===0)R.q.push(c.key);R.i++;R.shown=false;save();render();break}
  case'ahead':startRev(true);render();break;case'restart':startRev(false);render();break;
  case'sub':S.sub=el.getAttribute('data-v');S.q=null;S.p=null;render();break;case'cm':S.cm=el.getAttribute('data-v');S.q=null;render();break;
- case'opt':q=S.q;if(!q||q.res)break;c=D.words[q.key];q.given=+el.getAttribute('data-i');q.res={ok:q.opts[q.given]===c.word};c.cl[q.res.ok?'ok':'bad']++;logIt('cloze',q.res.ok);save();render();break;
- case'typeans':{q=S.q;var inp=$('#lab-ans');if(!q||q.res||!inp||!inp.value.trim())break;c=D.words[q.key];var v=norm(inp.value);q.res={ok:v===norm(q.surf)||v===norm(c.word)};c.cl[q.res.ok?'ok':'bad']++;logIt('cloze',q.res.ok);save();render();break}
+ case'opt':q=S.q;if(!q||q.res)break;c=D.words[q.key];q.given=+el.getAttribute('data-i');q.res={ok:q.opts[q.given]===c.word};c.cl[q.res.ok?'ok':'bad']++;if(!q.res.ok)c.srs.due=Math.min(c.srs.due,now());logIt('cloze',q.res.ok);save();render();break;
+ case'typeans':{q=S.q;var inp=$('#lab-ans');if(!q||q.res||!inp||!inp.value.trim())break;c=D.words[q.key];var v=norm(inp.value);q.res={ok:v===norm(q.surf)||v===norm(c.word)};c.cl[q.res.ok?'ok':'bad']++;if(!q.res.ok)c.srs.due=Math.min(c.srs.due,now());logIt('cloze',q.res.ok);save();render();break}
  case'next':S.q=null;render();break;
  case'pcheck':{var ta=$('#lab-prod');if(!ta||!S.p)break;var txt=ta.value.trim();if(!txt){ta.focus();break}c=D.words[S.p.key];S.p.txt=txt;var wc=txt.split(/\s+/).length;
   S.p.res={self:null,checks:[[wre(c,'i').test(txt),'Uses “'+c.word+'” (any form)'],[wc>=6&&/^[A-Z“"']/.test(txt)&&/[.!?]["”']?$/.test(txt),'Reads as a full sentence: 6+ words, capital letter, final punctuation'],[norm(txt)!==norm(c.example),'Original — not a copy of the example']]};
@@ -7180,7 +7279,7 @@ function act(a,el){var c,q;switch(a){
   if(trap){var tt=D.traps[trap]=D.traps[trap]||{n:0,c:it.c};tt.n++}
   logIt('gram',ok2);S.g.res={ok:ok2,trap:trap,given:gi.value.trim()};S.g.n++;save();render();break}
  case'gnext':if(S.g)S.g.cur=null;render();break;
- case'exp':{var b=new Blob([JSON.stringify(D)],{type:'application/json'}),u=URL.createObjectURL(b),a2=document.createElement('a'),d=new Date();a2.href=u;a2.download='niron-lab-backup-'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'.json';document.body.appendChild(a2);a2.click();a2.remove();setTimeout(function(){URL.revokeObjectURL(u)},500);break}
+ case'exp':{var b=new Blob([JSON.stringify(D)],{type:'application/json'}),u=URL.createObjectURL(b),a2=document.createElement('a'),d=new Date();a2.href=u;a2.download='niron-lab-backup-'+d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+'.json';document.body.appendChild(a2);a2.click();a2.remove();setTimeout(function(){URL.revokeObjectURL(u)},500);break}
  case'imp':{var f=$('#lab-file');if(f)f.click();break}
  case'clr':if(confirm('Delete all Learning Lab data on this device? Export a backup first if you may need it.')){D=fresh();S.rev=null;S.q=null;S.p=null;S.g=null;save();render()}break}}
 function open(tab){load();if(tab&&/^(dash|review|context|network|grammar|diag)$/.test(tab))S.tab=tab;S.rev=null;S.q=null;if(S.tab==='review')startRev(false);S.lastFocus=document.activeElement;ov.classList.add('lab-show');document.body.classList.add('lab-open');render();ov.scrollTop=0;var x=$('.lab-x',ov);if(x)x.focus({preventScroll:true})}
@@ -7188,13 +7287,15 @@ function close(){ov.classList.remove('lab-show');document.body.classList.remove(
 function init(){ov=$('#lab-overlay');view=$('#lab-view');if(!ov||!view)return;load();live();badge();
  ov.addEventListener('click',function(e){var t=e.target.closest('[data-act]');if(t&&ov.contains(t))act(t.getAttribute('data-act'),t)});
  ov.addEventListener('keydown',function(e){var t=e.target;
+  if(e.key==='Tab'){var f=[].filter.call(ov.querySelectorAll('button,input,textarea,[tabindex="0"],a[href]'),function(x){return !x.disabled&&x.getClientRects().length>0});if(f.length){var a0=f[0],z=f[f.length-1];if(e.shiftKey&&(t===a0||!ov.contains(t))){e.preventDefault();z.focus()}else if(!e.shiftKey&&(t===z||!ov.contains(t))){e.preventDefault();a0.focus()}}return}
   if(e.key==='Enter'&&t.getAttribute&&t.getAttribute('data-enter')){e.preventDefault();act(t.getAttribute('data-enter'),t);return}
   if((e.key==='Enter'||e.key===' ')&&t.getAttribute&&t.getAttribute('data-act')==='node'){e.preventDefault();act('node',t);return}
   if(typed())return;
   if(S.tab==='review'&&S.rev&&S.rev.i<S.rev.q.length){if(!S.rev.shown&&(e.key===' '||e.key==='Enter')&&t.tagName!=='BUTTON'){e.preventDefault();act('show')}else if(S.rev.shown&&/^[1-4]$/.test(e.key)){act('grade',{getAttribute:function(){return String(+e.key-1)}})}}
   if(S.tab==='context'&&S.sub==='cloze'&&S.q&&!S.q.res&&S.q.opts&&S.cm==='choose'&&/^[1-4]$/.test(e.key)){act('opt',{getAttribute:function(){return String(+e.key-1)}})}});
- ov.addEventListener('change',function(e){if(e.target.id!=='lab-file')return;var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var j=JSON.parse(r.result);if(!j||j.v!==1||typeof j.words!=='object')throw 0;if(!confirm('Replace the Learning Lab data on this device with this backup ('+Object.keys(j.words).length+' words)?'))return;localStorage.setItem(KEY,JSON.stringify(j));load();S.rev=null;S.q=null;S.p=null;S.g=null;save();render();toast('Backup imported.','success')}catch(x){toast('That file is not a valid Learning Lab backup.','error')}};r.readAsText(f)});
+ ov.addEventListener('change',function(e){if(e.target.id!=='lab-file')return;var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var j=JSON.parse(r.result);if(!j||j.v!==1||!j.words||typeof j.words!=='object'||Array.isArray(j.words))throw 0;if(!confirm('Replace the Learning Lab data on this device with this backup ('+Object.keys(j.words).length+' words)?'))return;localStorage.setItem(KEY,JSON.stringify(j));load();S.rev=null;S.q=null;S.p=null;S.g=null;save();render();toast('Backup imported.','success')}catch(x){toast('That file is not a valid Learning Lab backup.','error')}};r.onerror=function(){toast('That file could not be read.','error')};r.readAsText(f);e.target.value=''});
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('lab-show')&&!(window.VocabHub&&$('#vh-overlay')&&getComputedStyle($('#vh-overlay')).display!=='none'))close()});
+ window.addEventListener('storage',function(e){if(e.key!==KEY||!D)return;load();badge();live();if(ov.classList.contains('lab-show')&&!typed())render()});
  var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){if(ov.classList.contains('lab-show')&&S.tab==='network')render()},200)});
  /* bridge: offer "Add to Learning Lab" inside the existing Vocabulary Hub results (Hub code untouched) */
  var vb=document.getElementById('vh-body');if(vb&&window.MutationObserver)new MutationObserver(function(){var st=window.VocabHub&&VocabHub.state;if(!st||st.phase!=='learn'||!st.words||!st.words.length||vb.querySelector('.lab-add'))return;
