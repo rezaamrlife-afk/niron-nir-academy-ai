@@ -4232,6 +4232,8 @@ body{font-family:var(--f-sans)}
 .nd-err small { display: block; margin-top: 4px; color: var(--white-dim); font-size: 12.5px; }
 .nd-foot { margin-top: 12px; font: 500 11px/1.5 var(--f-sans); color: var(--white-dim); }
 .nd-note { padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--border); font: 500 13px/1.6 var(--f-sans); color: var(--white-dim); margin-bottom: 12px; }
+.vh-card.nd-pending .vh-card-section, .vh-card.nd-pending .vh-meta-row, .vh-card.nd-pending .vh-card-pos, .vh-card.nd-invalid .vh-card-section, .vh-card.nd-invalid .vh-meta-row, .vh-card.nd-invalid .vh-card-pos, .vh-card.nd-invalid .vh-reveal-btn,
+.def-card.nd-invalid .content-label, .def-card.nd-invalid .content-text, .def-card.nd-invalid .example-block { display: none; }
 .nd-sg { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--gold-dim, var(--border)); background: transparent; color: var(--gold); font: 700 13px var(--f-sans); cursor: pointer; } .nd-sg:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .nd-retry { margin-left: 8px; min-height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--gold-dim, var(--border)); background: transparent; color: var(--gold); font: 700 11px var(--f-sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .nd-load { display: grid; gap: 10px; padding: 18px; border: 1px solid var(--border); border-radius: 18px; }
@@ -7374,7 +7376,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast('
 function logIt(k,ok){D.log.push({t:now(),k:k,ok:ok?1:0});if(D.log.length>3000)D.log=D.log.slice(-3000)}
 function words(){return Object.keys(D.words).map(function(k){return D.words[k]})}
 function dueList(){var t=now();return words().filter(function(c){return c.srs.due<=t}).sort(function(a,b){return a.srs.due-b.srs.due})}
-function addWords(list,set){var a=0,d=0;(list||[]).forEach(function(w){if(!w||!w.word)return;var k=String(w.word).toLowerCase().trim().slice(0,80);if(!k||BAD[k])return;if(D.words[k]){d++;return}
+function addWords(list,set){var a=0,d=0;(list||[]).forEach(function(w){if(!w||!w.word)return;var k=String(w.word).toLowerCase().trim().slice(0,80);if(!k||BAD[k])return;if(window.NIRONDict&&NIRONDict.isInvalid&&NIRONDict.isInvalid(w.word))return;if(D.words[k]){d++;return}
  var tr=typeof w.translation==='string'?w.translation:(w.translation&&typeof w.translation==='object'?String(Object.keys(w.translation).map(function(k){return w.translation[k]}).filter(function(x){return typeof x==='string'})[0]||''):'');tr=tr.trim();var cl0=Array.isArray(w.collocations)?w.collocations:(typeof w.collocations==='string'?w.collocations.split(/[;,\n]+/):[]);cl0=cl0.map(function(x){return String(x==null?'':x).trim()}).filter(Boolean);
  D.words[k]=fixCard({word:String(w.word).trim().slice(0,80),pos:String(w.pos||'').slice(0,30),meaning:String(w.meaning||'').slice(0,400),example:String(w.example||'').slice(0,400),translation:tr.slice(0,200),register:String(w.register||'').slice(0,40),cefr:(String(w.cefr||'').toUpperCase().match(/[ABC][12]/)||[''])[0],ielts:String(w.ielts_relevance||'').slice(0,400),colloc:cl0.map(function(x){return x.slice(0,80)}),set:set||'',lang:/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(tr)?'fa':((/[çğışöüÇĞİŞÖÜ]/.test(tr)||(window._selectedLang==='tr'&&tr))?'tr':''),added:now()},k);a++});
  if(a)save();return{added:a,dup:d}}
@@ -7615,8 +7617,10 @@ function init(){ov=$('#lab-overlay');view=$('#lab-view');if(!ov||!view)return;lo
   d.innerHTML=all?'<span>✓ These '+st.words.length+' words are in your Learning Lab.</span><button class="g" type="button" data-lab="open">Open Lab</button>':'<span>Study these '+st.words.length+' words with spaced repetition, context practice and a vocabulary network.</span><button type="button" data-lab="add">＋ Add to Learning Lab</button>';
   var nav=vb.querySelector('.vh-nav');nav?vb.insertBefore(d,nav):vb.appendChild(d);
   d.addEventListener('click',function(e){var b=e.target.closest('[data-lab]');if(!b)return;if(b.getAttribute('data-lab')==='open'){var o=$('#vh-overlay');if(window.VocabHub&&VocabHub.close)VocabHub.close();open('dash');return}
-   var set=String(st.value||'').trim();set=set?set.charAt(0).toUpperCase()+set.slice(1,40):'';var r=addWords(st.words,set);toast(r.added+' word'+(r.added===1?'':'s')+' added to your Learning Lab'+(r.dup?' ('+r.dup+' already there)':'')+'.','success');
-   d.innerHTML='<span>✓ '+st.words.length+' words are in your Learning Lab.</span><button class="g" type="button" data-lab="open">Open Lab</button>'})}).observe(vb,{childList:true})}
+   if(b.disabled)return;b.disabled=true;var set=String(st.value||'').trim();set=set?set.charAt(0).toUpperCase()+set.slice(1,40):'';
+   var go=function(){var bad=st.words.filter(function(w){return w&&w.word&&window.NIRONDict&&NIRONDict.isInvalid&&NIRONDict.isInvalid(w.word)}).length,r=addWords(st.words,set);toast(r.added+' word'+(r.added===1?'':'s')+' added to your Learning Lab'+(r.dup?' ('+r.dup+' already there)':'')+(bad?'; '+bad+' misspelled word'+(bad===1?'':'s')+' skipped':'')+'.','success');
+    d.innerHTML='<span>✓ '+(st.words.length-bad)+' words are in your Learning Lab.</span><button class="g" type="button" data-lab="open">Open Lab</button>'};
+   window.NIRONDict&&NIRONDict.check?NIRONDict.check(st.words).then(go,go):go()})}).observe(vb,{childList:true})}
 window.NIRONLab={open:open,close:close,addWords:function(l,s){load();return addWords(l,s)},_data:function(){return D}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
@@ -7626,7 +7630,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* NIRON Learner's Dictionary — inline entry for Hub cards and Core definitions.
    Data: POST /api/dictionary (new, standalone). If it is unavailable, a basic entry is built from the card's own data. */
 var NIRONDict = (function () {
-  var KEY = 'niron_dict_v3', MAX = 60, openKeys = {}, busy = {}, sugg = {};
+  var KEY = 'niron_dict_v3', MAX = 60, openKeys = {}, busy = {}, sugg = {}, invalid = {}, okw = {};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function store() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
   function cget(k) { var c = store()[k]; return c && c.e ? c.e : null; }
@@ -7655,6 +7659,28 @@ var NIRONDict = (function () {
   }
   // The word actually looked up: the card's own word, or a suggestion the user picked for a misspelled one.
   function effSeed(el) { var sd = seedOf(el); if (sd && el.__pick) sd = Object.assign({}, sd, { w: el.__pick, v: 1 }); return sd; }
+  function nw(w) { return String(w == null ? '' : w).toLowerCase().trim(); }
+  // The Hub / Core card that owns a slot. While a word is being validated (pending) or turns out invalid, the card's own
+  // meaning / example are hidden, so an invalid word never shows a meaning next to the suggestions.
+  function shell(sl) { return sl.closest('.vh-card, .def-card'); }
+  function settle(sl, e) {
+    var c = shell(sl); if (!c) return;
+    c.classList.remove('nd-pending');
+    if (e && e.suggest) c.classList.add('nd-invalid'); else if (!sl.__pick) c.classList.remove('nd-invalid');
+  }
+  // After a suggestion is chosen and its entry is ready, the Hub card BECOMES that word (the invalid word is dropped from the set,
+  // so only the valid word can reach the Learning Lab). If the set already has that word, the invalid card is simply removed.
+  function adopt(sl, e) {
+    var hv = window.VocabHub, st = hv && hv.state, sd = seedOf(sl);
+    if (!st || !Array.isArray(st.words) || !sd || !sl.closest('#vh-body')) return false;
+    var orig = nw(sd.w), nxt = nw(e.headword || sl.__pick), idx = -1, dup = false;
+    st.words.forEach(function (w, i) { var k = nw(w && w.word); if (k === orig && idx < 0) idx = i; else if (k === nxt) dup = true; });
+    if (idx < 0) return false;
+    if (dup) { st.words.splice(idx, 1); st.index = Math.max(0, Math.min(st.index, st.words.length - 1)); }
+    else { var s0 = e.senses[0] || {}; st.words[idx] = { word: e.headword || sl.__pick, pos: s0.pos || '', meaning: s0.definition || '', example: (s0.examples || [])[0] || '', collocations: s0.collocations || [], cefr: sd.l || e.cefr || '', register: e.register || '', translation: s0.translation || '' }; }
+    try { hv.render(); } catch (x) { return false; }
+    return true;
+  }
   function seedOf(el) { try { return JSON.parse(decodeURIComponent(el.getAttribute('data-seed'))); } catch (e) { return null; } }
 
   var REASON = { missing: 'The dictionary service was not found (404). Deploy api/dictionary.js next to vocab.js.', server: 'The dictionary service had a temporary problem.', network: 'Could not reach the dictionary service. Check your connection.', bad: 'The dictionary service sent an unreadable answer.', timeout: 'The dictionary service took too long to answer.' };
@@ -7719,15 +7745,18 @@ var NIRONDict = (function () {
   function load(sl, force) {
     var sd = effSeed(sl); if (!sd) return;
     var k = ckey(sd.w, sd.l), hit = force ? null : cget(k);
-    if (hit) { paint(sl, safeView(hit)); return; }
-    if (!force && sugg[k]) { paint(sl, safeView(sugg[k])); return; }
+    if (hit) { paint(sl, safeView(hit)); settle(sl, hit); return; }
+    if (!force && sugg[k]) { paint(sl, safeView(sugg[k])); settle(sl, sugg[k]); return; }
     if (busy[k]) { paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>'); return; }
     busy[k] = true;
     paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>');
     var done = function (entry, ok) {
-      busy[k] = false; if (ok) cset(k, entry); if (entry && entry.suggest) sugg[k] = entry;
+      busy[k] = false;
+      if (ok) { cset(k, entry); okw[nw(sd.w)] = 1; }
+      if (entry && entry.suggest) { sugg[k] = entry; invalid[nw(sd.w)] = entry.suggestions || []; }   // never cached or saved as an entry
+      if (ok && sl.__pick) adopt(sl, entry);
       var live = document.querySelectorAll('.nd-slot');
-      for (var i = 0; i < live.length; i++) { var o = effSeed(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); }
+      for (var i = 0; i < live.length; i++) { var o = effSeed(live[i]); if (o && ckey(o.w, o.l) === k) { if (!live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); settle(live[i], entry); } }
     };
     var body = JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang(), validated: !!sd.v });
     function attempt(n) {
@@ -7762,13 +7791,27 @@ var NIRONDict = (function () {
   function toggle(btn) { var sl = btn.closest('.nd-slot'); setOpen(sl, sl.querySelector('.nd-panel').hidden); }
   function say(btn) { if (window.speakWord) speakWord(encodeURIComponent(btn.getAttribute('data-w') || '')); }
   function retry(btn) { var sl = btn.closest('.nd-slot'); load(sl, true); }
-  function pick(btn) { var sl = btn.closest('.nd-slot'), w = btn.getAttribute('data-w'); if (!sl || !w) return; sl.__pick = w; load(sl); }
+  function pick(btn) { var sl = btn.closest('.nd-slot'), w = btn.getAttribute('data-w'); if (!sl || !w || sl.__pick === w) return; sl.__pick = w; load(sl); }
   function init(root) {
     var list = (root.matches && root.matches('.nd-slot')) ? [root] : (root.querySelectorAll ? root.querySelectorAll('.nd-slot') : []);
-    for (var i = 0; i < list.length; i++) { var sl = list[i]; if (sl.__nd) continue; sl.__nd = 1; var sd = seedOf(sl); if (sd && (sl.getAttribute('data-auto') === '1' || openKeys[sd.w.toLowerCase()])) setOpen(sl, true); }
+    for (var i = 0; i < list.length; i++) { var sl = list[i]; if (sl.__nd) continue; sl.__nd = 1; var sd = seedOf(sl); if (sd && (sl.getAttribute('data-auto') === '1' || openKeys[sd.w.toLowerCase()])) { if (sl.getAttribute('data-auto') === '1') { var c = shell(sl); if (c) c.classList.add('nd-pending'); } setOpen(sl, true); } }
+  }
+  // Validation only (no entry): used before words are saved to the Learning Lab. Resolves when done; never rejects.
+  function check(list) {
+    var todo = []; (list || []).forEach(function (w) { var k = nw(w && w.word); if (k && k.length <= 60 && !okw[k] && !invalid[k] && todo.indexOf(k) < 0) todo.push(k); });
+    todo = todo.slice(0, 24); var i = 0;
+    function one() {
+      if (i >= todo.length) return Promise.resolve();
+      var k = todo[i++], ctl = ('AbortController' in window) ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 12000);
+      return fetch('/api/dictionary', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl ? ctl.signal : undefined, body: JSON.stringify({ word: k, check_only: true }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { clearTimeout(to); if (j && j.status === 'suggest') invalid[k] = A(j.suggestions).slice(0, 3); else if (j && j.status === 'valid') okw[k] = 1; })
+        .catch(function () { clearTimeout(to); }).then(one);
+    }
+    return Promise.all([one(), one(), one(), one()]);
   }
   new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) init(n); }); }); }).observe(document.body, { childList: true, subtree: true });
-  return { slot: slot, toggle: toggle, retry: retry, pick: pick, say: say, _view: view };
+  return { slot: slot, toggle: toggle, retry: retry, pick: pick, check: check, isInvalid: function (w) { return !!invalid[nw(w)]; }, say: say, _view: view };
 })();
 </script>
 </body>
