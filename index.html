@@ -3967,24 +3967,26 @@ body.focus-mode .lab-land, body:has(#account-view.show) .lab-land { display: non
 .lab-card b { font-size: 22px; line-height: 1.25; letter-spacing: 0; }
 .lab-empty h3 { font-size: 26px; }
 .lab-kpi b { letter-spacing: 0; }
-/* labels, buttons, uppercase text: Cinzel (wide, so tighter tracking and no tiny sizes) */
-.lab-kick, .lab-brand b, .lab-brand small, .lab-kpi span, .lab-h2 small, .lab-sec > b, .lab-btn, .lab-add button, .lab-seg button, .lab-grade, .lab-fb strong, .lab-card em, .lab-flow li, .lab-land .section-tag { font-family: var(--lab-label); font-weight: 600; font-synthesis: none; }
+/* buttons, navigation, labels and uppercase text: Plus Jakarta Sans Bold with open tracking */
+.lab-kick, .lab-brand small, .lab-kpi span, .lab-h2 small, .lab-sec > b, .lab-btn, .lab-add button, .lab-seg button, .lab-grade, .lab-fb strong, .lab-card em, .lab-flow li, .lab-lv, .lab-land .section-tag { font-family: var(--lab-sans); font-weight: 700; font-synthesis: none; }
 .lab-kick { font-size: 11px; letter-spacing: .16em; }
-.lab-brand b { font-size: 15px; font-weight: 700; letter-spacing: .22em; } .lab-brand small { font-size: 10.5px; font-weight: 500; letter-spacing: .12em; }
 .lab-kpi span { font-size: 11px; letter-spacing: .1em; }
-.lab-h2 small { font-size: 11px; letter-spacing: .1em; font-weight: 500; }
+.lab-h2 small { font-size: 11px; letter-spacing: .1em; font-weight: 600; }
 .lab-sec > b { font-size: 11px; letter-spacing: .14em; }
-.lab-btn { font-size: 12.5px; font-weight: 700; letter-spacing: .1em; } .lab-btn.sm { font-size: 11.5px; letter-spacing: .08em; }
-.lab-add button { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+.lab-btn { font-size: 12.5px; letter-spacing: .1em; } .lab-btn.sm { font-size: 11.5px; letter-spacing: .08em; }
+.lab-add button { font-size: 12px; letter-spacing: .08em; }
 .lab-seg button { font-size: 12px; letter-spacing: .08em; }
 .lab-grade { font-size: 14px; letter-spacing: .06em; } .lab-grade small { font-family: var(--lab-sans); font-weight: 600; letter-spacing: 0; font-size: 11px; }
 .lab-fb strong { font-size: 12.5px; letter-spacing: .12em; }
 .lab-card em { font-size: 11px; letter-spacing: .12em; }
 .lab-flow li { font-size: 12px; letter-spacing: .1em; } .lab-flow small { font-family: var(--lab-sans); font-weight: 500; }
-.lab-lv { font-family: var(--lab-label); font-weight: 700; font-size: 12.5px; letter-spacing: .06em; }
+.lab-lv { font-size: 12.5px; letter-spacing: .06em; }
+.lab-brand small { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; }
 .lab-stage span { font-family: var(--lab-sans); font-weight: 700; }
-@media (min-width: 640px) { .lab-stage span { font-family: var(--lab-label); font-weight: 600; font-size: 10px; letter-spacing: .06em; } }
+@media (min-width: 640px) { .lab-stage span { font-size: 10px; letter-spacing: .06em; } }
 .lab-land .section-tag { letter-spacing: .18em; }
+/* Cinzel: brand heading only */
+.lab-brand b { font-family: var(--lab-label); font-weight: 700; font-size: 15px; letter-spacing: .22em; font-synthesis: none; }
 /* Persian / Arabic script: Latin faces have no glyphs, so use a dedicated stack with relaxed leading and no tracking */
 .lab-tr, .lab-tr[lang="fa"], .lab-tr[lang="fa"] * { font-family: 'Vazirmatn', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, 'Geeza Pro', var(--lab-sans); font-weight: 500; letter-spacing: 0; text-transform: none; }
 .lab-tr[lang="fa"] { font-size: 1.08em; line-height: 1.95; }
