@@ -5852,6 +5852,27 @@ async function saveOutput() {
   btn.disabled    = true;
   btn.textContent = '…';
 
+  const _payload = {
+    topic:       document.getElementById('topic-input').value.trim(),
+    cefr_level:  document.getElementById('cefr-select').value,
+    ielts_band:  document.getElementById('ielts-select').value,
+    output_type: selectedType,
+    content:     window._lastNironData,
+  };
+  const _savedOffline = function() {
+    btn.textContent = '✓';
+    btn.classList.add('saved');
+    btn.title = 'Saved offline ✓';
+    showToast('Saved offline — will sync when you are back online', 'success');
+    setTimeout(() => {
+      btn.disabled    = false;
+      btn.textContent = '↓';
+      btn.classList.remove('saved');
+      btn.title       = 'Save';
+    }, 3000);
+  };
+  if (!navigator.onLine && window.NIRONSync && NIRONSync.queueSave(_payload)) { _savedOffline(); return; }
+
   try {
     const { data: { session } } = await window._sb.auth.getSession();
     if (!session) {
@@ -5887,6 +5908,7 @@ async function saveOutput() {
 
   } catch (err) {
     console.error('[NIRON] Save error:', err);
+    if (window.NIRONSync && NIRONSync.isNetErr(err) && NIRONSync.queueSave(_payload)) { _savedOffline(); return; }
     btn.disabled    = false;
     btn.textContent = '↓';
     btn.title = 'Save failed — try again';
@@ -8395,6 +8417,142 @@ function build(){
  return '<div class="pd-wrap">'+kp+empty+'<div class="pd-row">'+goalC+insC+'</div>'+actC+'<div class="pd-row">'+wkC+fcC+'</div><div class="pd-row">'+skC+pipC+'</div><div class="pd-row">'+cefC+wkW+'</div><div class="pd-row">'+svC+tpC+'</div>'+rcC+'<p class="pd-note">Learning figures are computed from practice stored in this browser; saved-output figures come from your account.</p></div>'}
 function draw(){if(host)host.innerHTML=build()}
 window.NIRONProgress={render:function(el,r,t){host=el;rows=Array.isArray(r)?r:[];total=+t||rows.length;draw()},range:function(n){R=n;draw()},goal:function(n){try{localStorage.setItem(GK,String(n))}catch(e){}draw()}};
+})();
+</script>
+<script>
+/* ══════ NIRON Cloud Sync (Supabase) ══════
+   Learning Lab data (localStorage "niron_lab_v1": words/SRS, review log, grammar, traps) is mirrored to ONE row per user in
+   public.niron_lab_sync (RLS: auth.uid() = user_id). localStorage stays the working copy and offline fallback.
+   Merge is non-destructive and order-independent: union of words/log, newest SRS state wins, counters take the max.
+   Only the public anon/publishable key is used in the browser. Saved Outputs already live in public.saved_outputs;
+   this module adds an offline outbox for saves made while offline. */
+(function(){
+'use strict';
+var LK='niron_lab_v1',MK='niron_sync_meta_v1',OB='niron_sync_outbox_v1',BK='niron_sync_backup_',T='niron_lab_sync',MAXLOG=3000,MAXOB=50;
+var origSet=Storage.prototype.setItem,origGet=Storage.prototype.getItem,origRem=Storage.prototype.removeItem;
+var uid=null,busy=false,again=false,timer=null,poll=null,chan=null,warned={},lastErr=null,lastSync=0,state='signed-out';
+function g(k){try{return origGet.call(localStorage,k)}catch(e){return null}}
+function s(k,v){try{origSet.call(localStorage,k,v);return true}catch(e){return false}}
+function j(x,d){try{var v=JSON.parse(x);return v==null?d:v}catch(e){return d}}
+function isObj(x){return x&&typeof x==='object'&&!Array.isArray(x)}
+function badKey(k){return k==='__proto__'||k==='constructor'||k==='prototype'}
+function toast(m,t){try{if(typeof showToast==='function')showToast(m,t||'info')}catch(e){}}
+function once(k,m,t){if(warned[k])return;warned[k]=1;toast(m,t)}
+function stable(x){if(Array.isArray(x))return '['+x.map(stable).join(',')+']';if(isObj(x))return '{'+Object.keys(x).sort().map(function(k){return JSON.stringify(k)+':'+stable(x[k])}).join(',')+'}';return JSON.stringify(x)===undefined?'null':JSON.stringify(x)}
+function canon(st){return stable({words:st.words,log:st.log.slice().sort(function(a,b){return a.t-b.t||(a.k<b.k?-1:a.k>b.k?1:0)}),gram:st.gram,traps:st.traps})}
+function empty(st){return !Object.keys(st.words).length&&!st.log.length&&!Object.keys(st.gram).length&&!Object.keys(st.traps).length}
+/* ── state normalisation (structure only; card contents are preserved as-is) ── */
+function norm(d){var st={words:{},log:[],gram:{},traps:{}};if(!isObj(d))return st;
+ if(isObj(d.words))Object.keys(d.words).forEach(function(k){if(!badKey(k)&&isObj(d.words[k]))st.words[k]=d.words[k]});
+ if(Array.isArray(d.log))st.log=d.log.filter(function(x){return isObj(x)&&isFinite(+x.t)&&/^(rev|cloze|prod|gram)$/.test(x.k)}).map(function(x){return{t:+x.t,k:x.k,ok:+x.ok?1:0}});
+ if(isObj(d.gram))Object.keys(d.gram).forEach(function(k){if(!badKey(k)&&isObj(d.gram[k]))st.gram[k]=d.gram[k]});
+ if(isObj(d.traps))Object.keys(d.traps).forEach(function(k){if(!badKey(k)&&isObj(d.traps[k]))st.traps[k]=d.traps[k]});
+ return st}
+function readLocal(){var raw=g(LK),d=j(raw,null);return{raw:raw,valid:!!(isObj(d)&&d.v===1),st:norm(isObj(d)&&d.v===1?d:null)}}
+/* ── merge (commutative + idempotent) ── */
+function n0(v){v=+v;return isFinite(v)?v:0}
+function cmpSrs(a,b){a=a||{};b=b||{};return (n0(a.last)-n0(b.last))||(n0(a.reps)-n0(b.reps))||(n0(a.int)-n0(b.int))}
+function filled(v){return v!=null&&v!==''&&!(Array.isArray(v)&&!v.length)}
+function pickMax(vals){var best=vals[0],bs=stable(best);for(var i=1;i<vals.length;i++){var t=stable(vals[i]);if(t>bs){best=vals[i];bs=t}}return best}
+function rankSrs(x){x=x||{};return [n0(x.last),n0(x.reps),n0(x.int)]}
+function betterSrs(a,b){var x=rankSrs(a),y=rankSrs(b);for(var i=0;i<3;i++)if(x[i]!==y[i])return x[i]>y[i]?a:b;return stable(a)>=stable(b)?a:b}
+function maxNums(a,b){var r={},ks=Object.keys(isObj(a)?a:{}).concat(Object.keys(isObj(b)?b:{}));ks.forEach(function(k){if(badKey(k))return;var x=isObj(a)?a[k]:undefined,y=isObj(b)?b[k]:undefined;r[k]=(typeof x==='number'||typeof y==='number'||x===undefined||y===undefined)&&(isFinite(+x)||isFinite(+y))?Math.max(n0(x),n0(y)):pickMax([x,y].filter(function(v){return v!==undefined}))});return r}
+/* associative + commutative: newest SRS state wins, counters take the max, text fields take the greatest non-empty value */
+function card(a,b){if(!a)return b;if(!b)return a;var r={};
+ Object.keys(a).concat(Object.keys(b)).forEach(function(k){if(badKey(k)||k in r||k==='srs'||k==='cl'||k==='pr'||k==='added')return;
+  var pool=[a[k],b[k]].filter(function(v){return v!==undefined}),ne=pool.filter(filled);r[k]=JSON.parse(JSON.stringify(pickMax(ne.length?ne:pool)))});
+ r.cl=maxNums(a.cl,b.cl);r.pr=maxNums(a.pr,b.pr);
+ var ad=[n0(a.added),n0(b.added)].filter(Boolean);if(ad.length)r.added=Math.min.apply(null,ad);
+ if(isObj(a.srs)||isObj(b.srs))r.srs=JSON.parse(JSON.stringify(isObj(a.srs)&&isObj(b.srs)?betterSrs(a.srs,b.srs):(a.srs||b.srs)));return r}
+function gram(a,b){if(!a)return b;if(!b)return a;var ta=n0(a.t),tb=n0(b.t);return{ok:Math.max(n0(a.ok),n0(b.ok)),bad:Math.max(n0(a.bad),n0(b.bad)),last:ta>tb?(a.last?1:0):tb>ta?(b.last?1:0):((a.last||b.last)?1:0),t:Math.max(ta,tb)}}
+function trap(a,b){if(!a)return b;if(!b)return a;var w=n0(a.n)>n0(b.n)?a:(n0(b.n)>n0(a.n)?b:null);return{n:Math.max(n0(a.n),n0(b.n)),c:w?w.c:Math.max(n0(a.c),n0(b.c))}}
+function merge(A,B){var o={words:{},log:[],gram:{},traps:{}};
+ Object.keys(A.words).concat(Object.keys(B.words)).forEach(function(k){if(!(k in o.words))o.words[k]=card(A.words[k],B.words[k])});
+ var seen={};A.log.concat(B.log).forEach(function(x){var k=x.t+'|'+x.k,p=seen[k];if(!p)seen[k]={t:x.t,k:x.k,ok:x.ok};else if(x.ok>p.ok)p.ok=x.ok});
+ o.log=Object.keys(seen).map(function(k){return seen[k]}).sort(function(a,b){return a.t-b.t||(a.k<b.k?-1:a.k>b.k?1:0)});if(o.log.length>MAXLOG)o.log=o.log.slice(-MAXLOG);
+ Object.keys(A.gram).concat(Object.keys(B.gram)).forEach(function(k){if(!(k in o.gram))o.gram[k]=gram(A.gram[k],B.gram[k])});
+ Object.keys(A.traps).concat(Object.keys(B.traps)).forEach(function(k){if(!(k in o.traps))o.traps[k]=trap(A.traps[k],B.traps[k])});
+ return o}
+/* ── meta, backups, applying to localStorage ── */
+function meta(){var m=j(g(MK),null);return isObj(m)?m:{}}
+function setMeta(m){s(MK,JSON.stringify(m))}
+function backup(raw,why){if(!raw)return;var ks=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf(BK)===0)ks.push(k)}}catch(e){}
+ ks.sort();while(ks.length>=3){try{origRem.call(localStorage,ks.shift())}catch(e){break}}s(BK+Date.now()+'_'+why,raw)}
+function labOpen(){var o=document.getElementById('lab-overlay');return !!(o&&o.classList.contains('lab-show'))}
+function apply(st){var cur=readLocal();if(cur.raw&&!cur.valid)backup(cur.raw,'unreadable');
+ if(!s(LK,JSON.stringify({v:1,words:st.words,log:st.log,gram:st.gram,traps:st.traps}))){once('quota','Browser storage is full — cloud data could not be applied locally.','warning');return false}
+ try{if(window.NIRONLab&&NIRONLab.addWords)NIRONLab.addWords([],'sync')}catch(e){}  /* refreshes Lab's in-memory copy; adds nothing */
+ return true}
+/* ── one sync attempt: returns true when finished, false to retry (conflict) ── */
+async function attempt(){
+ var sb=window._sb,m=meta(),first=!m.uid,other=!!m.uid&&m.uid!==uid,L=readLocal();
+ if(other){backup(L.raw,'acct_'+String(m.uid).slice(0,8));try{origRem.call(localStorage,LK)}catch(e){}L=readLocal();m={uid:uid,rev:0,epoch:0,had:false};setMeta(m)}
+ var r=await sb.from(T).select('rev,epoch,state').eq('user_id',uid).maybeSingle();
+ if(r.error)throw r.error;var rem=r.data;
+ if(!rem){
+  var ins=await sb.from(T).insert({user_id:uid,rev:1,epoch:n0(m.epoch),state:L.st});
+  if(ins.error){if(ins.error.code==='23505')return false;throw ins.error}
+  setMeta({uid:uid,rev:1,epoch:n0(m.epoch),had:!empty(L.st),at:Date.now()});return true}
+ var RS=norm(rem.state),rev=n0(rem.rev),rep=n0(rem.epoch);
+ /* a local "Delete all Lab data" on a device that had synced data = deliberate reset */
+ if(!first&&m.had&&empty(L.st)&&L.valid&&!empty(RS)&&rep<=n0(m.epoch)){
+  var ne=Math.max(Date.now(),rep+1),u=await sb.from(T).update({state:L.st,epoch:ne,rev:rev+1}).eq('user_id',uid).eq('rev',rev).select('rev');
+  if(u.error)throw u.error;if(!u.data||!u.data.length)return false;
+  setMeta({uid:uid,rev:rev+1,epoch:ne,had:false,at:Date.now()});return true}
+ /* another device reset the account's Lab data after our last sync: adopt it, keeping a local backup */
+ if(!first&&rep>n0(m.epoch)){if(labOpen())return true;backup(L.raw,'pre_reset');if(apply(RS))setMeta({uid:uid,rev:rev,epoch:rep,had:!empty(RS),at:Date.now()});return true}
+ var M=merge(L.st,RS),cM=canon(M),chL=cM!==canon(L.st),chR=cM!==canon(RS),newRev=rev;
+ if(chR){var up=await sb.from(T).update({state:M,rev:rev+1}).eq('user_id',uid).eq('rev',rev).select('rev');
+  if(up.error)throw up.error;if(!up.data||!up.data.length)return false;newRev=rev+1}
+ if(chL){if(labOpen()){setMeta({uid:uid,rev:newRev,epoch:Math.max(rep,n0(m.epoch)),had:m.had,at:m.at});return true}  /* never swap data under an open Lab; next sync applies it */
+  if(first||other||!L.valid)backup(L.raw,'premerge');if(!apply(M))return true}
+ setMeta({uid:uid,rev:newRev,epoch:Math.max(rep,n0(m.epoch)),had:!empty(M),at:Date.now()});return true}
+function errMsg(e){return e&&(e.message||e.code)||String(e)}
+function setupHint(e){var c=e&&e.code,t=errMsg(e);return c==='42P01'||c==='PGRST205'||c==='PGRST204'||c==='42703'||/does not exist|schema cache/i.test(t)}
+async function sync(why){
+ if(!uid||!window._sb)return;if(!navigator.onLine){state='offline';return}
+ if(busy){again=true;return}busy=true;state='syncing';
+ try{var ok=false;for(var i=0;i<4&&!ok;i++)ok=await attempt();
+  if(!ok)throw new Error('conflict retries exhausted');
+  var firstTime=!warned.synced&&!g('niron_sync_notified_'+uid);warned.synced=1;state='synced';lastErr=null;lastSync=Date.now();
+  if(firstTime){s('niron_sync_notified_'+uid,'1');toast('Learning Lab progress is now synced to your account','success')}
+  }
+ catch(e){lastErr=e;state='error';console.warn('[NIRON sync]',why||'',e);
+  if(setupHint(e))once('setup','Cloud sync is not set up yet in Supabase — your data is safe on this device.','warning');
+  else if(e&&(e.status===401||e.status===403||e.code==='42501'))once('rls','Cloud sync was refused by the server — please sign in again.','warning')}
+ try{await flushOutbox()}catch(e){console.warn('[NIRON sync] outbox',e)}
+ busy=false;if(again){again=false;schedule(1500)}}
+function schedule(ms){clearTimeout(timer);if(!uid)return;timer=setTimeout(function(){timer=null;sync('timer')},ms==null?3000:ms)}
+/* ── Saved Outputs offline outbox ── */
+function outbox(){var o=j(g(OB),[]);return Array.isArray(o)?o.filter(function(x){return isObj(x)&&x.cid&&x.uid}):[]}
+function cid(){return (window.crypto&&crypto.randomUUID)?crypto.randomUUID():'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,10)}
+function isNetErr(e){return !navigator.onLine||(e&&(e instanceof TypeError||/failed to fetch|network|load failed/i.test(errMsg(e))))}
+function queueSave(p){var u=uid||meta().uid;if(!u||!isObj(p))return false;var q=outbox();if(q.length>=MAXOB){toast('Offline save queue is full — reconnect to sync it.','warning');return false}
+ q.push({cid:cid(),uid:u,topic:p.topic,cefr_level:p.cefr_level,ielts_band:p.ielts_band,output_type:p.output_type,content:p.content,created_at:new Date().toISOString()});
+ if(!s(OB,JSON.stringify(q))){toast('Browser storage is full — could not queue this save.','warning');return false}
+ if(navigator.onLine)schedule(2000);return true}
+async function flushOutbox(){var q=outbox();if(!q.length||!uid||!navigator.onLine)return;var keep=q.filter(function(x){return x.uid!==uid}),mine=q.filter(function(x){return x.uid===uid}),done=0;
+ for(var i=0;i<mine.length;i++){var x=mine[i];
+  var r=await window._sb.from('saved_outputs').upsert({user_id:uid,client_id:x.cid,topic:x.topic,cefr_level:x.cefr_level,ielts_band:x.ielts_band,output_type:x.output_type,content:x.content,created_at:x.created_at},{onConflict:'user_id,client_id',ignoreDuplicates:true});
+  if(r.error){keep.push.apply(keep,mine.slice(i));if(setupHint(r.error))once('obsetup','Offline saves are waiting — the saved_outputs.client_id column is missing in Supabase.','warning');break}
+  done++}
+ if(keep.length)s(OB,JSON.stringify(keep));else try{origRem.call(localStorage,OB)}catch(e){}
+ if(done)toast(done+' offline save'+(done>1?'s':'')+' synced','success')}
+/* ── lifecycle: Supabase Auth integration (listens alongside the existing auth code; does not replace it) ── */
+function startFor(id){if(uid===id)return;stop();uid=id;state='idle';subscribe();schedule(300);clearInterval(poll);poll=setInterval(function(){if(!document.hidden)sync('poll')},60000)}
+function stop(){clearTimeout(timer);clearInterval(poll);uid=null;state='signed-out';warned.synced=0;try{if(chan&&window._sb)window._sb.removeChannel(chan)}catch(e){}chan=null}
+function subscribe(){try{var sb=window._sb;if(!sb||!sb.channel)return;chan=sb.channel('niron-lab-'+uid).on('postgres_changes',{event:'*',schema:'public',table:T,filter:'user_id=eq.'+uid},function(){schedule(400)}).subscribe()}catch(e){}}
+function boot(){var sb=window._sb;if(!sb||!sb.auth||typeof sb.auth.getSession!=='function'||typeof sb.auth.onAuthStateChange!=='function'){setTimeout(boot,300);return}
+ sb.auth.getSession().then(function(r){var ss=r&&r.data&&r.data.session;if(ss&&ss.user)startFor(ss.user.id)}).catch(function(){});
+ sb.auth.onAuthStateChange(function(ev,ss){setTimeout(function(){if(ev==='SIGNED_OUT'||!ss){if(ev==='SIGNED_OUT')stop();return}if(ss.user&&(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'||ev==='TOKEN_REFRESHED'||ev==='USER_UPDATED'))startFor(ss.user.id)},0)})}
+Storage.prototype.setItem=function(k){var r=origSet.apply(this,arguments);try{if(this===localStorage&&k===LK&&uid)schedule(3000)}catch(e){}return r};
+window.addEventListener('storage',function(e){if(e.key===LK&&uid)schedule(1500)});
+window.addEventListener('online',function(){if(uid)schedule(500)});
+window.addEventListener('offline',function(){state='offline'});
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&uid)schedule(500)});
+window.addEventListener('pagehide',function(){/* best effort only: data is already in localStorage and syncs on next load */});
+window.NIRONSync={queueSave:queueSave,isNetErr:isNetErr,syncNow:function(){return sync('manual')},uid:function(){return uid},status:function(){return{state:state,user:uid,lastSync:lastSync,error:lastErr?errMsg(lastErr):null,pendingSaves:outbox().length,busy:busy,queued:!!timer}},_merge:function(a,b){return merge(norm(a),norm(b))}};
+boot();
 })();
 </script>
 </body>
