@@ -4220,7 +4220,9 @@ body{font-family:var(--f-sans)}
 .nd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .nd-chips span { font: 500 12.5px var(--f-sans); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); }
 .nd-rel { font: 500 13.5px/1.6 var(--f-sans); } .nd-rel b { font: 700 10px var(--f-sans); letter-spacing: .12em; color: var(--white-dim); margin-right: 8px; }
-.nd-tr { font: 500 14px/1.9 var(--f-sans); color: var(--gold-dim, var(--gold)); direction: auto; unicode-bidi: plaintext; text-align: start; margin-top: 8px; }
+.nd-tr { font: 500 13px/1.8 var(--f-sans); color: var(--gold-dim, var(--gold)); direction: auto; unicode-bidi: plaintext; text-align: start; margin-top: 4px; }
+.nd-tx { display: block; font: 500 12.5px/1.8 var(--f-sans); font-style: normal; color: var(--gold-dim, var(--gold)); direction: auto; unicode-bidi: plaintext; text-align: start; margin-top: 2px; }
+.nd-tx-err { color: var(--white-dim); text-decoration: none; margin-bottom: 4px; } .nd-err small .nd-tx { margin-top: 2px; }
 .nd-sec { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px; }
 .nd-fam { display: flex; flex-wrap: wrap; gap: 6px; }
 .nd-fam span { font: 600 13px var(--f-sans); padding: 5px 11px; border-radius: 10px; border: 1px solid var(--border); }
@@ -4237,7 +4239,7 @@ body{font-family:var(--f-sans)}
 @keyframes ndSh { to { background-position: -200% 0; } }
 body.light-mode .nd-entry { background: #fff; color: #14172B; } body.light-mode .nd-def, body.light-mode .nd-ex li, body.light-mode .nd-ipa, body.light-mode .nd-rel, body.light-mode .nd-spk { color: #14172B; }
 body.light-mode .nd-hw, body.light-mode .nd-pos, body.light-mode .nd-ex b, body.light-mode .nd-pat-ex b, body.light-mode .nd-pat-p, body.light-mode .nd-toggle, body.light-mode .nd-lv { color: #3730A3; } body.light-mode .nd-num { background: #3730A3; color: #fff; }
-body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, body.light-mode .nd-foot, body.light-mode .nd-syl, body.light-mode .nd-note, body.light-mode .nd-err small, body.light-mode .nd-fam i, body.light-mode .nd-rel b, body.light-mode .nd-reg { color: rgba(20,23,43,.68); } body.light-mode .nd-tr { color: #5b4b16; }
+body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, body.light-mode .nd-foot, body.light-mode .nd-syl, body.light-mode .nd-note, body.light-mode .nd-err small, body.light-mode .nd-fam i, body.light-mode .nd-rel b, body.light-mode .nd-reg { color: rgba(20,23,43,.68); } body.light-mode .nd-tr, body.light-mode .nd-tx { color: #5b4b16; } body.light-mode .nd-tx-err { color: rgba(20,23,43,.68); }
 @media (max-width: 480px) { .nd-entry { padding: 16px 12px 12px; } .nd-sense { grid-template-columns: 22px minmax(0, 1fr); gap: 4px 8px; } .nd-toggle { width: 100%; justify-content: center; } }
 
 /* ═════ NIRON LAB — mobile layout fixes (phones/tablets only; desktop untouched) ═════ */
@@ -7623,7 +7625,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* NIRON Learner's Dictionary — inline entry for Hub cards and Core definitions.
    Data: POST /api/dictionary (new, standalone). If it is unavailable, a basic entry is built from the card's own data. */
 var NIRONDict = (function () {
-  var KEY = 'niron_dict_v1', MAX = 60, openKeys = {}, busy = {};
+  var KEY = 'niron_dict_v2', MAX = 60, openKeys = {}, busy = {};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function store() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
   function cget(k) { var c = store()[k]; return c && c.e ? c.e : null; }
@@ -7639,6 +7641,8 @@ var NIRONDict = (function () {
     }
     return t;
   }
+  // Translation line shown directly beneath an English line (smaller text); empty when there is none.
+  function tx(t, cls) { t = S(t).trim(); return t ? '<span class="nd-tx' + (cls ? ' ' + cls : '') + '" lang="' + trLang(t) + '" dir="auto">' + esc(t) + '</span>' : ''; }
   function trLang(t) { return /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(t) ? 'fa' : 'tr'; }
 
   function slot(w, auto) {
@@ -7659,11 +7663,16 @@ var NIRONDict = (function () {
     if (!e || typeof e !== 'object' || !Array.isArray(e.senses)) return null;
     var out = { headword: S(e.headword), syllables: S(e.syllables), ipa_uk: S(e.ipa_uk), ipa_us: S(e.ipa_us), cefr: S(e.cefr), register: S(e.register), word_family: [], usage_notes: [], senses: [] };
     out.senses = e.senses.filter(function (s) { return s && typeof s === 'object' && S(s.definition).trim(); }).map(function (s) {
-      return { pos: S(s.pos), grammar: S(s.grammar), cefr: S(s.cefr), definition: S(s.definition), translation: S(s.translation), examples: A(s.examples), collocations: A(s.collocations), synonyms: A(s.synonyms), antonyms: A(s.antonyms),
-        patterns: (Array.isArray(s.patterns) ? s.patterns : []).filter(function (p) { return p && S(p.pattern); }).map(function (p) { return { pattern: S(p.pattern), example: S(p.example) }; }) };
+      return { pos: S(s.pos), grammar: S(s.grammar), cefr: S(s.cefr), definition: S(s.definition), translation: S(s.translation), examples: [], examples_tr: [], collocations: A(s.collocations), synonyms: A(s.synonyms), antonyms: A(s.antonyms),
+        patterns: (Array.isArray(s.patterns) ? s.patterns : []).filter(function (p) { return p && S(p.pattern); }).map(function (p) { return { pattern: S(p.pattern), example: S(p.example), example_tr: S(p.example_tr) }; }) };
+    });
+    // Examples keep their translation at the same index.
+    out.senses.forEach(function (o, i) {
+      var src = e.senses.filter(function (s) { return s && typeof s === 'object' && S(s.definition).trim(); })[i] || {}, tr = Array.isArray(src.examples_tr) ? src.examples_tr : [];
+      (Array.isArray(src.examples) ? src.examples : []).forEach(function (x, j) { if (typeof x === 'string' && x.trim()) { o.examples.push(x); o.examples_tr.push(S(tr[j])); } });
     });
     if (Array.isArray(e.word_family)) out.word_family = e.word_family.filter(function (f) { return f && S(f.word); }).map(function (f) { return { word: S(f.word), pos: S(f.pos) }; });
-    if (Array.isArray(e.usage_notes)) out.usage_notes = e.usage_notes.filter(function (u) { return u && S(u.wrong) && S(u.right); }).map(function (u) { return { wrong: S(u.wrong), right: S(u.right), note: S(u.note) }; });
+    if (Array.isArray(e.usage_notes)) out.usage_notes = e.usage_notes.filter(function (u) { return u && S(u.wrong) && S(u.right); }).map(function (u) { return { wrong: S(u.wrong), right: S(u.right), note: S(u.note), wrong_tr: S(u.wrong_tr), right_tr: S(u.right_tr), note_tr: S(u.note_tr) }; });
     return out.senses.length ? out : null;
   }
 
@@ -7683,15 +7692,15 @@ var NIRONDict = (function () {
       h += '<section class="nd-sense"><span class="nd-num" aria-hidden="true">' + (i + 1) + '</span><div>';
       h += '<div class="nd-def">' + (s.pos && pos.length > 1 ? '<span class="nd-pos">' + esc(s.pos) + '</span>' : '') + (s.grammar ? '<span class="nd-gram">' + esc(s.grammar) + '</span>' : '') + esc(s.definition) + (s.cefr && s.cefr !== e.cefr ? ' <span class="nd-lv">' + esc(s.cefr) + '</span>' : '') + '</div>';
       if (s.translation) h += '<div class="nd-tr" lang="' + trLang(s.translation) + '">' + esc(s.translation) + '</div>';
-      if (s.examples && s.examples.length) h += '<ul class="nd-ex">' + s.examples.map(function (x) { return '<li>' + hl(x, e.headword) + '</li>'; }).join('') + '</ul>';
-      if (s.patterns && s.patterns.length) h += '<div class="nd-sub"><span class="nd-lbl">Grammar patterns</span>' + s.patterns.map(function (p) { return '<div class="nd-pat"><span class="nd-pat-p">' + esc(p.pattern) + '</span>' + (p.example ? '<span class="nd-pat-ex">' + hl(p.example, e.headword) + '</span>' : '') + '</div>'; }).join('') + '</div>';
+      if (s.examples && s.examples.length) h += '<ul class="nd-ex">' + s.examples.map(function (x, k) { return '<li>' + hl(x, e.headword) + tx(s.examples_tr && s.examples_tr[k]) + '</li>'; }).join('') + '</ul>';
+      if (s.patterns && s.patterns.length) h += '<div class="nd-sub"><span class="nd-lbl">Grammar patterns</span>' + s.patterns.map(function (p) { return '<div class="nd-pat"><span class="nd-pat-p">' + esc(p.pattern) + '</span>' + (p.example ? '<span class="nd-pat-ex">' + hl(p.example, e.headword) + tx(p.example_tr) + '</span>' : '') + '</div>'; }).join('') + '</div>';
       if (s.collocations && s.collocations.length) h += '<div class="nd-sub"><span class="nd-lbl">Collocations</span><div class="nd-chips">' + s.collocations.map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div></div>';
       if (s.synonyms && s.synonyms.length) h += '<div class="nd-sub nd-rel"><b>SYN</b>' + s.synonyms.map(esc).join(', ') + '</div>';
       if (s.antonyms && s.antonyms.length) h += '<div class="nd-sub nd-rel"><b>OPP</b>' + s.antonyms.map(esc).join(', ') + '</div>';
       h += '</div></section>';
     });
     if (e.word_family && e.word_family.length) h += '<section class="nd-sec"><span class="nd-lbl">Word family</span><div class="nd-fam">' + e.word_family.map(function (f) { return '<span>' + esc(f.word) + (f.pos ? '<i>' + esc(f.pos) + '</i>' : '') + '</span>'; }).join('') + '</div></section>';
-    if (e.usage_notes && e.usage_notes.length) h += '<section class="nd-sec" style="margin-top:14px"><span class="nd-lbl">Common mistakes</span>' + e.usage_notes.map(function (u) { return '<div class="nd-err"><div class="x">' + esc(u.wrong) + '</div><div class="v">' + esc(u.right) + '</div>' + (u.note ? '<small>' + esc(u.note) + '</small>' : '') + '</div>'; }).join('') + '</section>';
+    if (e.usage_notes && e.usage_notes.length) h += '<section class="nd-sec" style="margin-top:14px"><span class="nd-lbl">Common mistakes</span>' + e.usage_notes.map(function (u) { return '<div class="nd-err"><div class="x">' + esc(u.wrong) + '</div>' + tx(u.wrong_tr, 'nd-tx-err') + '<div class="v">' + esc(u.right) + '</div>' + tx(u.right_tr, 'nd-tx-err') + (u.note ? '<small>' + esc(u.note) + tx(u.note_tr) + '</small>' : (u.note_tr ? '<small>' + tx(u.note_tr) + '</small>' : '')) + '</div>'; }).join('') + '</section>';
     h += '<div class="nd-foot">NIRON learner’s dictionary · original AI-generated content. Check pronunciation with a trusted source before exams.</div></article>';
     return h;
   }
