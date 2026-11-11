@@ -24,8 +24,10 @@ const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL    = 'openai/gpt-oss-120b';
 const CEFR          = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-// A full entry on a reasoning model can outlast Vercel's default function timeout.
-export const config = { maxDuration: 30 };
+// No custom maxDuration: the function runs under the platform default and enforces its own deadline instead.
+// BUDGET_MS is the total wall-clock time for the whole request (every Groq attempt together), measured from handler start.
+const BUDGET_MS    = 8500;
+const MIN_RETRY_MS = 2500;   // never start another Groq attempt with less than this left on the clock
 
 // ── Prompts ──────────────────────────────────────────────────────────────────
 function buildSystemPrompt() {
@@ -177,7 +179,12 @@ function sanitiseEntry(raw, word, cefr, hasLang) {
 }
 
 // ── Groq call (returns a plain result object; never throws) ──────────────────
-async function callGroq(apiKey, messages, { maxTokens, reasoning }) {
+// `deadline` is an absolute timestamp (ms). The request is aborted when it passes, which also
+// covers a response body that stalls half-way, and the timer is always cleared.
+async function callGroq(apiKey, messages, { maxTokens, reasoning }, deadline) {
+  const left = deadline - Date.now();
+  if (left < 250) return { ok: false, stage: 'timeout', error: 'Time budget used up before the Groq request could start.' };
+
   const payload = {
     model: GROQ_MODEL, temperature: 0.3, max_tokens: maxTokens,
     response_format: { type: 'json_object' }, messages,
@@ -186,28 +193,43 @@ async function callGroq(apiKey, messages, { maxTokens, reasoning }) {
   // "low" keeps the budget for the JSON itself and cuts latency.
   if (reasoning) payload.reasoning_effort = 'low';
 
-  let r;
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), left);
+  const aborted = (e) => !!e && (e.name === 'AbortError' || e.name === 'TimeoutError');
   try {
-    r = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify(payload),
-    });
-  } catch (e) {
-    return { ok: false, stage: 'network', error: `Network error reaching Groq: ${e.message}` };
+    let r;
+    try {
+      r = await fetch(GROQ_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal,
+      });
+    } catch (e) {
+      if (aborted(e)) return { ok: false, stage: 'timeout', error: 'Groq did not answer within the time budget.' };
+      return { ok: false, stage: 'network', error: `Network error reaching Groq: ${e.message}` };
+    }
+    if (!r.ok) {
+      const t = await r.text().catch(() => '');
+      return { ok: false, stage: 'groq_http', status: r.status, error: `Groq API returned ${r.status}: ${t.slice(0, 200)}` };
+    }
+    let d;
+    try { d = await r.json(); } catch (e) {
+      if (aborted(e)) return { ok: false, stage: 'timeout', error: 'Groq response did not finish within the time budget.' };
+      return { ok: false, stage: 'groq_json', error: 'Failed to parse Groq API response.' };
+    }
+    const choice = d?.choices?.[0];
+    return { ok: true, content: choice?.message?.content || '', finish: choice?.finish_reason || '' };
+  } finally {
+    clearTimeout(timer);
   }
-  if (!r.ok) {
-    const t = await r.text().catch(() => '');
-    return { ok: false, stage: 'groq_http', status: r.status, error: `Groq API returned ${r.status}: ${t.slice(0, 200)}` };
-  }
-  let d;
-  try { d = await r.json(); } catch (_) { return { ok: false, stage: 'groq_json', error: 'Failed to parse Groq API response.' }; }
-  const choice = d?.choices?.[0];
-  return { ok: true, content: choice?.message?.content || '', finish: choice?.finish_reason || '' };
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
-export default async function handler(req, res) {
+async function handle(req, res) {
+  const t0       = Date.now();
+  const deadline = t0 + BUDGET_MS;
+
   res.setHeader('Access-Control-Allow-Origin',  req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -243,9 +265,17 @@ export default async function handler(req, res) {
       { role: 'system', content: buildSystemPrompt() },
       { role: 'user',   content: buildUserPrompt(word, cefr, lang, p.compact) },
     ];
-    let g = await callGroq(apiKey, messages, p);
-    if (!g.ok && g.status === 400 && p.reasoning) g = await callGroq(apiKey, messages, { ...p, reasoning: false });
-    if (!g.ok) { last = g; if (g.stage === 'groq_http' && g.status >= 400 && g.status < 500 && g.status !== 429) break; continue; }
+    // A retry is only worth starting if enough of the time budget is left to let it finish.
+    if (i > 0 && deadline - Date.now() < MIN_RETRY_MS) break;
+
+    let g = await callGroq(apiKey, messages, p, deadline);
+    if (!g.ok && g.status === 400 && p.reasoning && deadline - Date.now() >= MIN_RETRY_MS) g = await callGroq(apiKey, messages, { ...p, reasoning: false }, deadline);
+    if (!g.ok) {
+      last = g;
+      if (g.stage === 'timeout') break;   // the deadline has passed — nothing more can run
+      if (g.stage === 'groq_http' && g.status >= 400 && g.status < 500 && g.status !== 429) break;
+      continue;
+    }
 
     const entry = sanitiseEntry(extractJSON(g.content || ''), word, cefr, !!lang);
     if (entry) return res.status(200).json({ status: 'ok', entry });
@@ -256,5 +286,22 @@ export default async function handler(req, res) {
                               : `Groq returned empty content (finish_reason=${g.finish || 'unknown'}).` };
     console.error('[dictionary]', JSON.stringify({ attempt: i + 1, word, stage: last.stage, finish: g.finish }));
   }
+  if (last?.stage === 'timeout') {
+    console.error('[dictionary]', JSON.stringify({ word, stage: 'timeout', elapsed_ms: Date.now() - t0 }));
+    return res.status(504).json({
+      status: 'error', stage: 'timeout', retryable: true, elapsed_ms: Date.now() - t0,
+      error: `The dictionary took longer than ${BUDGET_MS / 1000} seconds to respond. Please try again.`,
+    });
+  }
   return res.status(502).json({ status: 'error', stage: last?.stage || 'unknown', error: last?.error || 'Dictionary generation failed.' });
+}
+
+// Entry point: whatever happens inside, the client always receives JSON (never a platform error page).
+export default async function handler(req, res) {
+  try {
+    return await handle(req, res);
+  } catch (e) {
+    console.error('[dictionary] unexpected', e && e.message);
+    if (!res.headersSent) return res.status(500).json({ status: 'error', stage: 'internal', error: 'Unexpected server error.' });
+  }
 }
