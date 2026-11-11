@@ -7626,7 +7626,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* NIRON Learner's Dictionary — inline entry for Hub cards and Core definitions.
    Data: POST /api/dictionary (new, standalone). If it is unavailable, a basic entry is built from the card's own data. */
 var NIRONDict = (function () {
-  var KEY = 'niron_dict_v2', MAX = 60, openKeys = {}, busy = {}, sugg = {};
+  var KEY = 'niron_dict_v3', MAX = 60, openKeys = {}, busy = {}, sugg = {};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function store() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
   function cget(k) { var c = store()[k]; return c && c.e ? c.e : null; }
@@ -7654,7 +7654,7 @@ var NIRONDict = (function () {
       '<div class="nd-panel" role="region" aria-label="Dictionary entry" hidden></div></div>';
   }
   // The word actually looked up: the card's own word, or a suggestion the user picked for a misspelled one.
-  function effSeed(el) { var sd = seedOf(el); if (sd && el.__pick) sd = Object.assign({}, sd, { w: el.__pick }); return sd; }
+  function effSeed(el) { var sd = seedOf(el); if (sd && el.__pick) sd = Object.assign({}, sd, { w: el.__pick, v: 1 }); return sd; }
   function seedOf(el) { try { return JSON.parse(decodeURIComponent(el.getAttribute('data-seed'))); } catch (e) { return null; } }
 
   var REASON = { missing: 'The dictionary service was not found (404). Deploy api/dictionary.js next to vocab.js.', server: 'The dictionary service had a temporary problem.', network: 'Could not reach the dictionary service. Check your connection.', bad: 'The dictionary service sent an unreadable answer.', timeout: 'The dictionary service took too long to answer.' };
@@ -7729,7 +7729,7 @@ var NIRONDict = (function () {
       var live = document.querySelectorAll('.nd-slot');
       for (var i = 0; i < live.length; i++) { var o = effSeed(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); }
     };
-    var body = JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang() });
+    var body = JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang(), validated: !!sd.v });
     function attempt(n) {
       var ctl = ('AbortController' in window) ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 28000), st = 0;
       fetch('/api/dictionary', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl ? ctl.signal : undefined, body: body })
