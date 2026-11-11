@@ -12,10 +12,15 @@
  * Returns: { status:'ok', entry: {
  *   headword, syllables, ipa_uk, ipa_us, cefr, register,
  *   senses: [ { pos, grammar, cefr, definition, examples[], patterns[{pattern,example}],
- *               collocations[], synonyms[], antonyms[], translation? } ],
+ *               collocations[], synonyms[], antonyms[],
+ *               translation?, examples_tr?[], patterns[].example_tr? } ],
  *   word_family: [ { word, pos } ],
- *   usage_notes: [ { wrong, right, note } ]
+ *   usage_notes: [ { wrong, right, note, wrong_tr?, right_tr?, note_tr? } ]
  * } }
+ *
+ * Bilingual mode (mother_language = 'fa' | 'tr'): English content is never changed. Translations are
+ * ADDITIONAL fields — translation (of the definition), examples_tr (parallel to examples),
+ * patterns[].example_tr, and wrong_tr / right_tr / note_tr on usage notes. Absent when mode is off.
  *
  * API key is read from process.env.GROQ_API_KEY — never exposed to the browser.
  */
@@ -55,9 +60,11 @@ LEXICOGRAPHY RULES:
 function buildUserPrompt(word, cefr, motherLang, compact) {
   const hasLang  = motherLang === 'fa' || motherLang === 'tr';
   const langName = motherLang === 'fa' ? 'Persian (Farsi)' : motherLang === 'tr' ? 'Turkish' : '';
-  const trField  = hasLang ? `,\n      "translation": "<short ${langName} equivalent or explanation of this sense>"` : '';
+  const trField  = hasLang ? `,\n      "translation": "<${langName} translation of the definition>",\n      "examples_tr": ["<${langName} translation of example 1>", "<${langName} translation of example 2>"]` : '';
+  const patTr    = hasLang ? `, "example_tr": "<${langName} translation of the example>"` : '';
+  const useTr    = hasLang ? `, "wrong_tr": "<${langName} translation>", "right_tr": "<${langName} translation>", "note_tr": "<${langName} translation of the reason>"` : '';
   const trNote   = hasLang
-    ? `Mother Language Mode is ON (${langName}). Add "translation" to every sense only.`
+    ? `Mother Language Mode is ON (${langName}). Keep every English field exactly as specified and ADD ${langName} translations: "translation" (of the definition), "examples_tr" (same length and order as "examples"), "example_tr" in each pattern that has an example, and "wrong_tr", "right_tr", "note_tr" in each usage note. Translations must be natural, accurate and concise; do not leave English words in them except unavoidable terms.`
     : 'Mother Language Mode is OFF. Do NOT include any translation field.';
 
   return `Write a learner's dictionary entry for the English word or phrase: "${word}"
@@ -81,14 +88,14 @@ Return ONLY this JSON object:
       "cefr": "<A1–C2 for this sense>",
       "definition": "<one short learner-friendly sentence>",
       "examples": ["<example 1>", "<example 2>"],
-      "patterns": [{ "pattern": "<pattern>", "example": "<example>" }],
+      "patterns": [{ "pattern": "<pattern>", "example": "<example>"${patTr} }],
       "collocations": ["<collocation 1>", "<collocation 2>", "<collocation 3>"],
       "synonyms": ["<synonym 1>", "<synonym 2>"],
       "antonyms": ["<antonym 1>"]${trField}
     }
   ],
   "word_family": [{ "word": "<related word>", "pos": "<part of speech>" }],
-  "usage_notes": [{ "wrong": "<incorrect learner sentence>", "right": "<corrected sentence>", "note": "<one-sentence reason>" }]
+  "usage_notes": [{ "wrong": "<incorrect learner sentence>", "right": "<corrected sentence>", "note": "<one-sentence reason>"${useTr} }]
 }`;
 }
 
@@ -122,6 +129,16 @@ function uniq(v, max, n, seen, banned) {
   });
   return out;
 }
+// Examples with their parallel translations: same filtering as uniq(), but each kept example carries its own translation.
+function pairedExamples(ex, tr, max, n, seen) {
+  const out = [], trs = [], T = Array.isArray(tr) ? tr : [];
+  (Array.isArray(ex) ? ex : []).forEach((x, i) => {
+    const t = str(x, n), k = norm(t);
+    if (!t || !k || out.length >= max || seen.has(k) || out.some(o => norm(o) === k)) return;
+    out.push(t); seen.add(k); trs.push(str(T[i], n));
+  });
+  return { ex: out, tr: trs };
+}
 // Accept objects or bare strings ("sustain + noun") for {pattern,example}-style items.
 const asObj = (x, key) => (typeof x === 'string' ? { [key]: x } : (x && typeof x === 'object' ? x : {}));
 
@@ -139,21 +156,24 @@ function sanitiseEntry(raw, word, cefr, hasLang) {
   const senses = raw.senses.slice(0, 4).map(s => {
     if (!s || typeof s !== 'object') return null;
     const patSeen = new Set();
+    const pe = hasLang ? pairedExamples(s.examples, s.examples_tr, 3, 300, exSeen) : null;
     const sense = {
       pos:        str(s.pos, 30),
       grammar:    str(s.grammar, 40),
       cefr:       lvl(s.cefr, ''),
       definition: str(s.definition, 400),
-      examples:   uniq(s.examples, 3, 300, exSeen),
-      patterns:   (Array.isArray(s.patterns) ? s.patterns : []).map(p => asObj(p, 'pattern')).map(p => ({
-                    pattern: str(p.pattern, 80), example: str(p.example, 300),
-                  })).filter(p => p.pattern && !patSeen.has(norm(p.pattern)) && patSeen.add(norm(p.pattern))).slice(0, 3),
+      examples:   pe ? pe.ex : uniq(s.examples, 3, 300, exSeen),
+      patterns:   (Array.isArray(s.patterns) ? s.patterns : []).map(p => asObj(p, 'pattern')).map(p => {
+                    const o = { pattern: str(p.pattern, 80), example: str(p.example, 300) };
+                    if (hasLang) o.example_tr = str(p.example_tr, 300);
+                    return o;
+                  }).filter(p => p.pattern && !patSeen.has(norm(p.pattern)) && patSeen.add(norm(p.pattern))).slice(0, 3),
       collocations: uniq(s.collocations, 6, 60),
       synonyms:     uniq(s.synonyms, 5, 40, null, self),
     };
     const synKeys = new Set(sense.synonyms.map(norm));
     sense.antonyms = uniq(s.antonyms, 4, 40, null, new Set([...self, ...synKeys]));   // an antonym is never a synonym
-    if (hasLang) sense.translation = str(s.translation, 200);
+    if (hasLang) { sense.translation = str(s.translation, 400); sense.examples_tr = pe.tr; }
     return sense.definition ? sense : null;
   }).filter(Boolean);
 
@@ -168,9 +188,11 @@ function sanitiseEntry(raw, word, cefr, hasLang) {
   })).filter(f => f.word && !famSeen.has(norm(f.word)) && famSeen.add(norm(f.word))).slice(0, 8);
 
   const noteSeen = new Set();
-  const usage_notes = (Array.isArray(raw.usage_notes) ? raw.usage_notes : []).map(u => asObj(u, 'note')).map(u => ({
-    wrong: str(u.wrong, 300), right: str(u.right, 300), note: str(u.note, 300),
-  })).filter(u => u.wrong && u.right && norm(u.wrong) !== norm(u.right) && !noteSeen.has(norm(u.wrong)) && noteSeen.add(norm(u.wrong))).slice(0, 3);
+  const usage_notes = (Array.isArray(raw.usage_notes) ? raw.usage_notes : []).map(u => asObj(u, 'note')).map(u => {
+    const o = { wrong: str(u.wrong, 300), right: str(u.right, 300), note: str(u.note, 300) };
+    if (hasLang) { o.wrong_tr = str(u.wrong_tr, 300); o.right_tr = str(u.right_tr, 300); o.note_tr = str(u.note_tr, 300); }
+    return o;
+  }).filter(u => u.wrong && u.right && norm(u.wrong) !== norm(u.right) && !noteSeen.has(norm(u.wrong)) && noteSeen.add(norm(u.wrong))).slice(0, 3);
 
   return {
     headword, syllables: str(raw.syllables, 80), ipa_uk: str(raw.ipa_uk, 80), ipa_us: str(raw.ipa_us, 80),
@@ -254,9 +276,10 @@ async function handle(req, res) {
 
   // Attempt plan: full entry → (if truncated / empty / unparseable) compact entry.
   // A 400 from Groq on the first call usually means an unsupported parameter, so retry once without it.
+  // Bilingual entries carry extra translated text, so they get a larger output allowance.
   const plan = [
-    { compact: false, maxTokens: 4096, reasoning: true  },
-    { compact: true,  maxTokens: 3000, reasoning: true  },
+    { compact: false, maxTokens: lang ? 6000 : 4096, reasoning: true  },
+    { compact: true,  maxTokens: lang ? 4000 : 3000, reasoning: true  },
   ];
   let last = null;
   for (let i = 0; i < plan.length; i++) {
