@@ -4241,6 +4241,12 @@ body.light-mode .nd-lbl, body.light-mode .nd-ipa b, body.light-mode .nd-gram, bo
 @media (max-width: 480px) { .nd-entry { padding: 16px 12px 12px; } .nd-sense { grid-template-columns: 22px minmax(0, 1fr); gap: 4px 8px; } .nd-toggle { width: 100%; justify-content: center; } }
 
 /* ═════ NIRON LAB — mobile layout fixes (phones/tablets only; desktop untouched) ═════ */
+/* the old transform animation (fill: both) turned the overlay into the containing block of the fixed tab bar,
+   so the bar floated mid-screen and scrolled with content. Opacity-only entry keeps it pinned to the viewport. */
+@keyframes labIn { from { opacity: 0; } to { opacity: 1; } }
+#lab-overlay.lab-show { animation: labIn .3s ease; animation-fill-mode: none; transform: none; will-change: auto; }
+.lab-tabs { position: fixed; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 768px) { .lab-tabs { position: sticky; bottom: auto; } }
 @media (max-width: 767px) {
   /* bottom tab bar: equal columns that can never be widened by their labels */
   .lab-tabs { grid-template-columns: repeat(6, minmax(0, 1fr)); left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); max-width: 100vw; box-sizing: border-box; }
