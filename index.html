@@ -7006,6 +7006,7 @@ async function showDashboard() {
 
     const rows  = data || [];
     const total = (typeof count === 'number') ? count : rows.length;
+    if (window.NIRONProgress) { window.NIRONProgress.render(body, rows, total); return; }
     if (!total) { msg('No saved outputs yet. Save a result with the ↓ button to see stats here.'); return; }
 
     const byType = {};
@@ -8268,6 +8269,130 @@ var NIRONDict = (function () {
   }
   new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) init(n); }); }); }).observe(document.body, { childList: true, subtree: true });
   return { slot: slot, toggle: toggle, retry: retry, pick: pick, check: check, isInvalid: function (w) { return !!invalid[nw(w)]; }, say: say, _view: view };
+})();
+</script>
+<style>
+/* ══════ Advanced Progress Dashboard ══════ */
+#dv-body .pd-wrap{display:grid;gap:1rem;min-width:0}
+.pd-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.7rem}
+.pd-kpi{background:var(--white-faint);border:1px solid var(--border);border-radius:12px;padding:.85rem .9rem;min-width:0}
+.pd-kpi b{display:block;font-size:26px;line-height:1.1;font-weight:700;color:var(--white);overflow-wrap:anywhere}
+.pd-kpi span{display:block;margin-top:5px;font-size:12px;line-height:1.35;color:var(--white-dim);font-weight:500}
+.pd-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1rem}
+.pd-sub{font-size:12.5px;line-height:1.5;color:var(--white-dim);margin:0 0 .8rem;font-weight:500}
+.pd-seg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 .9rem}
+.pd-seg button{font:600 12px var(--f-sans);color:var(--white-dim);background:transparent;border:1px solid var(--border);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:32px}
+.pd-seg button.on{color:var(--gold);border-color:var(--gold);background:var(--gold-glow)}
+.pd-bars{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid var(--border);padding-top:6px}
+.pd-bars i{flex:1 1 0;min-width:2px;min-height:2px;border-radius:3px 3px 0 0;background:var(--gold);opacity:.9}
+.pd-bars i.z{background:var(--white-faint);opacity:1}
+.pd-axis{display:flex;justify-content:space-between;font-size:11.5px;color:var(--white-dim);margin-top:6px;font-weight:500}
+.pd-wk{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;align-items:end;height:130px}
+.pd-wk div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:0}
+.pd-wk i{display:block;width:100%;border-radius:4px 4px 0 0;background:var(--green-light);min-height:3px}
+.pd-wk em{font-style:normal;font-size:11.5px;color:var(--white);margin-bottom:3px;font-weight:600}
+.pd-wkl{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin-top:6px;font-size:11px;text-align:center;color:var(--white-dim);font-weight:500}
+.pd-m{display:grid;grid-template-columns:minmax(78px,32%) minmax(0,1fr) 44px;align-items:center;gap:10px;padding:.42rem 0;font-size:13px;color:var(--white-dim);font-weight:500}
+.pd-m .t{height:8px;border-radius:4px;background:var(--white-faint);overflow:hidden}
+.pd-m .t i{display:block;height:100%;background:var(--gold)}
+.pd-m .t i.g{background:var(--green-light)}
+.pd-m b{text-align:right;color:var(--white);font-weight:700}
+.pd-goal{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.pd-ring{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto}
+.pd-ring span{width:78px;height:78px;border-radius:50%;background:var(--black-3);display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--white)}
+.pd-list{list-style:none;margin:0;padding:0}
+.pd-list li{display:flex;justify-content:space-between;gap:12px;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--white);min-width:0}
+.pd-list li:last-child{border-bottom:0}
+.pd-list li span:first-child{overflow-wrap:anywhere;min-width:0}
+.pd-list li span:last-child{color:var(--white-dim);flex:0 0 auto;font-size:12.5px}
+.pd-ins{margin:0;padding:0;list-style:none;display:grid;gap:.5rem}
+.pd-ins li{font-size:13.5px;line-height:1.55;color:var(--white);padding-left:1rem;position:relative}
+.pd-ins li:before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.pd-act{display:flex;flex-wrap:wrap;gap:.6rem}
+.pd-btn{font:700 12.5px var(--f-sans);letter-spacing:.04em;color:var(--gold);background:var(--gold-glow);border:1px solid var(--gold);border-radius:10px;padding:.65rem 1rem;cursor:pointer;min-height:40px}
+.pd-note{font-size:12.5px;color:var(--white-dim);margin:.7rem 0 0;line-height:1.5}
+@media (max-width:480px){.pd-kpi b{font-size:22px}.pd-m{grid-template-columns:minmax(70px,34%) minmax(0,1fr) 40px;gap:8px}.pd-ring{width:92px;height:92px}.pd-ring span{width:68px;height:68px}}
+</style>
+<script>
+/* NIRON Progress Dashboard — read-only: reads Lab progress from this browser (niron_lab_v1) + saved outputs passed in by showDashboard(). */
+(function(){
+var KEY='niron_lab_v1',GK='niron_dash_goal',DAY=864e5,LV=['A1','A2','B1','B2','C1','C2'],KN={rev:'Spaced review',cloze:'Cloze (context)',prod:'Production',gram:'Grammar'};
+var host=null,rows=[],total=0,R=30;
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function pct(a,b){return b?Math.round(100*a/b):0}
+function sod(t){var d=new Date(t);d.setHours(0,0,0,0);return d.getTime()}
+function num(v,d){v=+v;return isFinite(v)?v:(d||0)}
+function goal(){var g=0;try{g=+localStorage.getItem(GK)}catch(e){}return g>0?g:20}
+function data(){var D=null;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+ if(!D||typeof D!=='object')D={};var W=(D.words&&typeof D.words==='object')?D.words:{};
+ var ws=Object.keys(W).filter(function(k){return k!=='__proto__'&&k!=='constructor'&&k!=='prototype'&&W[k]&&typeof W[k]==='object'}).map(function(k){var c=W[k],s=c.srs||{},cl=c.cl||{},pr=c.pr||{};
+  return{w:String(c.word||k),cefr:/^[ABC][12]$/.test(String(c.cefr||'').toUpperCase())?String(c.cefr).toUpperCase():'',int:num(s.int),ease:num(s.ease,2.5),reps:num(s.reps),lap:num(s.lapses),due:num(s.due,num(c.added)),clo:num(cl.ok),clb:num(cl.bad),pro:num(pr.ok)}});
+ var log=(Array.isArray(D.log)?D.log:[]).filter(function(x){return x&&isFinite(+x.t)&&/^(rev|cloze|prod|gram)$/.test(x.k)}).map(function(x){return{t:+x.t,k:x.k,ok:+x.ok?1:0}});
+ var gm=(D.gram&&typeof D.gram==='object')?D.gram:{},go=0,gb=0;Object.keys(gm).forEach(function(k){var g=gm[k];if(g&&typeof g==='object'){go+=num(g.ok);gb+=num(g.bad)}});
+ return{ws:ws,log:log,go:go,gb:gb}}
+function mastery(c){var a=Math.min(1,Math.log(1+c.int)/Math.log(31))*60,b=Math.max(0,Math.min(20,c.clo*10-c.clb*3)),p=Math.min(20,c.pro*10);return Math.round(a+b+p)}
+function stage(c){if(c.pro>0&&c.int>=21)return 4;if(c.pro>0)return 3;if(c.reps>=3&&c.clo>=1)return 2;if(c.reps>=1||c.clo>=1)return 1;return 0}
+var STG=['Recognition','Controlled','Semi-controlled','Free production','Consolidated'];
+function meter(l,p,g,n){return '<div class="pd-m"><span>'+esc(l)+'</span><div class="t"><i'+(g?' class="g"':'')+' style="width:'+Math.max(0,Math.min(100,p))+'%"></i></div><b>'+n+'</b></div>'}
+function card(t,b){return '<div class="acct-card"><div class="acct-card-title">⬡ '+t+'</div>'+b+'</div>'}
+function streaks(days){var ks=Object.keys(days).map(Number).sort(function(a,b){return a-b}),best=0,run=0,prev=null;
+ ks.forEach(function(k){run=(prev!==null&&Math.round((k-prev)/DAY)===1)?run+1:1;if(run>best)best=run;prev=k});
+ var cur=0,d=sod(Date.now());if(!days[d])d-=DAY;while(days[d]){cur++;d-=DAY}return{cur:cur,best:best}}
+function build(){
+ var L=data(),ws=L.ws,log=L.log,now=Date.now(),t0=sod(now),days={},okAll=0;
+ log.forEach(function(x){var k=sod(x.t);days[k]=(days[k]||0)+1;okAll+=x.ok});
+ var st=streaks(days),due=ws.filter(function(c){return c.due<=now}).length,cons=ws.filter(function(c){return stage(c)===4}).length;
+ var l7=log.filter(function(x){return x.t>=t0-6*DAY}),ok7=l7.reduce(function(a,x){return a+x.ok},0),today=days[t0]||0,G=goal();
+ var avgM=ws.length?Math.round(ws.reduce(function(a,c){return a+mastery(c)},0)/ws.length):0;
+ var kp='<div class="pd-kpis">'+[[ws.length,'Words in Lab'],[due,'Due now'],[cons,'Consolidated'],[avgM+'%','Avg. mastery'],[l7.length?pct(ok7,l7.length)+'%':'—','7-day accuracy'],[st.cur,'Day streak'],[st.best,'Best streak'],[log.length,'Total practice'],[total,'Saved outputs']].map(function(a){return '<div class="pd-kpi"><b>'+a[0]+'</b><span>'+a[1]+'</span></div>'}).join('')+'</div>';
+ /* goal */
+ var gp=Math.min(100,pct(today,G));
+ var goalC=card('Daily goal','<div class="pd-goal"><div class="pd-ring" style="background:conic-gradient(var(--gold) '+(gp*3.6)+'deg,var(--white-faint) 0)"><span>'+gp+'%</span></div><div style="min-width:0;flex:1 1 150px"><p class="pd-sub" style="margin:0 0 .6rem"><b style="color:var(--white)">'+today+'</b> of '+G+' practice answers today</p><div class="pd-seg" style="margin:0">'+[10,20,30,50].map(function(n){return '<button type="button" class="'+(n===G?'on':'')+'" onclick="NIRONProgress.goal('+n+')">'+n+'/day</button>'}).join('')+'</div></div></div>');
+ /* activity */
+ var bars=[],mx=1,i,tot=0,act=0;for(i=R-1;i>=0;i--){var k=t0-i*DAY,v=days[k]||0;bars.push([k,v]);if(v>mx)mx=v;tot+=v;if(v)act++}
+ var fmt=function(t){var d=new Date(t);return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
+ var actC=card('Practice activity','<div class="pd-seg">'+[7,30,90].map(function(n){return '<button type="button" class="'+(n===R?'on':'')+'" onclick="NIRONProgress.range('+n+')">'+n+' days</button>'}).join('')+'</div><div class="pd-bars" role="img" aria-label="Practice answers per day, last '+R+' days">'+bars.map(function(b){return '<i class="'+(b[1]?'':'z')+'" style="height:'+(b[1]?Math.max(4,Math.round(b[1]/mx*100)):2)+'%" title="'+fmt(b[0])+': '+b[1]+'"></i>'}).join('')+'</div><div class="pd-axis"><span>'+fmt(bars[0][0])+'</span><span>'+fmt(bars[bars.length-1][0])+'</span></div><p class="pd-note">'+tot+' answers on '+act+' active day'+(act===1?'':'s')+' in this period.</p>');
+ /* weekly accuracy */
+ var wk=[];for(i=7;i>=0;i--){var a=t0-(i*7+6)*DAY,b=t0-(i-1)*7*DAY+(i===0?DAY:0)-(i===0?0:0);var e=a+7*DAY;var s=log.filter(function(x){return x.t>=a&&x.t<e});wk.push({n:s.length,p:pct(s.reduce(function(q,x){return q+x.ok},0),s.length),l:fmt(a)})}
+ var wkC=card('Weekly accuracy','<p class="pd-sub">Share of correct answers per week, last 8 weeks.</p><div class="pd-wk">'+wk.map(function(w){return '<div title="'+w.l+': '+w.n+' answers"><em>'+(w.n?w.p+'%':'')+'</em><i style="height:'+(w.n?Math.max(4,w.p*.9):3)+'%'+(w.n?'':';opacity:.25')+'"></i></div>'}).join('')+'</div><div class="pd-wkl">'+wk.map(function(w){return '<span>'+esc(w.l)+'</span>'}).join('')+'</div>');
+ /* skills */
+ var sk={rev:[0,0],cloze:[0,0],prod:[0,0],gram:[0,0]};log.forEach(function(x){sk[x.k][0]+=x.ok;sk[x.k][1]++});
+ var skR=Object.keys(sk).map(function(k){return{k:k,ok:sk[k][0],n:sk[k][1],p:pct(sk[k][0],sk[k][1])}});
+ var skC=card('Skill breakdown','<p class="pd-sub">Accuracy by practice type.</p>'+skR.map(function(s){return meter(KN[s.k],s.p,s.k==='gram',s.n?s.p+'%':'—')}).join('')+'<p class="pd-note">Grammar items overall: '+L.go+' correct, '+L.gb+' incorrect.</p>');
+ /* CEFR */
+ var cef=LV.map(function(lv){var w=ws.filter(function(c){return c.cefr===lv});return{lv:lv,n:w.length,m:w.length?Math.round(w.reduce(function(a,c){return a+mastery(c)},0)/w.length):0}});
+ var cefC=card('CEFR vocabulary map','<p class="pd-sub">Words per level and their average mastery.</p>'+cef.map(function(c){return meter(c.lv+' · '+c.n+' word'+(c.n===1?'':'s'),c.m,false,c.n?c.m+'%':'—')}).join(''));
+ /* pipeline */
+ var sc=[0,0,0,0,0];ws.forEach(function(c){sc[stage(c)]++});var smx=Math.max.apply(null,sc.concat([1]));
+ var pipC=card('Mastery pipeline','<p class="pd-sub">Where your words sit on the path to free production.</p>'+STG.map(function(s,i){return meter(s,pct(sc[i],smx),i===4,sc[i])}).join(''));
+ /* forecast */
+ var fc=[0,0,0,0,0,0,0];ws.forEach(function(c){var d=Math.floor((sod(c.due)-t0)/DAY);if(d<0)d=0;if(d<7)fc[d]++});var fm=Math.max.apply(null,fc.concat([1]));
+ var dn=['Today','+1','+2','+3','+4','+5','+6'];
+ var fcC=card('Review forecast','<p class="pd-sub">Words scheduled for review over the next 7 days (overdue counted today).</p><div class="pd-bars" style="height:90px">'+fc.map(function(v,i){return '<i class="'+(v?'':'z')+'" style="height:'+(v?Math.max(6,Math.round(v/fm*100)):2)+'%" title="'+dn[i]+': '+v+'"></i>'}).join('')+'</div><div class="pd-axis">'+dn.map(function(d,i){return '<span>'+d+' <b style="color:var(--white)">'+fc[i]+'</b></span>'}).join('')+'</div>');
+ /* weak words */
+ var weak=ws.filter(function(c){return c.lap>0||c.clb>0}).sort(function(a,b){return (b.lap*2+b.clb)-(a.lap*2+a.clb)}).slice(0,6);
+ var wkW=card('Words needing attention',weak.length?'<ul class="pd-list">'+weak.map(function(c){return '<li><span>'+esc(c.w)+'</span><span>'+(c.lap?c.lap+' lapse'+(c.lap>1?'s':''):'')+(c.lap&&c.clb?' · ':'')+(c.clb?c.clb+' miss'+(c.clb>1?'es':''):'')+'</span></li>'}).join('')+'</ul>':'<p class="pd-sub" style="margin:0">No struggling words yet — keep practising and they will show up here.</p>');
+ /* insights */
+ var ins=[],ranked=skR.filter(function(s){return s.n>=5}).sort(function(a,b){return b.p-a.p});
+ if(ranked.length>1){ins.push('Strongest skill: <b>'+KN[ranked[0].k]+'</b> ('+ranked[0].p+'%). Weakest: <b>'+KN[ranked[ranked.length-1].k]+'</b> ('+ranked[ranked.length-1].p+'%).')}
+ var dw=[0,0,0,0,0,0,0];log.forEach(function(x){dw[new Date(x.t).getDay()]++});var bd=dw.indexOf(Math.max.apply(null,dw));
+ if(log.length>=10)ins.push('You practise most on <b>'+['Sundays','Mondays','Tuesdays','Wednesdays','Thursdays','Fridays','Saturdays'][bd]+'</b>.');
+ if(due>0)ins.push('<b>'+due+'</b> word'+(due===1?' is':'s are')+' due for review right now.');
+ var lw=cef.filter(function(c){return c.n>=3}).sort(function(a,b){return a.m-b.m})[0];if(lw)ins.push('Lowest average mastery is at <b>'+lw.lv+'</b> ('+lw.m+'%) — a good level to revisit.');
+ if(!ins.length)ins.push('Practise in the Learning Lab to unlock personalised insights.');
+ var insC=card('Insights','<ul class="pd-ins">'+ins.map(function(s){return '<li>'+s+'</li>'}).join('')+'</ul><div class="pd-act" style="margin-top:1rem"><button type="button" class="pd-btn" onclick="window.NIRONLab&&NIRONLab.open(\'review\')">Start review →</button><button type="button" class="pd-btn" onclick="window.NIRONLab&&NIRONLab.open(\'dash\')">Open Learning Lab</button></div>');
+ /* saved outputs */
+ var bt={},tp={},m0=new Date(),thisM=0,lastM=0;rows.forEach(function(r){var k=r.output_type||'unknown';bt[k]=(bt[k]||0)+1;var tt=String(r.topic||'').trim();if(tt){var q=tt.toLowerCase();tp[q]=tp[q]||{t:tt,n:0};tp[q].n++}
+  if(r.created_at){var d=new Date(r.created_at),dm=(m0.getFullYear()-d.getFullYear())*12+m0.getMonth()-d.getMonth();if(dm===0)thisM++;else if(dm===1)lastM++}});
+ var types=Object.keys(bt).sort(function(a,b){return bt[b]-bt[a]}),tmx=bt[types[0]]||1,topics=Object.keys(tp).map(function(k){return tp[k]}).sort(function(a,b){return b.n-a.n}).slice(0,5);
+ var partial=total>rows.length?'<p class="pd-note">Based on the latest '+rows.length+' of '+total+' outputs.</p>':'';
+ var svC=total?card('Saved outputs','<div class="pd-kpis" style="margin-bottom:.8rem"><div class="pd-kpi"><b>'+total+'</b><span>Total saved</span></div><div class="pd-kpi"><b>'+thisM+'</b><span>This month</span></div><div class="pd-kpi"><b>'+lastM+'</b><span>Last month</span></div></div>'+types.map(function(k){return meter(k,pct(bt[k],tmx),false,bt[k])}).join('')+partial):card('Saved outputs','<p class="pd-sub" style="margin:0">No saved outputs yet. Save a result with the ↓ button to see stats here.</p>');
+ var tpC=topics.length?card('Top topics','<ul class="pd-list">'+topics.map(function(t){return '<li><span>'+esc(t.t)+'</span><span>×'+t.n+'</span></li>'}).join('')+'</ul>'):'';
+ var rcC=rows.length?card('Recent outputs',rows.slice(0,5).map(function(r){var d=r.created_at?new Date(r.created_at).toLocaleDateString():'';return '<div class="sv-item"><div class="sv-topic">'+esc(r.topic||'—')+'</div><div class="sv-meta">'+[r.output_type,d].filter(Boolean).map(esc).join(' · ')+'</div></div>'}).join('')):'';
+ var empty=!ws.length&&!log.length?'<div class="acct-card"><div class="sv-msg" style="padding:0">No Learning Lab practice recorded in this browser yet. Add words from the Vocabulary Hub and practise in the Lab — your progress will appear here automatically.</div></div>':'';
+ return '<div class="pd-wrap">'+kp+empty+'<div class="pd-row">'+goalC+insC+'</div>'+actC+'<div class="pd-row">'+wkC+fcC+'</div><div class="pd-row">'+skC+pipC+'</div><div class="pd-row">'+cefC+wkW+'</div><div class="pd-row">'+svC+tpC+'</div>'+rcC+'<p class="pd-note">Learning figures are computed from practice stored in this browser; saved-output figures come from your account.</p></div>'}
+function draw(){if(host)host.innerHTML=build()}
+window.NIRONProgress={render:function(el,r,t){host=el;rows=Array.isArray(r)?r:[];total=+t||rows.length;draw()},range:function(n){R=n;draw()},goal:function(n){try{localStorage.setItem(GK,String(n))}catch(e){}draw()}};
 })();
 </script>
 </body>
