@@ -8321,14 +8321,16 @@ var host=null,rows=[],total=0,R=30;
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function pct(a,b){return b?Math.round(100*a/b):0}
 function sod(t){var d=new Date(t);d.setHours(0,0,0,0);return d.getTime()}
+function dayN(i){var d=new Date();d.setDate(d.getDate()-i);d.setHours(0,0,0,0);return d.getTime()}
 function num(v,d){v=+v;return isFinite(v)?v:(d||0)}
 function goal(){var g=0;try{g=+localStorage.getItem(GK)}catch(e){}return g>0?g:20}
-function data(){var D=null;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
- if(!D||typeof D!=='object')D={};var W=(D.words&&typeof D.words==='object')?D.words:{};
- var ws=Object.keys(W).filter(function(k){return k!=='__proto__'&&k!=='constructor'&&k!=='prototype'&&W[k]&&typeof W[k]==='object'}).map(function(k){var c=W[k],s=c.srs||{},cl=c.cl||{},pr=c.pr||{};
-  return{w:String(c.word||k),cefr:/^[ABC][12]$/.test(String(c.cefr||'').toUpperCase())?String(c.cefr).toUpperCase():'',int:num(s.int),ease:num(s.ease,2.5),reps:num(s.reps),lap:num(s.lapses),due:num(s.due,num(c.added)),clo:num(cl.ok),clb:num(cl.bad),pro:num(pr.ok)}});
- var log=(Array.isArray(D.log)?D.log:[]).filter(function(x){return x&&isFinite(+x.t)&&/^(rev|cloze|prod|gram)$/.test(x.k)}).map(function(x){return{t:+x.t,k:x.k,ok:+x.ok?1:0}});
- var gm=(D.gram&&typeof D.gram==='object')?D.gram:{},go=0,gb=0;Object.keys(gm).forEach(function(k){var g=gm[k];if(g&&typeof g==='object'){go+=num(g.ok);gb+=num(g.bad)}});
+function data(){var D=null,now=Date.now();try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+ /* mirrors Lab load(): data that is not a v1 object is treated as empty; non-object cards still count as words */
+ if(!D||typeof D!=='object'||D.v!==1||!D.words||typeof D.words!=='object')D={};var W=(D.words&&typeof D.words==='object')?D.words:{};
+ var ws=Object.keys(W).filter(function(k){return k!=='__proto__'&&k!=='constructor'&&k!=='prototype'}).map(function(k){var c=(W[k]&&typeof W[k]==='object')?W[k]:{},s=(c.srs&&typeof c.srs==='object')?c.srs:{},cl=(c.cl&&typeof c.cl==='object')?c.cl:{},pr=(c.pr&&typeof c.pr==='object')?c.pr:{},added=+c.added||now,cf=typeof c.cefr==='string'?c.cefr.toUpperCase():'';
+  return{w:String(c.word||k),cefr:(cf.match(/^[ABC][12]$/)||[''])[0],int:+s.int||0,reps:+s.reps||0,lap:+s.lapses||0,due:+s.due||added,clo:+cl.ok||0,clb:+cl.bad||0,pro:+pr.ok||0}});
+ var log=(Array.isArray(D.log)?D.log:[]).filter(function(x){return x&&isFinite(+x.t)&&/^(rev|cloze|prod|gram)$/.test(x.k)}).map(function(x){return{t:+x.t,k:x.k,ok:+x.ok?1:0}}).slice(-3000);
+ var gm=(D.gram&&typeof D.gram==='object')?D.gram:{},go=0,gb=0;Object.keys(gm).forEach(function(k){var g=gm[k];if(k!=='__proto__'&&k!=='constructor'&&k!=='prototype'&&g&&typeof g==='object'){go+=+g.ok||0;gb+=+g.bad||0}});
  return{ws:ws,log:log,go:go,gb:gb}}
 function mastery(c){var a=Math.min(1,Math.log(1+c.int)/Math.log(31))*60,b=Math.max(0,Math.min(20,c.clo*10-c.clb*3)),p=Math.min(20,c.pro*10);return Math.round(a+b+p)}
 function stage(c){if(c.pro>0&&c.int>=21)return 4;if(c.pro>0)return 3;if(c.reps>=3&&c.clo>=1)return 2;if(c.reps>=1||c.clo>=1)return 1;return 0}
@@ -8337,23 +8339,23 @@ function meter(l,p,g,n){return '<div class="pd-m"><span>'+esc(l)+'</span><div cl
 function card(t,b){return '<div class="acct-card"><div class="acct-card-title">⬡ '+t+'</div>'+b+'</div>'}
 function streaks(days){var ks=Object.keys(days).map(Number).sort(function(a,b){return a-b}),best=0,run=0,prev=null;
  ks.forEach(function(k){run=(prev!==null&&Math.round((k-prev)/DAY)===1)?run+1:1;if(run>best)best=run;prev=k});
- var cur=0,d=sod(Date.now());if(!days[d])d-=DAY;while(days[d]){cur++;d-=DAY}return{cur:cur,best:best}}
+ var cur=0,d=new Date();d.setHours(0,0,0,0);if(!days[d.getTime()])d.setDate(d.getDate()-1);while(days[d.getTime()]){cur++;d.setDate(d.getDate()-1)}return{cur:cur,best:best}}
 function build(){
  var L=data(),ws=L.ws,log=L.log,now=Date.now(),t0=sod(now),days={},okAll=0;
  log.forEach(function(x){var k=sod(x.t);days[k]=(days[k]||0)+1;okAll+=x.ok});
- var st=streaks(days),due=ws.filter(function(c){return c.due<=now}).length,cons=ws.filter(function(c){return stage(c)===4}).length;
- var l7=log.filter(function(x){return x.t>=t0-6*DAY}),ok7=l7.reduce(function(a,x){return a+x.ok},0),today=days[t0]||0,G=goal();
+ var st=streaks(days),due=ws.filter(function(c){return c.due<=now}).length,cons=ws.filter(function(c){return c.int>=21}).length;
+ var l7=log.filter(function(x){return x.t>=now-7*DAY}),ok7=l7.reduce(function(a,x){return a+x.ok},0),today=days[t0]||0,G=goal();
  var avgM=ws.length?Math.round(ws.reduce(function(a,c){return a+mastery(c)},0)/ws.length):0;
- var kp='<div class="pd-kpis">'+[[ws.length,'Words in Lab'],[due,'Due now'],[cons,'Consolidated'],[avgM+'%','Avg. mastery'],[l7.length?pct(ok7,l7.length)+'%':'—','7-day accuracy'],[st.cur,'Day streak'],[st.best,'Best streak'],[log.length,'Total practice'],[total,'Saved outputs']].map(function(a){return '<div class="pd-kpi"><b>'+a[0]+'</b><span>'+a[1]+'</span></div>'}).join('')+'</div>';
+ var kp='<div class="pd-kpis">'+[[ws.length,'Words in Lab'],[due,'Due now'],[cons,'Consolidated'],[ws.length?avgM+'%':'—','Avg. mastery'],[l7.length?pct(ok7,l7.length)+'%':'—','7-day accuracy'],[st.cur,'Day streak'],[st.best,'Best streak'],[log.length,'Total practice'],[total,'Saved outputs']].map(function(a){return '<div class="pd-kpi"><b>'+a[0]+'</b><span>'+a[1]+'</span></div>'}).join('')+'</div>';
  /* goal */
  var gp=Math.min(100,pct(today,G));
  var goalC=card('Daily goal','<div class="pd-goal"><div class="pd-ring" style="background:conic-gradient(var(--gold) '+(gp*3.6)+'deg,var(--white-faint) 0)"><span>'+gp+'%</span></div><div style="min-width:0;flex:1 1 150px"><p class="pd-sub" style="margin:0 0 .6rem"><b style="color:var(--white)">'+today+'</b> of '+G+' practice answers today</p><div class="pd-seg" style="margin:0">'+[10,20,30,50].map(function(n){return '<button type="button" class="'+(n===G?'on':'')+'" onclick="NIRONProgress.goal('+n+')">'+n+'/day</button>'}).join('')+'</div></div></div>');
  /* activity */
- var bars=[],mx=1,i,tot=0,act=0;for(i=R-1;i>=0;i--){var k=t0-i*DAY,v=days[k]||0;bars.push([k,v]);if(v>mx)mx=v;tot+=v;if(v)act++}
+ var bars=[],mx=1,i,tot=0,act=0;for(i=R-1;i>=0;i--){var k=dayN(i),v=days[k]||0;bars.push([k,v]);if(v>mx)mx=v;tot+=v;if(v)act++}
  var fmt=function(t){var d=new Date(t);return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
  var actC=card('Practice activity','<div class="pd-seg">'+[7,30,90].map(function(n){return '<button type="button" class="'+(n===R?'on':'')+'" onclick="NIRONProgress.range('+n+')">'+n+' days</button>'}).join('')+'</div><div class="pd-bars" role="img" aria-label="Practice answers per day, last '+R+' days">'+bars.map(function(b){return '<i class="'+(b[1]?'':'z')+'" style="height:'+(b[1]?Math.max(4,Math.round(b[1]/mx*100)):2)+'%" title="'+fmt(b[0])+': '+b[1]+'"></i>'}).join('')+'</div><div class="pd-axis"><span>'+fmt(bars[0][0])+'</span><span>'+fmt(bars[bars.length-1][0])+'</span></div><p class="pd-note">'+tot+' answers on '+act+' active day'+(act===1?'':'s')+' in this period.</p>');
  /* weekly accuracy */
- var wk=[];for(i=7;i>=0;i--){var a=t0-(i*7+6)*DAY,b=t0-(i-1)*7*DAY+(i===0?DAY:0)-(i===0?0:0);var e=a+7*DAY;var s=log.filter(function(x){return x.t>=a&&x.t<e});wk.push({n:s.length,p:pct(s.reduce(function(q,x){return q+x.ok},0),s.length),l:fmt(a)})}
+ var wk=[];for(i=7;i>=0;i--){var a=dayN(i*7+6),e=dayN(i*7-1);var s=log.filter(function(x){return x.t>=a&&x.t<e});wk.push({n:s.length,p:pct(s.reduce(function(q,x){return q+x.ok},0),s.length),l:fmt(a)})}
  var wkC=card('Weekly accuracy','<p class="pd-sub">Share of correct answers per week, last 8 weeks.</p><div class="pd-wk">'+wk.map(function(w){return '<div title="'+w.l+': '+w.n+' answers"><em>'+(w.n?w.p+'%':'')+'</em><i style="height:'+(w.n?Math.max(4,w.p*.9):3)+'%'+(w.n?'':';opacity:.25')+'"></i></div>'}).join('')+'</div><div class="pd-wkl">'+wk.map(function(w){return '<span>'+esc(w.l)+'</span>'}).join('')+'</div>');
  /* skills */
  var sk={rev:[0,0],cloze:[0,0],prod:[0,0],gram:[0,0]};log.forEach(function(x){sk[x.k][0]+=x.ok;sk[x.k][1]++});
@@ -8366,7 +8368,7 @@ function build(){
  var sc=[0,0,0,0,0];ws.forEach(function(c){sc[stage(c)]++});var smx=Math.max.apply(null,sc.concat([1]));
  var pipC=card('Mastery pipeline','<p class="pd-sub">Where your words sit on the path to free production.</p>'+STG.map(function(s,i){return meter(s,pct(sc[i],smx),i===4,sc[i])}).join(''));
  /* forecast */
- var fc=[0,0,0,0,0,0,0];ws.forEach(function(c){var d=Math.floor((sod(c.due)-t0)/DAY);if(d<0)d=0;if(d<7)fc[d]++});var fm=Math.max.apply(null,fc.concat([1]));
+ var fc=[0,0,0,0,0,0,0];ws.forEach(function(c){var d=Math.round((sod(c.due)-t0)/DAY);if(d<0)d=0;if(d<7)fc[d]++});var fm=Math.max.apply(null,fc.concat([1]));
  var dn=['Today','+1','+2','+3','+4','+5','+6'];
  var fcC=card('Review forecast','<p class="pd-sub">Words scheduled for review over the next 7 days (overdue counted today).</p><div class="pd-bars" style="height:90px">'+fc.map(function(v,i){return '<i class="'+(v?'':'z')+'" style="height:'+(v?Math.max(6,Math.round(v/fm*100)):2)+'%" title="'+dn[i]+': '+v+'"></i>'}).join('')+'</div><div class="pd-axis">'+dn.map(function(d,i){return '<span>'+d+' <b style="color:var(--white)">'+fc[i]+'</b></span>'}).join('')+'</div>');
  /* weak words */
@@ -8388,7 +8390,7 @@ function build(){
  var partial=total>rows.length?'<p class="pd-note">Based on the latest '+rows.length+' of '+total+' outputs.</p>':'';
  var svC=total?card('Saved outputs','<div class="pd-kpis" style="margin-bottom:.8rem"><div class="pd-kpi"><b>'+total+'</b><span>Total saved</span></div><div class="pd-kpi"><b>'+thisM+'</b><span>This month</span></div><div class="pd-kpi"><b>'+lastM+'</b><span>Last month</span></div></div>'+types.map(function(k){return meter(k,pct(bt[k],tmx),false,bt[k])}).join('')+partial):card('Saved outputs','<p class="pd-sub" style="margin:0">No saved outputs yet. Save a result with the ↓ button to see stats here.</p>');
  var tpC=topics.length?card('Top topics','<ul class="pd-list">'+topics.map(function(t){return '<li><span>'+esc(t.t)+'</span><span>×'+t.n+'</span></li>'}).join('')+'</ul>'):'';
- var rcC=rows.length?card('Recent outputs',rows.slice(0,5).map(function(r){var d=r.created_at?new Date(r.created_at).toLocaleDateString():'';return '<div class="sv-item"><div class="sv-topic">'+esc(r.topic||'—')+'</div><div class="sv-meta">'+[r.output_type,d].filter(Boolean).map(esc).join(' · ')+'</div></div>'}).join('')):'';
+ var rcC=rows.length?card('Recent outputs',rows.slice(0,5).map(function(r){var dd=r.created_at?new Date(r.created_at):null,d=dd&&!isNaN(dd)?dd.toLocaleDateString():'';return '<div class="sv-item"><div class="sv-topic">'+esc(r.topic||'—')+'</div><div class="sv-meta">'+[r.output_type,d].filter(Boolean).map(esc).join(' · ')+'</div></div>'}).join('')):'';
  var empty=!ws.length&&!log.length?'<div class="acct-card"><div class="sv-msg" style="padding:0">No Learning Lab practice recorded in this browser yet. Add words from the Vocabulary Hub and practise in the Lab — your progress will appear here automatically.</div></div>':'';
  return '<div class="pd-wrap">'+kp+empty+'<div class="pd-row">'+goalC+insC+'</div>'+actC+'<div class="pd-row">'+wkC+fcC+'</div><div class="pd-row">'+skC+pipC+'</div><div class="pd-row">'+cefC+wkW+'</div><div class="pd-row">'+svC+tpC+'</div>'+rcC+'<p class="pd-note">Learning figures are computed from practice stored in this browser; saved-output figures come from your account.</p></div>'}
 function draw(){if(host)host.innerHTML=build()}
