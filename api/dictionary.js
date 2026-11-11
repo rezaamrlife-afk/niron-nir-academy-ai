@@ -5,6 +5,7 @@
  * Independent module. Does NOT touch /api/grok or /api/vocab.
  *
  * Receives: { word, cefr_level, mother_language, validated? }
+ *   check_only:      true → only validate: answers { status:'valid' } or { status:'suggest', ... }; never writes an entry
  *   validated:       true when the word was picked from a suggestion list (already validated) — skips the spelling check
  *   word:            English word or phrase (max 60 chars)
  *   cefr_level:      'A1'..'C2'  (default 'B1') — controls definition difficulty
@@ -329,6 +330,7 @@ async function handle(req, res) {
     const v = await validateWord(apiKey, word, Math.min(deadline, Date.now() + 3500));
     if (v.ok && !v.valid) return suggest(v.suggestions);
   }
+  if (body && body.check_only === true) return res.status(200).json({ status: 'valid', word });   // validation only — no entry
   const lang = mother_language === 'fa' || mother_language === 'tr' ? mother_language : null;
 
   // Attempt plan: full entry → (if truncated / empty / unparseable) compact entry.
