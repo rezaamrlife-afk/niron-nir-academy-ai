@@ -7588,26 +7588,38 @@ var NIRONDict = (function () {
   }
   function seedOf(el) { try { return JSON.parse(decodeURIComponent(el.getAttribute('data-seed'))); } catch (e) { return null; } }
 
-  function fallbackEntry(sd) {
-    return { fallback: true, headword: sd.w, cefr: sd.l, register: sd.r,
-      senses: [{ pos: sd.p, definition: sd.m, examples: sd.x ? [sd.x] : [], collocations: sd.c || [], translation: sd.t || '' }], word_family: [], usage_notes: [] };
+  var REASON = { missing: 'The dictionary service was not found (404). Deploy api/dictionary.js next to vocab.js.', server: 'The dictionary service had a temporary problem.', network: 'Could not reach the dictionary service. Check your connection.', bad: 'The dictionary service sent an unreadable answer.', timeout: 'The dictionary service took too long to answer.' };
+  function fallbackEntry(why) { return { fallback: true, reason: REASON[why] || REASON.server }; }
+  // Make any server answer safe to render: arrays stay arrays, text stays text.
+  function A(v) { return Array.isArray(v) ? v.filter(function (x) { return typeof x === 'string' && x.trim(); }) : []; }
+  function S(v) { return typeof v === 'string' ? v : ''; }
+  function clean(e) {
+    if (!e || typeof e !== 'object' || !Array.isArray(e.senses)) return null;
+    var out = { headword: S(e.headword), syllables: S(e.syllables), ipa_uk: S(e.ipa_uk), ipa_us: S(e.ipa_us), cefr: S(e.cefr), register: S(e.register), word_family: [], usage_notes: [], senses: [] };
+    out.senses = e.senses.filter(function (s) { return s && typeof s === 'object' && S(s.definition).trim(); }).map(function (s) {
+      return { pos: S(s.pos), grammar: S(s.grammar), cefr: S(s.cefr), definition: S(s.definition), translation: S(s.translation), examples: A(s.examples), collocations: A(s.collocations), synonyms: A(s.synonyms), antonyms: A(s.antonyms),
+        patterns: (Array.isArray(s.patterns) ? s.patterns : []).filter(function (p) { return p && S(p.pattern); }).map(function (p) { return { pattern: S(p.pattern), example: S(p.example) }; }) };
+    });
+    if (Array.isArray(e.word_family)) out.word_family = e.word_family.filter(function (f) { return f && S(f.word); }).map(function (f) { return { word: S(f.word), pos: S(f.pos) }; });
+    if (Array.isArray(e.usage_notes)) out.usage_notes = e.usage_notes.filter(function (u) { return u && S(u.wrong) && S(u.right); }).map(function (u) { return { wrong: S(u.wrong), right: S(u.right), note: S(u.note) }; });
+    return out.senses.length ? out : null;
   }
 
   function view(e) {
+    if (e.fallback) return '<div class="nd-note" role="status">' + esc(e.reason) + '<button type="button" class="nd-retry" onclick="NIRONDict.retry(this)">Retry</button></div>';
     var h = '<article class="nd-entry" lang="en">';
-    if (e.fallback) h += '<div class="nd-note">Basic entry built from this card. The full dictionary entry is unavailable right now.<button type="button" class="nd-retry" onclick="NIRONDict.retry(this)">Retry</button></div>';
     h += '<header><h3 class="nd-hw">' + esc(e.headword) + '</h3>';
     if (e.syllables && e.syllables.toLowerCase() !== String(e.headword).toLowerCase()) h += '<div class="nd-syl">' + esc(e.syllables) + '</div>';
     if (e.ipa_uk || e.ipa_us) {
       h += '<div class="nd-ph">' + (e.ipa_uk ? '<span class="nd-ipa"><b>UK</b>' + esc(e.ipa_uk) + '</span>' : '') + (e.ipa_us ? '<span class="nd-ipa"><b>US</b>' + esc(e.ipa_us) + '</span>' : '') +
-        ('speechSynthesis' in window ? '<button type="button" class="nd-spk" onclick="speakWord(\'' + encodeURIComponent(e.headword) + '\')" aria-label="Pronounce ' + esc(e.headword) + '">🔊</button>' : '') + '</div>';
+        ('speechSynthesis' in window ? '<button type="button" class="nd-spk" data-w="' + esc(e.headword) + '" onclick="NIRONDict.say(this)" aria-label="Pronounce ' + esc(e.headword) + '">🔊</button>' : '') + '</div>';
     }
     var pos = []; (e.senses || []).forEach(function (s) { if (s.pos && pos.indexOf(s.pos) < 0) pos.push(s.pos); });
     h += '<div class="nd-tags">' + pos.map(function (p) { return '<span class="nd-pos">' + esc(p) + '</span>'; }).join('<span class="nd-pos" aria-hidden="true">·</span>') +
       (e.cefr ? '<span class="nd-lv">' + esc(e.cefr) + '</span>' : '') + (e.register ? '<span class="nd-reg">' + esc(e.register) + '</span>' : '') + '</div></header>';
     (e.senses || []).forEach(function (s, i) {
       h += '<section class="nd-sense"><span class="nd-num" aria-hidden="true">' + (i + 1) + '</span><div>';
-      h += '<div class="nd-def">' + (s.pos ? '<span class="nd-pos">' + esc(s.pos) + '</span>' : '') + (s.grammar ? '<span class="nd-gram">' + esc(s.grammar) + '</span>' : '') + esc(s.definition) + (s.cefr && s.cefr !== e.cefr ? ' <span class="nd-lv">' + esc(s.cefr) + '</span>' : '') + '</div>';
+      h += '<div class="nd-def">' + (s.pos && pos.length > 1 ? '<span class="nd-pos">' + esc(s.pos) + '</span>' : '') + (s.grammar ? '<span class="nd-gram">' + esc(s.grammar) + '</span>' : '') + esc(s.definition) + (s.cefr && s.cefr !== e.cefr ? ' <span class="nd-lv">' + esc(s.cefr) + '</span>' : '') + '</div>';
       if (s.translation) h += '<div class="nd-tr" lang="' + trLang(s.translation) + '">' + esc(s.translation) + '</div>';
       if (s.examples && s.examples.length) h += '<ul class="nd-ex">' + s.examples.map(function (x) { return '<li>' + hl(x, e.headword) + '</li>'; }).join('') + '</ul>';
       if (s.patterns && s.patterns.length) h += '<div class="nd-sub"><span class="nd-lbl">Grammar patterns</span>' + s.patterns.map(function (p) { return '<div class="nd-pat"><span class="nd-pat-p">' + esc(p.pattern) + '</span>' + (p.example ? '<span class="nd-pat-ex">' + hl(p.example, e.headword) + '</span>' : '') + '</div>'; }).join('') + '</div>';
@@ -7623,24 +7635,41 @@ var NIRONDict = (function () {
   }
 
   function paint(sl, html) { var p = sl.querySelector('.nd-panel'); if (p) p.innerHTML = html; }
+  function safeView(e) { try { return view(e); } catch (x) { return view(fallbackEntry('bad')); } }
   function load(sl, force) {
     var sd = seedOf(sl); if (!sd) return;
     var k = ckey(sd.w, sd.l), hit = force ? null : cget(k);
-    if (hit) { paint(sl, view(hit)); return; }
+    if (hit) { paint(sl, safeView(hit)); return; }
     if (busy[k]) { paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>'); return; }
     busy[k] = true;
     paint(sl, '<div class="nd-load" aria-busy="true"><i></i><i></i><i></i></div>');
     var done = function (entry, ok) {
       busy[k] = false; if (ok) cset(k, entry);
       var live = document.querySelectorAll('.nd-slot');
-      for (var i = 0; i < live.length; i++) { var o = seedOf(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], view(entry)); }
+      for (var i = 0; i < live.length; i++) { var o = seedOf(live[i]); if (o && ckey(o.w, o.l) === k && !live[i].querySelector('.nd-panel').hidden) paint(live[i], safeView(entry)); }
     };
-    var ctl = ('AbortController' in window) ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 25000);
-    fetch('/api/dictionary', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl ? ctl.signal : undefined,
-      body: JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang() }) })
-      .then(function (r) { return r.json(); })
-      .then(function (j) { clearTimeout(to); if (j && j.status === 'ok' && j.entry && j.entry.senses && j.entry.senses.length) done(j.entry, true); else done(fallbackEntry(sd), false); })
-      .catch(function () { clearTimeout(to); done(fallbackEntry(sd), false); });
+    var body = JSON.stringify({ word: sd.w, cefr_level: sd.l || 'B1', mother_language: lang() });
+    function attempt(n) {
+      var ctl = ('AbortController' in window) ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 28000), st = 0;
+      fetch('/api/dictionary', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl ? ctl.signal : undefined, body: body })
+        .then(function (r) { st = r.status; return r.text(); })
+        .then(function (t) {
+          clearTimeout(to); var j = null; try { j = JSON.parse(t); } catch (x) {}
+          var e = j && j.status === 'ok' ? clean(j.entry) : null;
+          if (e) return done(e, true);
+          var why = st === 404 || st === 405 ? 'missing' : (st >= 500 || st === 429 ? 'server' : 'bad');
+          if (n < 1 && why === 'server') return setTimeout(function () { attempt(n + 1); }, 1200);
+          if (window.console) console.warn('[NIRONDict]', sd.w, 'HTTP', st, j && j.stage ? 'stage=' + j.stage : '', j && j.error ? j.error : t.slice(0, 120));
+          done(fallbackEntry(why), false);
+        })
+        .catch(function (err) {
+          clearTimeout(to);
+          var why = err && err.name === 'AbortError' ? 'timeout' : 'network';
+          if (n < 1) return setTimeout(function () { attempt(n + 1); }, 1200);
+          done(fallbackEntry(why), false);
+        });
+    }
+    attempt(0);
   }
   function setOpen(sl, on) {
     var b = sl.querySelector('.nd-toggle'), p = sl.querySelector('.nd-panel'), sd = seedOf(sl); if (!b || !p || !sd) return;
@@ -7648,13 +7677,14 @@ var NIRONDict = (function () {
     openKeys[sd.w.toLowerCase()] = on; if (on) load(sl);
   }
   function toggle(btn) { var sl = btn.closest('.nd-slot'); setOpen(sl, sl.querySelector('.nd-panel').hidden); }
+  function say(btn) { if (window.speakWord) speakWord(encodeURIComponent(btn.getAttribute('data-w') || '')); }
   function retry(btn) { var sl = btn.closest('.nd-slot'); load(sl, true); }
   function init(root) {
     var list = (root.matches && root.matches('.nd-slot')) ? [root] : (root.querySelectorAll ? root.querySelectorAll('.nd-slot') : []);
     for (var i = 0; i < list.length; i++) { var sl = list[i]; if (sl.__nd) continue; sl.__nd = 1; var sd = seedOf(sl); if (sd && (sl.getAttribute('data-auto') === '1' || openKeys[sd.w.toLowerCase()])) setOpen(sl, true); }
   }
   new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) init(n); }); }); }).observe(document.body, { childList: true, subtree: true });
-  return { slot: slot, toggle: toggle, retry: retry, _view: view };
+  return { slot: slot, toggle: toggle, retry: retry, say: say, _view: view };
 })();
 </script>
 </body>
