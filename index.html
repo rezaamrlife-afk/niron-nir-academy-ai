@@ -8555,5 +8555,315 @@ window.NIRONSync={queueSave:queueSave,isNetErr:isNetErr,syncNow:function(){retur
 boot();
 })();
 </script>
+<style>
+/* ══════ Dictionary+ (word parts, meaning finder) and Adaptive Coach — additive ══════ */
+.ndp{border-top:1px solid var(--border);margin-top:14px;padding-top:8px}
+.ndp>summary{cursor:pointer;list-style:none;font:700 12px var(--f-sans);letter-spacing:.06em;color:var(--gold);padding:8px 0;min-height:36px}
+.ndp>summary::-webkit-details-marker{display:none}
+.ndp>summary:before{content:"＋ ";font-weight:700}.ndp[open]>summary:before{content:"－ "}
+.ndp-box{display:grid;gap:16px;margin-top:6px;min-width:0}
+.ndp-row{display:flex;gap:8px;flex-wrap:wrap}
+.ndp-in{flex:1 1 200px;min-width:0;font:500 14px var(--f-sans);color:var(--white);background:var(--white-faint);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.ndp-btn,.nc-btn{font:700 12.5px var(--f-sans);letter-spacing:.04em;color:var(--gold);background:var(--gold-glow);border:1px solid var(--gold);border-radius:10px;padding:9px 14px;cursor:pointer;min-height:40px}
+.ndp-res{font:500 13.5px/1.55 var(--f-sans);color:var(--white);margin-top:8px;overflow-wrap:anywhere}
+.ndp-res small{display:block;color:var(--white-dim);font-size:12.5px;margin-top:4px}
+.ndp-wb{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ndp-wb li{font:500 13.5px/1.5 var(--f-sans);color:var(--white);overflow-wrap:anywhere}
+.ndp-wb li b{font-weight:700}.ndp-wb li span{color:var(--white-dim);font-size:12.5px}
+.nd-sense.ndp-hit{box-shadow:inset 3px 0 0 var(--gold);background:var(--gold-glow);border-radius:8px}
+#nc-overlay{position:fixed;inset:0;z-index:9600;display:none;background:rgba(0,0,0,.55);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#nc-overlay.nc-show{display:block}
+.nc-panel{position:relative;max-width:760px;min-height:100%;margin:0 auto;background:var(--black);color:var(--white);font-family:var(--f-sans);padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(40px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.nc-x{position:sticky;top:0;float:right;z-index:2;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--black-3);color:var(--white);font-size:22px;cursor:pointer}
+.nc-kick{font:700 11px var(--f-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.nc-h1{font:700 26px/1.2 var(--f-sans);margin:6px 0 4px;overflow-wrap:anywhere}
+.nc-lead{font:500 13.5px/1.55 var(--f-sans);color:var(--white-dim);margin:0 0 18px}
+.nc-h2{font:700 12px var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--white-dim);margin:22px 0 10px}
+.nc-card{background:var(--black-3);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;min-width:0}
+.nc-card b{font-weight:700;color:var(--white)}.nc-card p{margin:4px 0 0;font:500 13.5px/1.55 var(--f-sans);color:var(--white-dim);overflow-wrap:anywhere}
+.nc-act{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.nc-li{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:10px;padding:8px 0;border-top:1px solid var(--border);font:500 13.5px/1.4 var(--f-sans);align-items:center}
+.nc-li:first-child{border-top:0}.nc-li span{color:var(--white-dim);font-size:12.5px;display:block}.nc-li em{font-style:normal;font-weight:700;text-align:right}
+.nc-opts{display:grid;gap:8px;margin-top:12px}
+.nc-opt{text-align:left;font:500 14px/1.45 var(--f-sans);color:var(--white);background:var(--white-faint);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:44px;overflow-wrap:anywhere}
+.nc-opt.ok{border-color:var(--green-light);box-shadow:inset 0 0 0 1px var(--green-light)}.nc-opt.no{border-color:#c0392b;box-shadow:inset 0 0 0 1px #c0392b}
+.nc-bar{height:8px;border-radius:4px;background:var(--white-faint);overflow:hidden;margin:6px 0}.nc-bar i{display:block;height:100%;background:var(--gold)}
+.nc-q{font:600 17px/1.45 var(--f-sans);overflow-wrap:anywhere}.nc-meta{font:500 12.5px var(--f-sans);color:var(--white-dim)}
+@media (max-width:480px){.nc-h1{font-size:22px}.nc-panel{padding-left:12px;padding-right:12px}}
+</style>
+<script>
+/* ═════ Dictionary+ — additive panel inside the existing dictionary entry: word-building (morphology) + context-aware meaning finder.
+   Works fully offline from the entry that is already on screen (no extra API calls). ═════ */
+var NIRONDictPlus = (function () {
+  var STOP = {}; 'a an the and or but of to in on at for with by from as is are was were be been being it its this that these those he she they we you i me my your his her their our not no do does did have has had will would can could should may might must than then so if about into over after before up down out off very more most some any too also just'.split(' ').forEach(function (w) { STOP[w] = 1; });
+  var PREP = /^(in|on|at|for|to|of|with|by|from|about|into|over|under|against|between|through|towards|without|within|upon|among)$/;
+  var DET = /^(the|a|an|this|that|these|those|my|your|his|her|its|our|their|some|any|each|every)$/, AUX = /^(to|will|would|can|could|should|may|might|must|shall|did|does|do|don't|didn't|won't|cannot)$/, SUBJ = /^(i|you|we|they|he|she|it)$/;
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function toks(s) { return String(s || '').toLowerCase().replace(/[^a-z' -]/g, ' ').split(/[\s-]+/).map(function (w) { return w.replace(/^'+|'+$/g, ''); }).filter(Boolean); }
+  function stem(w) { w = w.replace(/'s$/, ''); if (w.length > 5 && /ing$/.test(w)) w = w.slice(0, -3); else if (w.length > 4 && /ies$/.test(w)) w = w.slice(0, -3) + 'y'; else if (w.length > 4 && /ed$/.test(w)) w = w.slice(0, -2); else if (w.length > 3 && /es$/.test(w)) w = w.slice(0, -2); else if (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) w = w.slice(0, -1); return w.slice(0, 5); }
+  /* ── context-aware sense ranking (pure function) ── */
+  function rank(hw, senses, sentence) {
+    var H = toks(hw)[0] || '', hk = stem(H), T = toks(sentence), idx = -1, i;
+    for (i = 0; i < T.length; i++) if (stem(T[i]) === hk) { idx = i; break; }
+    if (idx < 0) return { err: 'missing' };
+    var ctx = [];
+    T.forEach(function (w, j) { if (j !== idx && !STOP[w] && w.length > 2) ctx.push({ w: w, k: stem(w), d: Math.abs(j - idx) }); });
+    var prev = T[idx - 1] || '', prev2 = T[idx - 2] || '', next = T[idx + 1] || '';
+    var asVerb = AUX.test(prev) || SUBJ.test(prev), asNoun = DET.test(prev) || (DET.test(prev2) && prev !== 'to');
+    var res = senses.map(function (s, n) {
+      var bag = {}, size = 0;
+      function add(text, wt) { toks(text).forEach(function (w) { if (STOP[w] || w.length < 3 || stem(w) === hk) return; var k = stem(w); bag[k] = Math.max(bag[k] || 0, wt); size++; }); }
+      add(s.def, 1); (s.examples || []).forEach(function (x) { add(x, 1.5); }); (s.colloc || []).forEach(function (x) { add(x, 2); }); (s.syn || []).forEach(function (x) { add(x, 1); });
+      var score = 0, why = [];
+      ctx.forEach(function (c) { if (bag[c.k]) { score += bag[c.k] / (1 + c.d / 6); if (why.length < 4 && why.indexOf(c.w) < 0) why.push(c.w); } });
+      var cn = ''; (s.colloc || []).forEach(function (cl) { if (cn) return; var ct = toks(cl).filter(function (w) { return stem(w) !== hk && !STOP[w]; }); for (var a = 0; a < ct.length; a++) for (var b = 0; b < ctx.length; b++) if (ctx[b].d <= 3 && stem(ct[a]) === ctx[b].k) { cn = cl; return; } });
+      if (cn) { score += 2.5; why.unshift('“' + cn + '”'); }
+      var pn = ''; (s.patterns || []).forEach(function (p) { if (pn) return; var pt = toks(p); var h = pt.map(stem).indexOf(hk); if (h >= 0 && pt[h + 1] && PREP.test(pt[h + 1]) && pt[h + 1] === next) pn = p; });
+      if (pn) { score += 3; why.push('pattern “' + pn + '”'); }
+      var pos = String(s.pos || '').toLowerCase();
+      if (/verb/.test(pos) && asVerb && !asNoun) { score += 2; why.push('used as a verb'); } else if (/noun/.test(pos) && asNoun && !asVerb) { score += 2; why.push('used as a noun'); }
+      score = score / Math.sqrt(1 + size / 20);
+      return { i: n, score: score, why: why };
+    }).sort(function (a, b) { return b.score - a.score; });
+    var top = res[0], sec = res[1], conf = top.score >= 1.2 && (!sec || top.score >= sec.score * 1.35) ? 'clear' : top.score >= 0.6 ? 'close' : 'none';
+    return { ranked: res, conf: conf };
+  }
+  /* ── word-building: only relations between words that are actually attested in the entry's own word family ── */
+  var PRE = [['un', 'not / the opposite'], ['im', 'not'], ['in', 'not'], ['il', 'not'], ['ir', 'not'], ['dis', 'not / the opposite'], ['mis', 'wrongly'], ['re', 'again'], ['pre', 'before'], ['over', 'too much'], ['under', 'too little / below'], ['inter', 'between'], ['sub', 'under'], ['super', 'above / beyond'], ['anti', 'against'], ['de', 'reverse / remove'], ['non', 'not'], ['co', 'together'], ['out', 'beyond / more than'], ['trans', 'across'], ['mid', 'middle']];
+  var SUF = [['ation', 'noun: action / result'], ['ition', 'noun: action / result'], ['tion', 'noun: action / result'], ['sion', 'noun: action / result'], ['ion', 'noun: action / result'], ['ment', 'noun: result / state'], ['ness', 'noun: quality / state'], ['ity', 'noun: quality / state'], ['ship', 'noun: status / skill'], ['hood', 'noun: state / period'], ['ism', 'noun: belief / system'], ['ance', 'noun: action / state'], ['ence', 'noun: action / state'], ['ist', 'noun: person who …'], ['er', 'noun: person / thing that does it'], ['or', 'noun: person / thing that does it'], ['ful', 'adjective: full of'], ['less', 'adjective: without'], ['able', 'adjective: can be …ed'], ['ible', 'adjective: can be …ed'], ['al', 'adjective: relating to'], ['ous', 'adjective: having'], ['ive', 'adjective: tending to'], ['ic', 'adjective: relating to'], ['ly', 'adverb: in a … way'], ['ize', 'verb: make / become'], ['ise', 'verb: make / become'], ['ify', 'verb: make / become'], ['en', 'verb / adjective'], ['y', 'adjective: characterised by'], ['ing', 'form of the verb'], ['ed', 'form of the verb']];
+  function stems(a) { var o = [a]; if (/e$/.test(a)) o.push(a.slice(0, -1)); if (/y$/.test(a)) o.push(a.slice(0, -1) + 'i'); if (/ate$/.test(a)) o.push(a.slice(0, -2)); if (/de$/.test(a)) o.push(a.slice(0, -2) + 's'); if (/ble$/.test(a)) o.push(a.slice(0, -2) + 'il'); o.push(a + a.slice(-1)); return o; }
+  function derive(a, b) {
+    a = a.toLowerCase(); b = b.toLowerCase(); if (a === b || a.length < 3) return null;
+    var i, j, rem, st;
+    for (i = 0; i < PRE.length; i++) if (b === PRE[i][0] + a) return { kind: 'pre', af: PRE[i][0] + '-', m: PRE[i][1] };
+    st = stems(a);
+    for (j = 0; j < st.length; j++) if (b.indexOf(st[j]) === 0) { rem = b.slice(st[j].length); if (!rem) continue; for (i = 0; i < SUF.length; i++) if (rem === SUF[i][0]) return { kind: 'suf', af: '-' + SUF[i][0], m: SUF[i][1] }; }
+    return null;
+  }
+  function relations(hw, fam) {
+    var words = [], seen = {}; [{ w: hw, pos: '' }].concat(fam).forEach(function (f) { var k = f.w.toLowerCase(); if (k && !seen[k] && /^[a-z]+$/i.test(k)) { seen[k] = 1; words.push(f); } });
+    var out = [], used = {};
+    words.forEach(function (a) { words.forEach(function (b) { var d = derive(a.w, b.w); if (d && !used[a.w + '>' + b.w]) { used[a.w + '>' + b.w] = 1; out.push({ a: a, b: b, d: d }); } }); });
+    return out.slice(0, 8);
+  }
+  /* ── DOM helpers: read the entry that NIRONDict already rendered ── */
+  function parse(en) {
+    var hw = (en.querySelector('.nd-hw') || {}).textContent || '';
+    var senses = [].map.call(en.querySelectorAll('.nd-sense'), function (el, i) {
+      var q = el.querySelector('.nd-def'), pos = (el.querySelector('.nd-def .nd-pos') || en.querySelector('.nd-tags .nd-pos') || {}).textContent || '';
+      var ex = [].map.call(el.querySelectorAll('.nd-ex li'), function (l) { var c = l.cloneNode(true); [].forEach.call(c.querySelectorAll('.nd-tx'), function (x) { x.remove(); }); return c.textContent; });
+      var colloc = [], pats = [], syn = [];
+      [].forEach.call(el.querySelectorAll('.nd-sub'), function (sub) { var lb = (sub.querySelector('.nd-lbl') || {}).textContent || ''; if (/Collocations/i.test(lb)) colloc = [].map.call(sub.querySelectorAll('.nd-chips span'), function (x) { return x.textContent; }); else if (/Grammar patterns/i.test(lb)) pats = [].map.call(sub.querySelectorAll('.nd-pat-p'), function (x) { return x.textContent; }); else if (sub.classList.contains('nd-rel') && /SYN/.test(sub.textContent)) syn = sub.textContent.replace('SYN', '').split(',').map(function (x) { return x.trim(); }); });
+      var def = q ? (function () { var c = q.cloneNode(true); [].forEach.call(c.querySelectorAll('.nd-pos,.nd-gram,.nd-lv'), function (x) { x.remove(); }); return c.textContent; })() : '';
+      return { n: i + 1, el: el, pos: pos, def: def, examples: ex, colloc: colloc, patterns: pats, syn: syn };
+    });
+    var fam = [].map.call(en.querySelectorAll('.nd-fam span'), function (s) { var it = s.querySelector('i'), p = it ? it.textContent : ''; return { w: (s.firstChild ? s.firstChild.textContent : s.textContent).trim(), pos: p }; }).filter(function (f) { return f.w; });
+    return { hw: hw, senses: senses, fam: fam };
+  }
+  function enhance(en) {
+    if (en.__ndp || en.querySelector('.ndp') || !en.querySelector('.nd-sense')) return; en.__ndp = 1;
+    var P = parse(en), rel = relations(P.hw, P.fam), id = 'ndp' + Math.random().toString(36).slice(2, 8);
+    var wb = rel.length ? '<ul class="ndp-wb">' + rel.map(function (r) { return '<li><b>' + esc(r.a.w) + '</b> → <b>' + esc(r.b.w) + '</b> <span>' + esc(r.d.af) + ' · ' + esc(r.d.m) + (r.b.pos ? ' · ' + esc(r.b.pos) : '') + '</span></li>'; }).join('') + '</ul>' : '<p class="ndp-res" style="margin:0">No word-building pattern is attested in this word’s family.</p>';
+    var h = '<details class="ndp"><summary>Word parts &amp; meaning finder</summary><div class="ndp-box">' +
+      '<div><span class="nd-lbl">Word building</span>' + wb + '</div>' +
+      (P.senses.length > 1 ? '<div><span class="nd-lbl">Which meaning fits your sentence?</span><div class="ndp-row"><input class="ndp-in" id="' + id + '" type="text" maxlength="240" placeholder="Write a sentence with “' + esc(P.hw) + '”…" aria-label="Sentence containing ' + esc(P.hw) + '"><button type="button" class="ndp-btn" data-ndp="find" data-for="' + id + '">Find meaning</button></div><div class="ndp-res" role="status" aria-live="polite"></div></div>' : '') +
+      '</div></details>';
+    var foot = en.querySelector('.nd-foot'); if (foot) foot.insertAdjacentHTML('beforebegin', h); else en.insertAdjacentHTML('beforeend', h);
+  }
+  function find(btn) {
+    var en = btn.closest('.nd-entry'), inp = document.getElementById(btn.getAttribute('data-for')), out = btn.parentNode.nextElementSibling; if (!en || !inp || !out) return;
+    [].forEach.call(en.querySelectorAll('.ndp-hit'), function (x) { x.classList.remove('ndp-hit'); });
+    var P = parse(en), s = inp.value.trim(); if (!s) { out.textContent = 'Type a sentence first.'; return; }
+    var r = rank(P.hw, P.senses.map(function (x) { return { def: x.def, examples: x.examples, colloc: x.colloc, patterns: x.patterns, syn: x.syn, pos: x.pos }; }), s);
+    if (r.err) { out.textContent = 'Your sentence needs to contain “' + P.hw + '” (or a form of it).'; return; }
+    var top = r.ranked[0], sn = P.senses[top.i];
+    if (r.conf === 'none') { out.innerHTML = 'Not enough clues in that sentence to choose a meaning.<small>Add a word that goes with it (for example an object, a preposition or a topic word) and try again.</small>'; return; }
+    sn.el.classList.add('ndp-hit'); try { sn.el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+    var why = top.why.length ? '<small>Clues: ' + top.why.map(esc).join(', ') + '</small>' : '';
+    if (r.conf === 'close') { var s2 = P.senses[r.ranked[1].i]; s2.el.classList.add('ndp-hit'); out.innerHTML = 'Closest: meaning <b>' + sn.n + '</b>, but meaning <b>' + s2.n + '</b> is also possible.' + why + '<small>This is a keyword-based estimate, not a certainty.</small>'; }
+    else out.innerHTML = 'Best match: meaning <b>' + sn.n + '</b>.' + why + '<small>Keyword-based estimate from the definitions, examples and collocations shown above.</small>';
+  }
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-ndp="find"]'); if (b) find(b); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('ndp-in')) { var b = e.target.parentNode.querySelector('[data-ndp="find"]'); if (b) { e.preventDefault(); find(b); } } });
+  function scan(root) { if (!root || root.nodeType !== 1) return; if (root.matches && root.matches('.nd-entry')) enhance(root); else if (root.querySelector && root.querySelector('.nd-entry')) [].forEach.call(root.querySelectorAll('.nd-entry'), enhance); }
+  new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(scan); }); }).observe(document.body, { childList: true, subtree: true });
+  scan(document.body);
+  return { _rank: rank, _derive: derive, _relations: relations, _toks: toks };
+})();
+
+/* ═════ Adaptive Coach — new analysis + adaptive drills built on the data the Learning Lab already stores (read-only).
+   Drill attempts are kept in their own key "niron_coach_v1"; Lab data, SRS and cloud sync are not modified. ═════ */
+var NIRONCoach = (function () {
+  var CK = 'niron_coach_v1', DAY = 864e5, MAXATT = 1500, ov, body, opener = null, drill = null;
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function pct(a, b) { return b ? Math.round(100 * a / b) : 0; }
+  function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v && typeof v === 'object' ? v : d; } catch (e) { return d; } }
+  function store() { var s = jget(CK, null); if (!s || !Array.isArray(s.att)) s = { att: [], lvl: {} }; if (!s.lvl || typeof s.lvl !== 'object') s.lvl = {}; return s; }
+  function save(s) { if (s.att.length > MAXATT) s.att = s.att.slice(-MAXATT); try { localStorage.setItem(CK, JSON.stringify(s)); } catch (e) {} }
+  function data() {
+    try { if (window.NIRONLab && NIRONLab.addWords) NIRONLab.addWords([], 'coach'); var D = NIRONLab._data(); if (!D || !D.words) return { ws: [], log: [], D: { words: {}, log: [], gram: {}, traps: {} } };
+      var ws = Object.keys(D.words).map(function (k) { var c = D.words[k]; c.key = c.key || k; return c; }).filter(function (c) { return c && c.srs && c.cl && c.pr; });
+      return { ws: ws, log: Array.isArray(D.log) ? D.log : [], D: D };
+    } catch (e) { return { ws: [], log: [], D: { words: {}, log: [], gram: {}, traps: {} } }; }
+  }
+  function mastery(c) { var s = c.srs, a = Math.min(1, Math.log(1 + s.int) / Math.log(31)) * 60, b = Math.max(0, Math.min(20, c.cl.ok * 10 - c.cl.bad * 3)), p = Math.min(20, c.pr.ok * 10); return Math.round(a + b + p); }
+  function acc(a) { return pct(a.filter(function (x) { return x.ok; }).length, a.length); }
+  /* ── 1. retention estimate + intelligent review priority ── */
+  function retention(c, t) { var s = c.srs; if (!s.reps && !s.last) return null; var last = s.last || c.added, iv = Math.max(1, s.int || 1), r = Math.pow(0.9, Math.max(0, t - last) / DAY / iv); if (s.reps === 0 && s.lapses > 0) r = Math.min(r, 0.6); return Math.max(0, Math.min(1, r)); }
+  function queue(ws, t) {
+    var q = ws.map(function (c) { var r = retention(c, t); if (r == null) return null; var due = c.srs.due <= t, od = due ? Math.max(0, (t - c.srs.due) / DAY) : 0;
+      var score = (1 - r) + 0.15 * Math.min(c.srs.lapses, 4) + (c.cl.bad > c.cl.ok ? 0.1 : 0) + (due ? 0.15 : 0);
+      var why = []; if (due) why.push(od >= 1 ? 'overdue ' + Math.round(od) + ' d' : 'due now'); if (c.srs.lapses >= 2) why.push('forgotten ' + c.srs.lapses + '×'); if (c.cl.bad > c.cl.ok) why.push('misses in context'); if (!why.length) why.push('retention falling');
+      return { c: c, r: r, due: due, score: score, why: why.join(' · ') }; }).filter(Boolean).sort(function (a, b) { return b.score - a.score; });
+    return q;
+  }
+  /* ── 2. evidence-based mastery ── */
+  function attByWord(att) { var m = {}; att.forEach(function (a) { var o = m[a.w] = m[a.w] || { mm: 0, co: 0 }; if (a.ok && a.k === 'mm' && a.lv >= 2) o.mm++; if (a.ok && a.k === 'co') o.co++; }); return m; }
+  function evidence(c, am) { var a = am[c.key] || { mm: 0, co: 0 }, t = []; if (c.srs.reps >= 3 && c.srs.lapses <= Math.floor(c.srs.reps / 3)) t.push('recall'); if (c.cl.ok >= 2 || a.co >= 2) t.push('context'); if (a.mm >= 2) t.push('meaning'); if (c.pr.ok >= 1) t.push('production'); return t; }
+  /* ── 3. weak-point detection on dimensions the Lab does not analyse ── */
+  function weak(ws, log, t) {
+    var out = [], KN = { rev: 'Recall', cloze: 'Context', prod: 'Production', gram: 'Grammar' }, TAB = { rev: 'review', cloze: 'context', prod: 'context', gram: 'grammar' };
+    Object.keys(KN).forEach(function (k) {
+      var a = log.filter(function (x) { return x.k === k && x.t >= t - 14 * DAY; }), b = log.filter(function (x) { return x.k === k && x.t < t - 14 * DAY && x.t >= t - 28 * DAY; });
+      if (a.length >= 6 && b.length >= 6) { var pa = acc(a), pb = acc(b); if (pa - pb <= -10) out.push({ s: pb - pa + 20, t: KN[k] + ' accuracy is slipping', d: 'Last 14 days: ' + pa + '% (' + a.length + ' answers) vs ' + pb + '% in the 14 days before (' + b.length + ').', tab: TAB[k] }); }
+    });
+    var days = {}; log.forEach(function (x) { var d = new Date(x.t); d.setHours(0, 0, 0, 0); (days[d.getTime()] = days[d.getTime()] || []).push(x); });
+    var early = [], late = []; Object.keys(days).forEach(function (k) { var a = days[k].slice().sort(function (x, y) { return x.t - y.t; }); a.forEach(function (x, i) { (i < 15 ? early : late).push(x); }); });
+    if (early.length >= 30 && late.length >= 30) { var pe = acc(early), pl = acc(late); if (pe - pl >= 10) out.push({ s: pe - pl + 10, t: 'Accuracy drops in long sessions', d: 'First 15 answers of a day: ' + pe + '%; after that: ' + pl + '%. Shorter sessions should help.', tab: null }); }
+    var B = [['morning', 5, 11], ['afternoon', 11, 17], ['evening', 17, 22], ['night', 22, 29]], bl = B.map(function (b) { var a = log.filter(function (x) { var h = new Date(x.t).getHours(); if (h < 5) h += 24; return h >= b[1] && h < b[2]; }); return { n: b[0], c: a.length, p: acc(a) }; }).filter(function (b) { return b.c >= 12; });
+    if (bl.length >= 2) { bl.sort(function (a, b) { return b.p - a.p; }); var hi = bl[0], lo = bl[bl.length - 1]; if (hi.p - lo.p >= 12) out.push({ s: 3, t: 'You answer best in the ' + hi.n, d: hi.n + ': ' + hi.p + '% (' + hi.c + ' answers) vs ' + lo.n + ': ' + lo.p + '% (' + lo.c + '). Schedule hard review for the ' + hi.n + '.', tab: null }); }
+    var avg = ws.length ? ws.reduce(function (a, c) { return a + mastery(c); }, 0) / ws.length : 0;
+    ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(function (L) { var w = ws.filter(function (c) { return c.cefr === L; }); if (w.length >= 3) { var m = Math.round(w.reduce(function (a, c) { return a + mastery(c); }, 0) / w.length); if (m <= avg - 15) out.push({ s: avg - m, t: L + ' vocabulary lags behind', d: 'Average mastery ' + m + '% across ' + w.length + ' words, against ' + Math.round(avg) + '% overall.', tab: 'review' }); } });
+    var pos = {}; ws.forEach(function (c) { var p = (c.pos || '').toLowerCase().match(/[a-z]+/); if (p) (pos[p[0]] = pos[p[0]] || []).push(c); });
+    Object.keys(pos).forEach(function (p) { var w = pos[p]; if (w.length >= 4) { var m = Math.round(w.reduce(function (a, c) { return a + mastery(c); }, 0) / w.length); if (m <= avg - 15) out.push({ s: avg - m, t: 'Your ' + p + 's are weaker', d: 'Average mastery ' + m + '% across ' + w.length + ' ' + p + 's, against ' + Math.round(avg) + '% overall.', tab: 'context' }); } });
+    return out.sort(function (a, b) { return b.s - a.s; }).slice(0, 4);
+  }
+  /* ── 4. adaptive drills ── */
+  var PREPS = ['in', 'on', 'at', 'for', 'to', 'of', 'with', 'by', 'from', 'about', 'into', 'over'];
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function level(s, k) { var v = +s.lvl[k]; return v >= 1 && v <= 5 ? v : 2; }
+  function trim(s, n) { s = String(s || '').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+  function pickWord(pool, t, am, recent) {
+    var sc = pool.filter(function (c) { return recent.indexOf(c.key) < 0; }); if (!sc.length) sc = pool;
+    var w = sc.map(function (c) { var r = retention(c, t), ev = evidence(c, am).length; return { c: c, w: 0.2 + (r == null ? 0.5 : 1 - r) + (1 - ev / 4) * 0.5 }; }), tot = w.reduce(function (a, x) { return a + x.w; }, 0), p = Math.random() * tot;
+    for (var i = 0; i < w.length; i++) { p -= w[i].w; if (p <= 0) return w[i].c; } return w[w.length - 1].c;
+  }
+  function mkMM(ws, c, L) {
+    var n = [2, 3, 3, 4, 4][L - 1], others = ws.filter(function (o) { return o.key !== c.key && o.meaning && o.meaning !== c.meaning; });
+    var pref = others.filter(function (o) { var samePos = o.pos && c.pos && o.pos.toLowerCase().split(/\W+/)[0] === c.pos.toLowerCase().split(/\W+/)[0], sameLv = o.cefr && o.cefr === c.cefr; return L >= 4 ? samePos && sameLv : L === 3 ? samePos : !samePos; });
+    var d = shuffle(pref).concat(shuffle(others.filter(function (o) { return pref.indexOf(o) < 0; }))).slice(0, n - 1);
+    if (d.length < 1) return null;
+    var opts = shuffle([{ t: trim(c.meaning, 150), ok: 1, key: c.key }].concat(d.map(function (o) { return { t: trim(o.meaning, 150), ok: 0, key: o.key }; })));
+    return { k: 'mm', c: c, L: L, prompt: 'What does <b>' + esc(c.word) + '</b>' + (c.pos ? ' <span class="nc-meta">(' + esc(c.pos) + ')</span>' : '') + ' mean?', hint: L <= 2 && c.example ? '“' + esc(c.example) + '”' : '', opts: opts };
+  }
+  function mkCO(ws, c, L) {
+    var n = [2, 3, 3, 4, 4][L - 1], cols = (c.colloc || []).filter(function (x) { return toksN(x) >= 2; }); if (!cols.length) return null;
+    var col = cols[Math.floor(Math.random() * cols.length)], parts = col.split(/\s+/), pi = -1, i;
+    for (i = 0; i < parts.length; i++) if (PREPS.indexOf(parts[i].toLowerCase()) >= 0) { pi = i; break; }
+    var isPrep = pi >= 0, bi = isPrep ? pi : parts.length - 1, ans = parts[bi].replace(/[.,;]/g, '').toLowerCase(), pool;
+    if (isPrep) pool = PREPS.filter(function (p) { return p !== ans; });
+    else { pool = []; ws.forEach(function (o) { (o.colloc || []).forEach(function (x) { var q = x.split(/\s+/); var w = q[q.length - 1].replace(/[.,;]/g, '').toLowerCase(); if (w && w !== ans && pool.indexOf(w) < 0 && q.length >= 2) pool.push(w); }); }); }
+    var d = shuffle(pool).slice(0, n - 1); if (d.length < 1) return null;
+    var shown = parts.map(function (p, j) { return j === bi ? '_____' : esc(p); }).join(' ');
+    return { k: 'co', c: c, L: L, prompt: 'Complete the collocation: <b>' + shown + '</b>', hint: L <= 2 && c.meaning ? esc(trim(c.meaning, 120)) : '', opts: shuffle([{ t: ans, ok: 1 }].concat(d.map(function (x) { return { t: x, ok: 0 }; }))), full: col };
+  }
+  function toksN(s) { return String(s || '').trim().split(/\s+/).length; }
+  function nextQ() {
+    var d = data(), st = store(), t = Date.now(), am = attByWord(st.att), ws = d.ws.filter(function (c) { return c.meaning; });
+    if (ws.length < 4) return { err: 'Add at least 4 words with meanings to your Learning Lab to unlock adaptive drills.' };
+    var hist = st.att.slice(-30), a1 = hist.filter(function (a) { return a.k === 'mm'; }), a2 = hist.filter(function (a) { return a.k === 'co'; }), want = drill.mode;
+    if (want === 'mix') want = Math.random() < (a2.length >= 4 && a1.length >= 4 && acc(a2) < acc(a1) ? 0.6 : 0.35) ? 'co' : 'mm';
+    for (var tries = 0; tries < 8; tries++) {
+      var c = pickWord(want === 'co' ? ws.filter(function (x) { return (x.colloc || []).length; }) : ws, t, am, drill.recent), q = null;
+      if (!c) { want = 'mm'; continue; }
+      q = want === 'co' ? mkCO(ws, c, level(st, 'co')) : mkMM(ws, c, level(st, 'mm'));
+      if (q) return { q: q };
+      if (want === 'co') want = 'mm';
+    }
+    return { err: 'Not enough varied material yet for this drill. Add more words with collocations.' };
+  }
+  function answer(i) {
+    var q = drill.q; if (!q || drill.done) return; drill.done = 1; var o = q.opts[i], ok = !!o.ok, st = store(), k = q.k, wrong = !ok ? (o.key || '') : '';
+    st.att.push({ t: Date.now(), w: q.c.key, k: k, ok: ok ? 1 : 0, lv: q.L, x: wrong }); var lv = level(st, k), run = ok ? (drill.run[k] || 0) + 1 : 0; drill.run[k] = run;
+    if (ok && run >= 2) { st.lvl[k] = Math.min(5, lv + 1); drill.run[k] = 0; } else if (!ok) st.lvl[k] = Math.max(1, lv - 1);
+    save(st); drill.n++; if (ok) drill.ok++; drill.recent.push(q.c.key); if (drill.recent.length > 3) drill.recent.shift();
+    drill.fb = { ok: ok, up: st.lvl[k] > lv, down: st.lvl[k] < lv, pick: i, newL: st.lvl[k] }; drill.msg = ok ? '' : (q.k === 'mm' ? 'Correct meaning of ' + q.c.word + ': ' + trim(q.c.meaning, 160) : 'Correct: ' + q.full);
+    render();
+  }
+  /* ── recommendations ── */
+  function recs(ctx) {
+    var r = [], q = ctx.queue, risk = q.filter(function (x) { return x.r < 0.8 || x.due; });
+    if (risk.length) r.push({ i: '⟳', t: 'Review ' + Math.min(risk.length, 20) + ' at-risk word' + (Math.min(risk.length, 20) > 1 ? 's' : '') + ' first', w: 'Estimated recall for “' + risk[0].c.word + '” is ' + Math.round(risk[0].r * 100) + '% (' + risk[0].why + ').', b: 'Open review', go: 'lab:review' });
+    var st = ctx.st, h = st.att.slice(-12), ha = h.length >= 6 ? acc(h) : null;
+    if (ha != null) r.push({ i: '◎', t: ha >= 85 ? 'Raise the challenge' : ha < 55 ? 'Consolidate before moving up' : 'You are in the learning zone', w: 'Last ' + h.length + ' drill answers: ' + ha + '% correct. ' + (ha >= 85 ? 'Drills will get harder automatically.' : ha < 55 ? 'Drills will use easier options until you are steadier.' : 'Difficulty adapts after every answer.'), b: 'Start adaptive drill', go: 'drill:mix' });
+    if (ctx.weak[0]) r.push({ i: '⚑', t: ctx.weak[0].t, w: ctx.weak[0].d, b: ctx.weak[0].tab ? 'Practise' : null, go: ctx.weak[0].tab ? 'lab:' + ctx.weak[0].tab : null });
+    if (ctx.unproven.length) r.push({ i: '✎', t: 'Prove ' + Math.min(ctx.unproven.length, 8) + ' word' + (ctx.unproven.length > 1 ? 's' : '') + ' by using them', w: 'Marked consolidated by the schedule but never used in your own sentence: ' + ctx.unproven.slice(0, 4).map(function (c) { return c.word; }).join(', ') + '.', b: 'Write sentences', go: 'lab:context' });
+    if (!r.length) r.push({ i: '✦', t: ctx.ws.length ? 'Keep practising' : 'Build your deck', w: ctx.ws.length ? 'Recommendations appear as your practice history grows.' : 'Generate words in the Vocabulary Hub and add them to the Lab.', b: ctx.ws.length ? 'Start adaptive drill' : null, go: ctx.ws.length ? 'drill:mix' : null });
+    return r.slice(0, 4);
+  }
+  function btn(label, go, cls) { return label ? '<button type="button" class="nc-btn" data-nc="' + esc(go) + '">' + esc(label) + '</button>' : ''; }
+  function drillHTML() {
+    var st = store();
+    if (drill) {
+      if (drill.err) return '<div class="nc-card"><p>' + esc(drill.err) + '</p><div class="nc-act">' + btn('Back', 'drill:stop') + '</div></div>';
+      if (drill.finished) return '<div class="nc-card"><b>Drill complete: ' + drill.ok + ' / ' + drill.n + ' correct</b><p>Meaning level ' + level(st, 'mm') + ' · collocation level ' + level(st, 'co') + ' (1–5). Your next drill starts at these levels.</p><div class="nc-act">' + btn('Another drill', 'drill:' + drill.mode) + btn('Back to coach', 'drill:stop') + '</div></div>';
+      var q = drill.q, f = drill.fb;
+      var h = '<div class="nc-card"><div class="nc-meta">Question ' + (drill.n + (drill.done ? 0 : 1)) + ' of ' + drill.total + ' · ' + (q.k === 'mm' ? 'Meaning' : 'Collocation') + ' · difficulty ' + q.L + '/5</div><div class="nc-bar"><i style="width:' + pct(drill.n, drill.total) + '%"></i></div><div class="nc-q">' + q.prompt + '</div>' + (q.hint ? '<p>' + q.hint + '</p>' : '') + '<div class="nc-opts">';
+      q.opts.forEach(function (o, i) { var cl = drill.done ? (o.ok ? ' ok' : (f && f.pick === i ? ' no' : '')) : ''; h += '<button type="button" class="nc-opt' + cl + '" data-nc="ans:' + i + '"' + (drill.done ? ' disabled' : '') + '>' + esc(o.t) + '</button>'; });
+      h += '</div>';
+      if (!drill.done) h += '<div class="nc-act">' + btn('End drill', 'drill:stop') + '</div>';
+      if (drill.done) h += '<p role="status">' + (f.ok ? '✓ Correct.' : '✗ Not quite. ' + esc(drill.msg)) + (f.up ? ' Difficulty up.' : f.down ? ' Difficulty eased.' : '') + '</p><div class="nc-act">' + btn(drill.n >= drill.total ? 'See result' : 'Next', 'drill:next') + '</div>';
+      return h + '</div>';
+    }
+    return '<div class="nc-card"><b>Adaptive drills</b><p>Difficulty rises after two correct answers in a row and eases after a miss. Words you are weakest on come up more often.</p><div class="nc-meta" style="margin-top:8px">Current levels — meaning: ' + level(st, 'mm') + '/5 · collocation: ' + level(st, 'co') + '/5</div><div class="nc-act">' + btn('Mixed (8)', 'drill:mix') + btn('Meaning', 'drill:mm') + btn('Collocations', 'drill:co') + '</div></div>';
+  }
+  function render() {
+    var d = data(), t = Date.now(), st = store(), am = attByWord(st.att), q = queue(d.ws, t), wk = weak(d.ws, d.log, t), n = d.ws.length;
+    var ev = d.ws.map(function (c) { return { c: c, e: evidence(c, am) }; }), backed = ev.filter(function (x) { return x.e.length >= 3; }).length, building = ev.filter(function (x) { return x.e.length === 2; }).length, thin = n - backed - building;
+    var unproven = d.ws.filter(function (c) { return c.srs.int >= 21 && c.pr.ok === 0; });
+    var ctx = { ws: d.ws, queue: q, st: st, weak: wk, unproven: unproven }, R = recs(ctx);
+    var h = '<div class="nc-kick">Adaptive Coach</div><h1 class="nc-h1" id="nc-title">Your next best steps</h1><p class="nc-lead">Computed from your own practice. Estimates are labelled; nothing here changes your Lab data or review schedule.</p>';
+    if (drill) h += drillHTML();
+    else {
+      h += R.map(function (x) { return '<div class="nc-card"><b>' + esc(x.i) + ' ' + esc(x.t) + '</b><p>' + esc(x.w) + '</p>' + (x.b ? '<div class="nc-act">' + btn(x.b, x.go) + '</div>' : '') + '</div>'; }).join('');
+      h += '<h2 class="nc-h2">Retention forecast &amp; review priority</h2><div class="nc-card">';
+      if (!q.length) h += '<p style="margin:0">No reviewed words yet. Review a few words in the Lab and an estimated recall forecast will appear.</p>';
+      else { var dueN = q.filter(function (x) { return x.due; }).length, rec = Math.min(25, Math.max(dueN, Math.min(q.filter(function (x) { return x.r < 0.8; }).length, 25)));
+        h += '<p style="margin:0 0 8px"><b>' + dueN + '</b> due · suggested session: <b>' + rec + '</b> word' + (rec === 1 ? '' : 's') + ' (about ' + Math.max(1, Math.round(rec * 0.5)) + ' min), highest forgetting risk first.' + (dueN > 40 ? ' Large backlog: clear it over several days.' : '') + '</p>';
+        h += q.slice(0, 8).map(function (x) { return '<div class="nc-li"><div>' + esc(x.c.word) + '<span>' + esc(x.why) + '</span></div><em>' + Math.round(x.r * 100) + '%</em></div>'; }).join('') + '<p class="nc-meta" style="margin-top:8px">Estimated recall now, from the time since your last review and the current interval. It is a model, not a test.</p>'; }
+      h += '</div><h2 class="nc-h2">Weak-point detection</h2>';
+      h += wk.length ? wk.map(function (x) { return '<div class="nc-card"><b>' + esc(x.t) + '</b><p>' + esc(x.d) + '</p>' + (x.tab ? '<div class="nc-act">' + btn('Practise', 'lab:' + x.tab) + '</div>' : '') + '</div>'; }).join('') : '<div class="nc-card"><p style="margin:0">No clear weak point yet. These checks need about 6+ answers per skill in two consecutive 14-day periods, 30+ answers across sessions, or 3+ words per level or word type.</p></div>';
+      h += '<h2 class="nc-h2">Evidence-based mastery</h2><div class="nc-card"><p style="margin:0 0 6px"><b>' + backed + '</b> evidence-backed · <b>' + building + '</b> building · <b>' + thin + '</b> thin (of ' + n + ' words)</p><div class="nc-bar"><i style="width:' + pct(backed, n) + '%"></i></div><p>A word counts as evidence-backed after 3 of: stable recall, correct use in context, correct meaning in drills, and your own sentence.</p>' + (unproven.length ? '<p><b>' + unproven.length + '</b> word' + (unproven.length > 1 ? 's are' : ' is') + ' scheduled as consolidated without any production: ' + esc(unproven.slice(0, 6).map(function (c) { return c.word; }).join(', ')) + '.</p>' : '') + '</div>';
+      var conf = {}; st.att.forEach(function (a) { if (!a.ok && a.x) { var key = a.w + '|' + a.x; conf[key] = (conf[key] || 0) + 1; } });
+      var pairs = Object.keys(conf).filter(function (k) { return conf[k] >= 2; }).sort(function (a, b) { return conf[b] - conf[a]; }).slice(0, 3).map(function (k) { var p = k.split('|'), A = d.D.words[p[0]], B = d.D.words[p[1]]; return A && B ? esc(A.word) + ' ↔ ' + esc(B.word) + ' (' + conf[k] + '×)' : ''; }).filter(Boolean);
+      if (pairs.length) h += '<h2 class="nc-h2">Confusable words</h2><div class="nc-card"><p style="margin:0">You mixed these up in drills: ' + pairs.join(', ') + '. Compare their meanings side by side.</p></div>';
+      h += '<h2 class="nc-h2">Adaptive practice</h2>' + drillHTML();
+    }
+    body.innerHTML = h;
+  }
+  function startDrill(mode) { drill = { mode: mode, n: 0, ok: 0, total: 8, recent: [], run: {}, done: 0 }; var r = nextQ(); if (r.err) drill.err = r.err; else drill.q = r.q; render(); }
+  function act(go) {
+    if (go.indexOf('lab:') === 0) { close(); try { NIRONLab.open(go.slice(4)); } catch (e) {} return; }
+    if (go.indexOf('ans:') === 0) return answer(+go.slice(4));
+    if (go === 'drill:stop') { drill = null; return render(); }
+    if (go === 'drill:next') { if (drill.n >= drill.total) { drill.finished = 1; return render(); } var r = nextQ(); drill.done = 0; drill.fb = null; if (r.err) drill.err = r.err; else drill.q = r.q; return render(); }
+    if (go.indexOf('drill:') === 0) return startDrill(go.slice(6));
+  }
+  function open() { drill = null; opener = document.activeElement; render(); ov.classList.add('nc-show'); ov.scrollTop = 0; var x = ov.querySelector('.nc-x'); if (x) x.focus({ preventScroll: true }); }
+  function close() { ov.classList.remove('nc-show'); drill = null; if (opener && opener.focus && document.contains(opener)) try { opener.focus(); } catch (e) {} }
+  function init() {
+    ov = document.createElement('div'); ov.id = 'nc-overlay'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'nc-title');
+    ov.innerHTML = '<div class="nc-panel"><button type="button" class="nc-x" aria-label="Close Adaptive Coach" data-nc="close">×</button><div id="nc-body"></div></div>'; document.body.appendChild(ov); body = ov.querySelector('#nc-body');
+    document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-nc]'); if (!b) { if (e.target === ov) close(); return; } var g = b.getAttribute('data-nc'); if (g === 'open') open(); else if (g === 'close') close(); else if (ov.contains(b)) act(g); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ov.classList.contains('nc-show')) { e.stopPropagation(); e.preventDefault(); close(); } }, true);
+    var lv = document.getElementById('lab-view');
+    function inject() { if (!lv || lv.querySelector('[data-nc="open"]')) return; var grid = lv.querySelector('.lab-grid'); if (!grid || !grid.querySelector('.lab-plan')) return; var prev = grid.previousElementSibling; if (!prev || !/adaptive plan/i.test(prev.textContent)) return;
+      grid.insertAdjacentHTML('beforeend', '<button class="lab-plan" type="button" data-nc="open"><i aria-hidden="true">◎</i><div><b>Adaptive Coach</b><span>Retention forecast, weak points and adaptive drills.</span></div></button>'); }
+    if (lv) { new MutationObserver(inject).observe(lv, { childList: true, subtree: true }); inject(); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  return { open: open, close: close, _queue: queue, _weak: weak, _evidence: evidence, _retention: retention, _state: function () { return drill; } };
+})();
+</script>
 </body>
 </html>
