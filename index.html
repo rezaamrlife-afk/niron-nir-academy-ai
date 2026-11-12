@@ -5377,68 +5377,6 @@ function showToast(message, type) {
   </div>
 </div>
 
-<!-- ══ VOCABULARY HUB SHOWCASE ══ -->
-<section class="vhs" id="vocab-showcase" aria-labelledby="vhs-title">
-  <div class="vhs-inner">
-    <div class="vhs-copy">
-      <div class="section-header vhs-head">
-        <div class="section-tag">Vocabulary Hub</div>
-        <h2 class="section-title" id="vhs-title">KNOW A WORD THE WAY IT IS REALLY USED</h2>
-        <p class="section-sub">Give the Vocabulary Hub a single word, a phrase or a whole topic. It builds a structured study set for your CEFR level, with the meaning, a natural example, collocations, IELTS relevance, a translation and the register of every word.</p>
-      </div>
-      <ul class="vhs-types" aria-label="Input types">
-        <li><b>Word</b><span>One word, studied in depth</span></li>
-        <li><b>Phrase</b><span>Idioms and fixed expressions</span></li>
-        <li><b>Topic</b><span>A themed set of 3, 5 or 7 words</span></li>
-      </ul>
-      <p class="vhs-modes">Study in <b>Passive</b>, <b>Active</b> or <b>IELTS</b> mode, with spoken pronunciation where your browser supports it.</p>
-      <div class="vhs-actions">
-        <button type="button" class="vhs-cta" onclick="VocabHub.open()"><span aria-hidden="true">📚</span> Open Vocabulary Hub <span class="vhs-arrow" aria-hidden="true">→</span></button>
-        <div class="vhs-levels" aria-label="CEFR levels A1 to C2">
-          <span class="vhs-lv" data-l="A1">A1</span><span class="vhs-lv" data-l="A2">A2</span><span class="vhs-lv" data-l="B1">B1</span><span class="vhs-lv" data-l="B2">B2</span><span class="vhs-lv" data-l="C1">C1</span><span class="vhs-lv" data-l="C2">C2</span>
-        </div>
-      </div>
-    </div>
-    <figure class="vhs-preview" aria-label="Example vocabulary card (static preview)">
-      <span class="vhs-tag">Example preview</span>
-      <div class="vhs-card">
-        <div class="vhs-word-row">
-          <div>
-            <div class="vhs-word">investigate</div>
-            <div class="vhs-pos">verb</div>
-          </div>
-          <span class="vhs-badge" data-l="B2">B2</span>
-        </div>
-        <div class="vhs-sec"><div class="vhs-lbl">Meaning</div><p>To examine a problem or situation carefully in order to find out the facts.</p></div>
-        <div class="vhs-sec"><div class="vhs-lbl">Example</div><p class="vhs-ex">“Researchers will investigate the causes of the decline.”</p></div>
-        <div class="vhs-sec"><div class="vhs-lbl">Collocations</div>
-          <div class="vhs-chips"><span>investigate a claim</span><span>thoroughly investigate</span><span>investigate the cause</span></div></div>
-        <div class="vhs-sec"><div class="vhs-lbl">IELTS Relevance</div><p>Useful in Writing Task 2 when discussing research, policy and crime.</p></div>
-        <div class="vhs-sec"><div class="vhs-lbl">Translation</div><p class="vhs-fa" dir="rtl" lang="fa">بررسی کردن</p></div>
-        <div class="vhs-meta"><span>Register <b>formal</b></span><span>CEFR <b class="vhs-badge" data-l="B2">B2</b></span></div>
-      </div>
-    </figure>
-  </div>
-</section>
-
-<!-- ══ LEARNING LAB (landing) ══ -->
-<section class="lab-land" id="learning-lab" aria-labelledby="lab-land-title">
-  <div class="lab-land-in">
-    <div class="section-header">
-      <div class="section-tag">Learning Lab</div>
-      <h2 class="section-title" id="lab-land-title">FROM A SINGLE WORD TO LASTING MASTERY</h2>
-      <p class="section-sub">Generation is only the start. The Learning Lab turns what NIRON creates into practice that adapts to you: scheduled recall, contextual use, grammar transformation and a diagnosis of what to fix next.</p>
-    </div>
-    <ol class="lab-flow" aria-label="How the Learning Lab works">
-      <li>Generate<small>Vocabulary Hub</small></li><li>Collect<small>Add to your Lab</small></li><li>Recall<small>Spaced repetition</small></li><li>Use<small>Context &amp; writing</small></li><li>Diagnose<small>Fix what is weak</small></li>
-    </ol>
-    <div class="lab-cards"><button type="button" class="lab-card" onclick="NIRONLab.open('dash')"><i aria-hidden="true">▦</i><b>Adaptive dashboard &amp; CEFR progress</b><span>A daily plan computed from your own practice: what is due, what is weak and what to do next, with CEFR evidence from your answers.</span><em>Open dashboard →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('review')"><i aria-hidden="true">⟳</i><b>Smart spaced repetition</b><span>Every rating reschedules the word. Forgotten words return within minutes; secure ones come back after weeks.</span><em>Start reviewing →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('context')"><i aria-hidden="true">❝</i><b>Contextual acquisition &amp; production</b><span>Fill the gap in real example sentences, then write your own sentence and compare it with a model.</span><em>Practise in context →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('network')"><i aria-hidden="true">✳</i><b>Intelligent vocabulary network</b><span>See how your words connect through shared collocation terms, the sets they came from and word families.</span><em>Explore the network →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('grammar')"><i aria-hidden="true">§</i><b>Grammar intelligence lab</b><span>Sentence transformations across eight structures from B1 to C2, with the rule behind each answer and feedback on common mistakes.</span><em>Open the lab →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('diag')"><i aria-hidden="true">✚</i><b>Personalised error diagnosis</b><span>Recurring error patterns, difficult words and your weakest skill, found from your own answers, not guessed.</span><em>See my diagnosis →</em></button></div>
-    <p class="lab-live" id="lab-live" aria-live="polite"></p>
-    <div class="lab-land-cta"><button type="button" class="vhs-cta" onclick="NIRONLab.open('dash')"><span aria-hidden="true">◈</span> Open Learning Lab <span class="vhs-arrow" aria-hidden="true">→</span></button><button type="button" class="lab-btn ghost" onclick="VocabHub.open()">📚 Generate words first</button></div>
-    <p class="lab-note" style="margin-top:1rem">Your progress syncs securely across devices.</p>
-  </div>
-</section>
-
 <!-- ══ MAIN INTERFACE ══ -->
 <div class="main-interface" id="interface">
   <div class="section-header" style="margin-bottom:2rem;">
@@ -5620,6 +5558,68 @@ function showToast(message, type) {
         </ul>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ══ VOCABULARY HUB SHOWCASE ══ -->
+<section class="vhs" id="vocab-showcase" aria-labelledby="vhs-title">
+  <div class="vhs-inner">
+    <div class="vhs-copy">
+      <div class="section-header vhs-head">
+        <div class="section-tag">Vocabulary Hub</div>
+        <h2 class="section-title" id="vhs-title">KNOW A WORD THE WAY IT IS REALLY USED</h2>
+        <p class="section-sub">Give the Vocabulary Hub a single word, a phrase or a whole topic. It builds a structured study set for your CEFR level, with the meaning, a natural example, collocations, IELTS relevance, a translation and the register of every word.</p>
+      </div>
+      <ul class="vhs-types" aria-label="Input types">
+        <li><b>Word</b><span>One word, studied in depth</span></li>
+        <li><b>Phrase</b><span>Idioms and fixed expressions</span></li>
+        <li><b>Topic</b><span>A themed set of 3, 5 or 7 words</span></li>
+      </ul>
+      <p class="vhs-modes">Study in <b>Passive</b>, <b>Active</b> or <b>IELTS</b> mode, with spoken pronunciation where your browser supports it.</p>
+      <div class="vhs-actions">
+        <button type="button" class="vhs-cta" onclick="VocabHub.open()"><span aria-hidden="true">📚</span> Open Vocabulary Hub <span class="vhs-arrow" aria-hidden="true">→</span></button>
+        <div class="vhs-levels" aria-label="CEFR levels A1 to C2">
+          <span class="vhs-lv" data-l="A1">A1</span><span class="vhs-lv" data-l="A2">A2</span><span class="vhs-lv" data-l="B1">B1</span><span class="vhs-lv" data-l="B2">B2</span><span class="vhs-lv" data-l="C1">C1</span><span class="vhs-lv" data-l="C2">C2</span>
+        </div>
+      </div>
+    </div>
+    <figure class="vhs-preview" aria-label="Example vocabulary card (static preview)">
+      <span class="vhs-tag">Example preview</span>
+      <div class="vhs-card">
+        <div class="vhs-word-row">
+          <div>
+            <div class="vhs-word">investigate</div>
+            <div class="vhs-pos">verb</div>
+          </div>
+          <span class="vhs-badge" data-l="B2">B2</span>
+        </div>
+        <div class="vhs-sec"><div class="vhs-lbl">Meaning</div><p>To examine a problem or situation carefully in order to find out the facts.</p></div>
+        <div class="vhs-sec"><div class="vhs-lbl">Example</div><p class="vhs-ex">“Researchers will investigate the causes of the decline.”</p></div>
+        <div class="vhs-sec"><div class="vhs-lbl">Collocations</div>
+          <div class="vhs-chips"><span>investigate a claim</span><span>thoroughly investigate</span><span>investigate the cause</span></div></div>
+        <div class="vhs-sec"><div class="vhs-lbl">IELTS Relevance</div><p>Useful in Writing Task 2 when discussing research, policy and crime.</p></div>
+        <div class="vhs-sec"><div class="vhs-lbl">Translation</div><p class="vhs-fa" dir="rtl" lang="fa">بررسی کردن</p></div>
+        <div class="vhs-meta"><span>Register <b>formal</b></span><span>CEFR <b class="vhs-badge" data-l="B2">B2</b></span></div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ LEARNING LAB (landing) ══ -->
+<section class="lab-land" id="learning-lab" aria-labelledby="lab-land-title">
+  <div class="lab-land-in">
+    <div class="section-header">
+      <div class="section-tag">Learning Lab</div>
+      <h2 class="section-title" id="lab-land-title">FROM A SINGLE WORD TO LASTING MASTERY</h2>
+      <p class="section-sub">Generation is only the start. The Learning Lab turns what NIRON creates into practice that adapts to you: scheduled recall, contextual use, grammar transformation and a diagnosis of what to fix next.</p>
+    </div>
+    <ol class="lab-flow" aria-label="How the Learning Lab works">
+      <li>Generate<small>Vocabulary Hub</small></li><li>Collect<small>Add to your Lab</small></li><li>Recall<small>Spaced repetition</small></li><li>Use<small>Context &amp; writing</small></li><li>Diagnose<small>Fix what is weak</small></li>
+    </ol>
+    <div class="lab-cards"><button type="button" class="lab-card" onclick="NIRONLab.open('dash')"><i aria-hidden="true">▦</i><b>Adaptive dashboard &amp; CEFR progress</b><span>A daily plan computed from your own practice: what is due, what is weak and what to do next, with CEFR evidence from your answers.</span><em>Open dashboard →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('review')"><i aria-hidden="true">⟳</i><b>Smart spaced repetition</b><span>Every rating reschedules the word. Forgotten words return within minutes; secure ones come back after weeks.</span><em>Start reviewing →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('context')"><i aria-hidden="true">❝</i><b>Contextual acquisition &amp; production</b><span>Fill the gap in real example sentences, then write your own sentence and compare it with a model.</span><em>Practise in context →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('network')"><i aria-hidden="true">✳</i><b>Intelligent vocabulary network</b><span>See how your words connect through shared collocation terms, the sets they came from and word families.</span><em>Explore the network →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('grammar')"><i aria-hidden="true">§</i><b>Grammar intelligence lab</b><span>Sentence transformations across eight structures from B1 to C2, with the rule behind each answer and feedback on common mistakes.</span><em>Open the lab →</em></button><button type="button" class="lab-card" onclick="NIRONLab.open('diag')"><i aria-hidden="true">✚</i><b>Personalised error diagnosis</b><span>Recurring error patterns, difficult words and your weakest skill, found from your own answers, not guessed.</span><em>See my diagnosis →</em></button></div>
+    <p class="lab-live" id="lab-live" aria-live="polite"></p>
+    <div class="lab-land-cta"><button type="button" class="vhs-cta" onclick="NIRONLab.open('dash')"><span aria-hidden="true">◈</span> Open Learning Lab <span class="vhs-arrow" aria-hidden="true">→</span></button><button type="button" class="lab-btn ghost" onclick="VocabHub.open()">📚 Generate words first</button></div>
+    <p class="lab-note" style="margin-top:1rem">Your progress syncs securely across devices.</p>
   </div>
 </section>
 
