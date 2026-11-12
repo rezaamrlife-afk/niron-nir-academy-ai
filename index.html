@@ -8865,5 +8865,13 @@ var NIRONCoach = (function () {
   return { open: open, close: close, _queue: queue, _weak: weak, _evidence: evidence, _retention: retention, _state: function () { return drill; } };
 })();
 </script>
+<style>
+/* Mastery pathway: stage boxes wrap instead of letting long labels overlap (5 columns when there is room, otherwise 2–3 per row) */
+.lab-path{grid-template-columns:repeat(auto-fit,minmax(104px,1fr))}
+.lab-stage span{font-size:10.5px;letter-spacing:.02em;overflow-wrap:normal;word-break:normal;hyphens:manual}
+@media (min-width:640px){.lab-stage span{font-size:11px;letter-spacing:.04em}}
+/* KPI labels: keep long words such as “Consolidated” inside their box on tablet widths */
+@media (min-width:640px) and (max-width:899px){.lab-kpi span{font-size:12px;letter-spacing:.05em}}
+</style>
 </body>
 </html>
