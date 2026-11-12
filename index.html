@@ -8873,5 +8873,10 @@ var NIRONCoach = (function () {
 /* KPI labels: keep long words such as “Consolidated” inside their box on tablet widths */
 @media (min-width:640px) and (max-width:899px){.lab-kpi span{font-size:12px;letter-spacing:.05em}}
 </style>
+<style>
+/* Lab bottom tab bar (mobile): label size only, so all 6 labels fit without scrolling */
+@media (max-width: 359.98px) { .lab-tab { font-size: 9px; } }
+@media (min-width: 360px) and (max-width: 414px) { .lab-tab { font-size: 10px; } }
+</style>
 </body>
 </html>
