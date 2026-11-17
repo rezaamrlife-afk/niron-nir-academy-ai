@@ -6082,6 +6082,9 @@ function renderTabContent(tab, data) {
     html += block('📚', 'CORE LANGUAGE INTELLIGENCE', 'gold', `
       <div class="content-label">COGNITIVE DEFINITION</div>
       <div class="content-text">${c.definition || ''}</div>
+      ${c.translation ? `
+      <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">TRANSLATION</div>
+      <div class="content-text" style="color:var(--gold-dim);font-size:14px;direction:auto;unicode-bidi:plaintext;text-align:start;">${c.translation}</div>` : ''}
 
       <div class="content-label">WORD FAMILY</div>
       <div class="tag-row">${(c.word_family||[]).map(w=>`<span class="tag">${w}</span>`).join('')}</div>
