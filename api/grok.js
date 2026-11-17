@@ -54,8 +54,12 @@ function buildUserPrompt(topic, cefr, ielts, type, motherLang) {
   const hasLang    = motherLang === 'fa' || motherLang === 'tr';
   const langName   = motherLang === 'fa' ? 'Persian (Farsi)' : motherLang === 'tr' ? 'Turkish' : '';
 
+  const grammarTrans = (isGrammar && hasLang)
+    ? `,\n    "translation": "<clear, learner-friendly ${langName} explanation of the grammar concept '${topic}', written in ${langName} only>"`
+    : '';
+
   const translationNote = hasLang
-    ? `\nMother Language Mode is ON (${langName}). For the "definitions" array, add a "translation" field to each item with a simple ${langName} explanation of the meaning. Do NOT add translation fields to any other section.`
+    ? `\nMother Language Mode is ON (${langName}). For the "definitions" array, add a "translation" field to each item with a simple ${langName} explanation of the meaning.${isGrammar ? ` Also add a "translation" field to "core_content" with a clear ${langName} explanation of the grammar concept.` : ''} Do NOT add translation fields to any other section.`
     : '\nMother Language Mode is OFF. Do NOT include any translation fields.';
 
   return `Analyse the ${isGrammar ? 'grammar structure' : 'vocabulary item'}: "${topic}"
@@ -82,7 +86,7 @@ STRICT RULE FOR DEFINITIONS: Every item in the "definitions" array must be a rea
     "key_features": ["<linguistic feature 1>", "<feature 2>", "<feature 3>", "<feature 4>"]
   },
   "core_content": {
-    "definition": "<precise academic definition of '${topic}'>",
+    "definition": "<precise academic definition of '${topic}'>"${grammarTrans},
     "word_family": ["<base form>", "<second form>", "<third form>", "<fourth form>"],
     "collocations": ["<natural collocation 1>", "<collocation 2>", "<collocation 3>"],
     "synonyms": ["<synonym 1>", "<synonym 2>", "<synonym 3>"],
