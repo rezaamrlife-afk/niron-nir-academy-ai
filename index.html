@@ -3379,6 +3379,31 @@ body:not(.light-mode) .btn-signin { color: #0A0E1A; }
   .hero-actions { justify-content: flex-start; margin-top: 1.8rem; }
 }
 @media (max-width: 768px) { .hero-headline { font-size: clamp(40px, 14vw, 60px) !important; letter-spacing: 5px !important; } .hero-tagline { font-size: 11.5px !important; } .hero-logo-wrap { margin-top: .4rem; } }
+/* ═════════ NIRON HERO 4.1 — product UI preview (additive) ═════════ */
+.hero-preview { width: 100%; max-width: 440px; margin: 2rem auto 0; text-align: left; overflow: hidden; border: 1px solid var(--border-green); border-radius: 18px; background: linear-gradient(150deg, var(--gold-glow), transparent 60%), var(--surf); box-shadow: var(--sh-up), inset 0 1px 0 rgba(255,255,255,.12); pointer-events: none; user-select: none; }
+.hp-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.hp-dots { display: flex; gap: 5px; flex: none; }
+.hp-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--white-faint); }
+.hp-topic { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: 1.4px; text-transform: uppercase; color: var(--white-dim); }
+.hp-cefr { flex: none; display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border-green); background: var(--green-glow); font: 700 9px/1 'JetBrains Mono', monospace; letter-spacing: 1.4px; color: var(--green-light); }
+.hp-cefr b { font: 700 13px/1 'Orbitron', monospace; letter-spacing: 1px; color: var(--gold); }
+.hp-tabs { flex-wrap: wrap; padding: 8px 10px 0; }
+.hero-preview .out-tab { cursor: default; padding: 5px 9px; font-size: 10px; letter-spacing: 1.2px; }
+.hp-body { padding: 10px 14px 14px; }
+.hero-preview .intelligence-block { margin: 0; }
+.hero-preview .tag-row { margin-top: 8px; }
+.hero-preview .ib-body { padding: 8px 10px 10px; }
+@media (max-width: 480px) {
+  .hp-dots { display: none; }
+  .hp-topic { letter-spacing: .8px; }
+  .hp-tabs { flex-wrap: nowrap; padding: 8px 6px 0; }
+  .hero-preview .out-tab { padding: 5px 5px; font-size: 9px; letter-spacing: .5px; }
+}
+@media (min-width: 992px) {
+  .hero-inner > .hero-logo-wrap { grid-row: 1 / span 3; align-self: end; }
+  .hero-logo { width: clamp(150px, 15vw, 200px); }
+  .hero-inner > .hero-preview { grid-column: 2; grid-row: 4 / span 3; align-self: start; margin: 1.8rem auto 0; }
+}
 
 .auth-close { width: 40px; height: 40px; }
 .auth-tab { min-height: 44px; }
@@ -5349,6 +5374,36 @@ function showToast(message, type) {
     <div class="hero-actions">
       <a href="#interface" class="btn-primary">✦ Activate Intelligence</a>
       <a href="#engines" class="btn-ghost">Explore Engines →</a>
+    </div>
+    <div class="hero-preview" role="img" aria-label="Preview of a NIRON Practice output at CEFR level B2">
+      <div class="hp-bar">
+        <span class="hp-dots"><i></i><i></i><i></i></span>
+        <span class="hp-topic">Grammar · Second conditional</span>
+        <span class="hp-cefr">CEFR <b>B2</b></span>
+      </div>
+      <div class="output-tabs hp-tabs">
+        <span class="out-tab">Diagnosis</span>
+        <span class="out-tab">Analysis</span>
+        <span class="out-tab active">Practice</span>
+        <span class="out-tab">Pathway</span>
+      </div>
+      <div class="hp-body">
+        <div class="intelligence-block">
+          <div class="ib-header">
+            <span class="ib-icon">🎯</span>
+            <span class="ib-title">CONTROLLED PRACTICE</span>
+            <span class="ib-badge gold">NIRON</span>
+          </div>
+          <div class="ib-body">
+            <div class="practice-item">
+              <span class="practice-num">01</span>
+              <span class="practice-text">Choose the correct form: "If I ___ more time, I would learn Turkish."
+                <span class="tag-row"><span class="tag">had</span><span class="tag">have</span><span class="tag">would have</span></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
