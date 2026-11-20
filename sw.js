@@ -1,5 +1,5 @@
-const CACHE = 'niron-v1';
-const ASSETS = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
+const CACHE = 'niron-v2';
+const ASSETS = ['/', '/index.html', '/manifest.json', '/i18n.js', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).catch(() => {}));
