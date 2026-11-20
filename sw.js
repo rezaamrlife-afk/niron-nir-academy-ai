@@ -1,4 +1,4 @@
-const CACHE = 'niron-v2';
+const CACHE = 'niron-v3';
 const ASSETS = ['/', '/index.html', '/manifest.json', '/i18n.js', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
