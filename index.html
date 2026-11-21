@@ -4222,7 +4222,8 @@ body{font-family:var(--f-sans)}
 [style*="Orbitron"] { font-family: var(--f-display) !important; font-weight: 400 !important; letter-spacing: .01em !important; }
 /* Persian / Arabic script and translation fields */
 [lang="fa"], [lang="ar"], .vhs-fa, [dir="rtl"] { font-family: 'Vazirmatn', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, 'Geeza Pro', var(--f-sans); letter-spacing: 0; }
-[data-i18n][lang="fa"] { letter-spacing: 0 !important; }
+[data-i18n][lang="fa"], [data-i18n-lang][lang="fa"] { letter-spacing: 0 !important; }
+.output-tabs:not(.hp-tabs) .out-tab[data-i18n-lang] { white-space: nowrap; }
 
 /* ═════ NIRON Learner's Dictionary (inline entry, Hub cards + Core definitions) ═════ */
 .nd-slot { margin-top: 14px; }
@@ -5173,7 +5174,7 @@ function showToast(message, type) {
   </div>
 </div>
 
-<div class="copy-feedback" id="copy-feedback">COPIED ✓</div>
+<div class="copy-feedback" id="copy-feedback"><span data-i18n="in.copied">COPIED</span> ✓</div>
 <div id="toast-container"></div>
 
 <!-- ══ FOCUS EXIT BAR ══ -->
@@ -5462,60 +5463,60 @@ function showToast(message, type) {
 <!-- ══ MAIN INTERFACE ══ -->
 <div class="main-interface" id="interface">
   <div class="section-header" style="margin-bottom:2rem;">
-    <div class="section-tag">Intelligence Interface</div>
-    <h2 class="section-title">LANGUAGE INTELLIGENCE ENGINE</h2>
-    <p class="section-sub">Enter any word, phrase, or grammar structure. NIRON generates a full diagnostic learning intelligence output.</p>
+    <div class="section-tag" data-i18n="hero.p_title">Intelligence Interface</div>
+    <h2 class="section-title" data-i18n="in.title">LANGUAGE INTELLIGENCE ENGINE</h2>
+    <p class="section-sub" data-i18n="in.sub">Enter any word, phrase, or grammar structure. NIRON generates a full diagnostic learning intelligence output.</p>
   </div>
 
   <div class="interface-grid">
     <!-- Sidebar -->
     <div class="i-sidebar">
-      <div class="i-sidebar-title">⬡ System Parameters</div>
+      <div class="i-sidebar-title">⬡ <span data-i18n="in.params">System Parameters</span></div>
 
       <div class="input-group">
-        <label class="input-label">CEFR Level <span class="req">*</span></label>
+        <label class="input-label"><span data-i18n="hero.p_cefr_level">CEFR Level</span> <span class="req">*</span></label>
         <select class="input-select" id="cefr-select">
-          <option value="">Select Level</option>
-          <option value="A1">A1 — Beginner</option>
-          <option value="A2">A2 — Elementary</option>
-          <option value="B1">B1 — Intermediate</option>
-          <option value="B2">B2 — Upper-Intermediate</option>
-          <option value="C1">C1 — Advanced</option>
-          <option value="C2">C2 — Mastery</option>
+          <option value="" data-i18n="in.select_level">Select Level</option>
+          <option value="A1" data-i18n="in.cefr_a1">A1 — Beginner</option>
+          <option value="A2" data-i18n="in.cefr_a2">A2 — Elementary</option>
+          <option value="B1" data-i18n="in.cefr_b1">B1 — Intermediate</option>
+          <option value="B2" data-i18n="in.cefr_b2">B2 — Upper-Intermediate</option>
+          <option value="C1" data-i18n="in.cefr_c1">C1 — Advanced</option>
+          <option value="C2" data-i18n="in.cefr_c2">C2 — Mastery</option>
         </select>
-        <div class="field-error-msg" id="cefr-error">Please select your CEFR level</div>
+        <div class="field-error-msg" id="cefr-error" data-i18n="in.err_cefr">Please select your CEFR level</div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">IELTS Target Band <span class="req">*</span></label>
+        <label class="input-label"><span data-i18n="in.ielts_band">IELTS Target Band</span> <span class="req">*</span></label>
         <select class="input-select" id="ielts-select">
-          <option value="">Select Band</option>
-          <option value="5">Band 5 — Modest</option>
-          <option value="5.5">Band 5.5</option>
-          <option value="6">Band 6 — Competent</option>
-          <option value="6.5">Band 6.5</option>
-          <option value="7">Band 7 — Good</option>
-          <option value="7.5">Band 7.5</option>
-          <option value="8">Band 8 — Very Good</option>
-          <option value="9">Band 9 — Expert</option>
+          <option value="" data-i18n="in.select_band">Select Band</option>
+          <option value="5" data-i18n="in.band_5">Band 5 — Modest</option>
+          <option value="5.5" data-i18n="in.band_5_5">Band 5.5</option>
+          <option value="6" data-i18n="in.band_6">Band 6 — Competent</option>
+          <option value="6.5" data-i18n="in.band_6_5">Band 6.5</option>
+          <option value="7" data-i18n="in.band_7">Band 7 — Good</option>
+          <option value="7.5" data-i18n="in.band_7_5">Band 7.5</option>
+          <option value="8" data-i18n="in.band_8">Band 8 — Very Good</option>
+          <option value="9" data-i18n="in.band_9">Band 9 — Expert</option>
         </select>
-        <div class="field-error-msg" id="ielts-error">Please select your IELTS target band</div>
+        <div class="field-error-msg" id="ielts-error" data-i18n="in.err_ielts">Please select your IELTS target band</div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">Intelligence Type <span class="req">*</span></label>
+        <label class="input-label"><span data-i18n="in.type">Intelligence Type</span> <span class="req">*</span></label>
         <div class="lang-type-grid">
-          <button class="type-btn active" data-type="vocabulary" onclick="selectType(this,'vocabulary')">Vocabulary</button>
-          <button class="type-btn" data-type="grammar" onclick="selectType(this,'grammar')">Grammar</button>
-          <button class="type-btn" data-type="mixed" onclick="selectType(this,'mixed')" style="grid-column:span 2;">Mixed Intelligence</button>
+          <button class="type-btn active" data-type="vocabulary" onclick="selectType(this,'vocabulary')" data-i18n="hero.p_vocab">Vocabulary</button>
+          <button class="type-btn" data-type="grammar" onclick="selectType(this,'grammar')" data-i18n="hero.p_grammar">Grammar</button>
+          <button class="type-btn" data-type="mixed" onclick="selectType(this,'mixed')" style="grid-column:span 2;" data-i18n="in.mixed">Mixed Intelligence</button>
         </div>
       </div>
 
       <div class="input-group" style="position:relative;">
-        <label class="input-label">Input <span class="req">*</span><br><span style="font-size:11px;color:var(--white-dim);letter-spacing:1px;text-transform:none;">Word / phrase / grammar structure</span></label>
-        <textarea class="input-field" id="topic-input" placeholder="e.g.  'investigate'&#10;or  'present perfect'&#10;or  'climate change vocabulary'"></textarea>
+        <label class="input-label"><span data-i18n="in.input">Input</span> <span class="req">*</span><br><span style="font-size:11px;color:var(--white-dim);letter-spacing:1px;text-transform:none;" data-i18n="in.input_hint">Word / phrase / grammar structure</span></label>
+        <textarea class="input-field" id="topic-input" data-i18n-attr="placeholder:in.placeholder" placeholder="e.g.  'investigate'&#10;or  'present perfect'&#10;or  'climate change vocabulary'"></textarea>
         <div class="history-dropdown" id="history-dropdown"></div>
-        <div class="field-error-msg" id="topic-error">Please enter a word, phrase, or structure</div>
+        <div class="field-error-msg" id="topic-error" data-i18n="in.err_topic">Please enter a word, phrase, or structure</div>
       </div>
 
       <button class="generate-btn" id="generate-btn" onclick="runNiron()">
@@ -5534,22 +5535,22 @@ function showToast(message, type) {
           <button class="out-tab" onclick="switchTab(this,'definitions')" data-i18n="out.definitions">Definitions</button>
         </div>
         <div class="output-actions">
-          <button class="act-btn" onclick="copyOutput()" title="Copy">⎘</button>
-          <button class="act-btn" onclick="printOutput()" title="Print">⎙</button>
-          <button class="act-btn" onclick="saveOutput()" title="Save" id="save-btn">↓</button>
-          <button class="act-btn" onclick="clearOutput()" title="Clear">✕</button>
+          <button class="act-btn" onclick="copyOutput()" title="Copy" data-i18n-attr="title:in.copy">⎘</button>
+          <button class="act-btn" onclick="printOutput()" title="Print" data-i18n-attr="title:in.print">⎙</button>
+          <button class="act-btn" onclick="saveOutput()" title="Save" id="save-btn" data-i18n-attr="title:in.save">↓</button>
+          <button class="act-btn" onclick="clearOutput()" title="Clear" data-i18n-attr="title:in.clear">✕</button>
         </div>
       </div>
       <div class="output-body" id="output-body">
         <div class="output-empty" id="output-empty">
           <div class="empty-icon">⬡</div>
           <div class="empty-text">
-            Configure parameters<br>and activate intelligence<br>to begin
+            <span data-i18n="in.empty_1">Configure parameters</span><br><span data-i18n="in.empty_2">and activate intelligence</span><br><span data-i18n="in.empty_3">to begin</span>
           </div>
         </div>
         <div class="loading-state" id="loading-state">
           <div class="loader-ring"></div>
-          <div class="loader-text" id="loader-text">Processing Language Intelligence...</div>
+          <div class="loader-text" id="loader-text" data-i18n="load.0">Processing Language Intelligence...</div>
 <div class="n-skel" aria-hidden="true"><i style="width:40%"></i><i></i><i style="width:88%"></i><i style="width:72%"></i><div class="n-skel-grid"><b></b><b></b><b></b></div></div>
         </div>
         <div class="output-content" id="output-content"></div>
@@ -5854,19 +5855,19 @@ function showLoading(show) {
     content.classList.remove('show');
 
     // Reset to first message
-    if (txt) txt.textContent = _loadingMessages[0];
+    if (txt) { txt.textContent = _loaderMsg(0); _mark(txt); }
 
     // Rotate messages every 2s — start from index 1
     var idx = 1;
     _loadingInterval = setInterval(function() {
-      if (txt) txt.textContent = _loadingMessages[idx % _loadingMessages.length];
+      if (txt) { txt.textContent = _loaderMsg(idx % _loadingMessages.length); _mark(txt); }
       idx++;
     }, 2000);
 
   } else {
     loading.classList.remove('show');
     // Reset text for next use
-    if (txt) txt.textContent = _loadingMessages[0];
+    if (txt) { txt.textContent = _loaderMsg(0); _mark(txt); }
   }
 }
 
@@ -5903,7 +5904,7 @@ function printOutput() {
   const content = document.getElementById('output-content').innerHTML;
   if (!content) return;
   const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>NIRON Output</title>
+  win.document.write(`<!DOCTYPE html><html><head><title>${_t('print.title', 'NIRON Output')}</title>
     <style>
       body { font-family: monospace; padding: 2rem; background: #fff; color: #000; }
       h2 { color: #C9A84C; } h3 { color: #2a7a4b; }
@@ -5944,8 +5945,8 @@ async function saveOutput() {
   const _savedOffline = function() {
     btn.textContent = '✓';
     btn.classList.add('saved');
-    btn.title = 'Saved offline ✓';
-    showToast('Saved offline — will sync when you are back online', 'success');
+    btn.title = _t('in.saved_offline_title', 'Saved offline ✓');
+    showToast(_t('msg.saved_offline', 'Saved offline — will sync when you are back online'), 'success');
     setTimeout(() => {
       btn.disabled    = false;
       btn.textContent = '↓';
@@ -5979,8 +5980,8 @@ async function saveOutput() {
 
     btn.textContent = '✓';
     btn.classList.add('saved');
-    btn.title = 'Saved ✓';
-    showToast('Output saved', 'success');
+    btn.title = _t('in.saved_title', 'Saved ✓');
+    showToast(_t('msg.saved', 'Output saved'), 'success');
     setTimeout(() => {
       btn.disabled    = false;
       btn.textContent = '↓';
@@ -5993,9 +5994,9 @@ async function saveOutput() {
     if (window.NIRONSync && NIRONSync.isNetErr(err) && NIRONSync.queueSave(_payload)) { _savedOffline(); return; }
     btn.disabled    = false;
     btn.textContent = '↓';
-    btn.title = 'Save failed — try again';
-    showToast('Could not save — please try again', 'error');
-    setTimeout(() => { btn.title = 'Save'; }, 3000);
+    btn.title = _t('in.save_failed_title', 'Save failed — try again');
+    showToast(_t('msg.save_failed', 'Could not save — please try again'), 'error');
+    setTimeout(() => { btn.title = _t('in.save', 'Save'); }, 3000);
   }
 }
 
@@ -6060,7 +6061,7 @@ async function runNiron() {
 
   const btn = document.getElementById('generate-btn');
   btn.disabled    = true;
-  btn.textContent = 'PROCESSING…';
+  btn.textContent = _t('in.processing', 'PROCESSING…'); _mark(btn);
   showLoading(true);
 
   // Reset to diagnosis tab
@@ -6091,7 +6092,7 @@ async function runNiron() {
 
     showLoading(false);
     renderTabContent('diagnosis', response.output);
-    showToast('Content generated', 'success');
+    showToast(_t('msg.generated', 'Content generated'), 'success');
 
     // Show save indicator if saved to Supabase
     if (response.saved) {
@@ -6101,16 +6102,16 @@ async function runNiron() {
   } catch (err) {
     console.error('[NIRON] runNiron error:', err);
     showLoading(false);
-    showToast('Generation failed — please try again', 'error');
+    showToast(_t('msg.gen_failed', 'Generation failed — please try again'), 'error');
     showContent(`<div style="padding:2rem;text-align:center;">
       <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;color:#c94c4c;">
-        ⚠ INTELLIGENCE PROCESSING ERROR<br><br>
+        ⚠ ${_L('err.processing', 'INTELLIGENCE PROCESSING ERROR')}<br><br>
         <span style="font-size:12px;color:var(--white-dim);">${err.message}</span>
       </div>
     </div>`);
   } finally {
     btn.disabled    = false;
-    btn.textContent = '✦   GENERATE INTELLIGENCE';
+    btn.textContent = '✦   ' + _t('in.generate', 'GENERATE INTELLIGENCE'); _mark(btn);
   }
 }
 
@@ -6126,61 +6127,61 @@ function renderTabContent(tab, data) {
     const a = data.analysis || {};
     const c = data.core_content || {};
 
-    html += block('🧠', 'DIAGNOSIS LAYER', 'gold', `
+    html += block('🧠', _L('res.diag_layer', 'DIAGNOSIS LAYER'), 'gold', `
       <div class="diagnosis-grid">
         <div class="diag-card">
           <div class="diag-val">${d.cefr_level || '—'}</div>
-          <div class="diag-key">CEFR Level</div>
+          <div class="diag-key">${_L('hero.p_cefr_level', 'CEFR Level')}</div>
           <div class="diag-note">${d.proficiency_label || ''}</div>
         </div>
         <div class="diag-card">
           <div class="diag-val">${d.ielts_estimate || '—'}</div>
-          <div class="diag-key">IELTS Target</div>
-          <div class="diag-note">Band Target</div>
+          <div class="diag-key">${_L('res.ielts_target', 'IELTS Target')}</div>
+          <div class="diag-note">${_L('res.band_target', 'Band Target')}</div>
         </div>
         <div class="diag-card">
-          <div class="diag-val" style="font-size:15px;">${a.type || '—'}</div>
-          <div class="diag-key">Input Type</div>
-          <div class="diag-note">Intelligence Mode</div>
+          <div class="diag-val" style="font-size:15px;">${_Lmap(_TYPE_KEYS, a.type) || '—'}</div>
+          <div class="diag-key">${_L('res.input_type', 'Input Type')}</div>
+          <div class="diag-note">${_L('res.intel_mode', 'Intelligence Mode')}</div>
         </div>
       </div>
-      <div class="content-label">COMPETENCE NOTE</div>
+      <div class="content-label">${_L('res.competence', 'COMPETENCE NOTE')}</div>
       <div class="content-text">${d.competence_note || ''}</div>
-      <div class="content-label">SKILL GAPS IDENTIFIED</div>
+      <div class="content-label">${_L('res.skill_gaps', 'SKILL GAPS IDENTIFIED')}</div>
       <div class="tag-row">${(d.skill_gaps||[]).map(g=>`<span class="tag">${g}</span>`).join('')}</div>
     `);
 
-    html += block('🔍', 'ANALYSIS LAYER', 'gold', `
-      <div class="content-label">CEFR MAPPING</div>
+    html += block('🔍', _L('res.analysis_layer', 'ANALYSIS LAYER'), 'gold', `
+      <div class="content-label">${_L('res.cefr_mapping', 'CEFR MAPPING')}</div>
       <div class="content-text">${a.cefr_mapping || ''}</div>
-      <div class="content-label">IELTS RELEVANCE</div>
+      <div class="content-label">${_L('res.ielts_rel', 'IELTS RELEVANCE')}</div>
       <div class="content-text">${a.ielts_relevance || ''}</div>
-      <div class="content-label">CHALLENGE FACTORS</div>
+      <div class="content-label">${_L('res.challenge', 'CHALLENGE FACTORS')}</div>
       <div class="content-text">${a.difficulty_note || ''}</div>
-      <div class="content-label">KEY LINGUISTIC FEATURES</div>
+      <div class="content-label">${_L('res.features', 'KEY LINGUISTIC FEATURES')}</div>
       <div class="tag-row">${(a.key_features||[]).map(f=>`<span class="tag gold-tag">${f}</span>`).join('')}</div>
     `);
 
-    html += block('📚', 'CORE LANGUAGE INTELLIGENCE', 'gold', `
-      <div class="content-label">COGNITIVE DEFINITION</div>
+    html += block('📚', _L('res.core', 'CORE LANGUAGE INTELLIGENCE'), 'gold', `
+      <div class="content-label">${_L('res.definition', 'COGNITIVE DEFINITION')}</div>
       <div class="content-text">${c.definition || ''}</div>
       ${c.translation ? `
-      <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">TRANSLATION</div>
+      <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">${_L('res.translation', 'TRANSLATION')}</div>
       <div class="content-text" style="color:var(--gold-dim);font-size:14px;direction:auto;unicode-bidi:plaintext;text-align:start;">${c.translation}</div>` : ''}
 
-      <div class="content-label">WORD FAMILY</div>
+      <div class="content-label">${_L('res.word_family', 'WORD FAMILY')}</div>
       <div class="tag-row">${(c.word_family||[]).map(w=>`<span class="tag">${w}</span>`).join('')}</div>
 
-      <div class="content-label">KEY COLLOCATIONS</div>
+      <div class="content-label">${_L('res.collocations', 'KEY COLLOCATIONS')}</div>
       <div class="tag-row">${(c.collocations||[]).map(col=>`<span class="tag gold-tag">${col}</span>`).join('')}</div>
 
-      <div class="content-label">GRADED SYNONYMS</div>
+      <div class="content-label">${_L('res.synonyms', 'GRADED SYNONYMS')}</div>
       <div class="tag-row">${(c.synonyms||[]).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
 
-      <div class="content-label">REGISTER</div>
+      <div class="content-label">${_L('res.register', 'REGISTER')}</div>
       <div class="content-text">${c.register || ''}</div>
 
-      <div class="content-label">USAGE CONTEXTS</div>
+      <div class="content-label">${_L('res.usage', 'USAGE CONTEXTS')}</div>
       <div class="tag-row">${(c.usage_contexts||[]).map(u=>`<span class="tag green-tag">${u}</span>`).join('')}</div>
     `);
   }
@@ -6189,30 +6190,30 @@ function renderTabContent(tab, data) {
     const ia = data.ielts_application || {};
     const ei = data.error_intelligence || {};
 
-    html += block('📝', 'IELTS & ACADEMIC APPLICATION', 'gold', `
-      <div class="content-label">IELTS WRITING TASK 2</div>
+    html += block('📝', _L('res.ielts_app', 'IELTS & ACADEMIC APPLICATION'), 'gold', `
+      <div class="content-label">${_L('res.writing2', 'IELTS WRITING TASK 2')}</div>
       <div class="example-block">${ia.writing_task2_example || ''}</div>
 
-      <div class="content-label">IELTS SPEAKING PART 3</div>
+      <div class="content-label">${_L('res.speaking3', 'IELTS SPEAKING PART 3')}</div>
       <div class="example-block green-accent">${ia.speaking_part3_example || ''}</div>
 
-      <div class="content-label">ACADEMIC USAGE NOTE</div>
+      <div class="content-label">${_L('res.academic_note', 'ACADEMIC USAGE NOTE')}</div>
       <div class="content-text">${ia.academic_usage_note || ''}</div>
 
-      <div class="content-label">BAND DESCRIPTORS SUPPORTED</div>
+      <div class="content-label">${_L('res.band_desc', 'BAND DESCRIPTORS SUPPORTED')}</div>
       <div class="tag-row"><span class="tag gold-tag">${ia.band_descriptor || ''}</span></div>
     `);
 
-    html += block('⚠', 'ERROR INTELLIGENCE', 'green', `
-      <div class="content-label">COMMON ERRORS</div>
+    html += block('⚠', _L('res.error_intel', 'ERROR INTELLIGENCE'), 'green', `
+      <div class="content-label">${_L('res.common_errors', 'COMMON ERRORS')}</div>
       ${(ei.common_errors||[]).map(e => `
         <div class="error-item"><span class="error-icon">✗</span><div>
-          <strong>Error:</strong> ${e.error}<br>
-          <span style="color:var(--green-light)">✓ Correction:</span> ${e.correction}<br>
-          <span style="color:var(--gold-dim);font-size:13px;">Rule: ${e.rule}</span>
+          <strong>${_L('res.error', 'Error:')}</strong> ${e.error}<br>
+          <span style="color:var(--green-light)">✓ ${_L('res.correction', 'Correction:')}</span> ${e.correction}<br>
+          <span style="color:var(--gold-dim);font-size:13px;">${_L('res.rule', 'Rule:')} ${e.rule}</span>
         </div></div>
       `).join('')}
-      <div class="content-label" style="margin-top:1.2rem;">AVOIDANCE TIPS</div>
+      <div class="content-label" style="margin-top:1.2rem;">${_L('res.avoid', 'AVOIDANCE TIPS')}</div>
       ${(ei.avoidance_tips||[]).map(t => `
         <div class="correct-item"><span class="correct-icon">✓</span><span>${t}</span></div>
       `).join('')}
@@ -6222,7 +6223,7 @@ function renderTabContent(tab, data) {
   else if (tab === 'practice') {
     const p = data.practice || {};
 
-    html += block('🎯', 'CONTROLLED PRACTICE', 'gold', `
+    html += block('🎯', _L('out.controlled', 'CONTROLLED PRACTICE'), 'gold', `
       ${(p.controlled||[]).map((t,i) => `
         <div class="practice-item">
           <span class="practice-num">0${i+1}</span>
@@ -6231,7 +6232,7 @@ function renderTabContent(tab, data) {
       `).join('')}
     `);
 
-    html += block('✍', 'GUIDED PRODUCTION', 'gold', `
+    html += block('✍', _L('res.guided', 'GUIDED PRODUCTION'), 'gold', `
       ${(p.guided||[]).map((t,i) => `
         <div class="practice-item">
           <span class="practice-num">0${i+1}</span>
@@ -6240,7 +6241,7 @@ function renderTabContent(tab, data) {
       `).join('')}
     `);
 
-    html += block('🚀', 'FREE PRODUCTION TASKS', 'green', `
+    html += block('🚀', _L('res.free', 'FREE PRODUCTION TASKS'), 'green', `
       ${(p.free_production||[]).map((t,i) => `
         <div class="practice-item">
           <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
@@ -6249,7 +6250,7 @@ function renderTabContent(tab, data) {
       `).join('')}
     `);
 
-    html += block('🔄', 'TRANSFORMATION TASKS', 'green', `
+    html += block('🔄', _L('res.transform', 'TRANSFORMATION TASKS'), 'green', `
       ${(p.transformation||[]).map((t,i) => `
         <div class="practice-item">
           <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
@@ -6262,27 +6263,27 @@ function renderTabContent(tab, data) {
   else if (tab === 'pathway') {
     const path = data.pathway || {};
 
-    html += block('🧭', 'LEARNING PATHWAY', 'gold', `
-      <div class="content-label">CURRENT STAGE</div>
+    html += block('🧭', _L('res.pathway', 'LEARNING PATHWAY'), 'gold', `
+      <div class="content-label">${_L('res.current_stage', 'CURRENT STAGE')}</div>
       <div class="tag-row"><span class="tag gold-tag">${path.current_stage || ''}</span></div>
 
-      <div class="content-label">PROGRESSION TRACK</div>
+      <div class="content-label">${_L('res.progression', 'PROGRESSION TRACK')}</div>
       <div class="progression-track">
         ${(path.progression_items||['Recognition','Controlled','Semi-Controlled','Free Production','IELTS Application']).map((s,i,arr) => `
-          <span class="prog-step ${i < 2 ? 'done' : i === 2 ? 'active' : ''}">${s.replace('Stage \\d+: ','')}</span>
+          <span class="prog-step ${i < 2 ? 'done' : i === 2 ? 'active' : ''}">${_Lmap(_STAGE_KEYS, s.replace('Stage \\d+: ',''))}</span>
           ${i < arr.length - 1 ? '<span class="prog-arrow">›</span>' : ''}
         `).join('')}
       </div>
 
-      <div class="content-label" style="margin-top:1.5rem;">IELTS READINESS</div>
+      <div class="content-label" style="margin-top:1.5rem;">${_L('res.readiness', 'IELTS READINESS')}</div>
       <div class="content-text">${path.ielts_readiness || ''}</div>
 
-      <div class="content-label">RECOMMENDATION</div>
+      <div class="content-label">${_L('res.recommendation', 'RECOMMENDATION')}</div>
       <div class="example-block">${path.recommendation || ''}</div>
     `);
 
-    html += block('⏭', 'NEXT STEP ENGINE', 'green', `
-      <div class="content-label">LEARN NEXT</div>
+    html += block('⏭', _L('res.next_step', 'NEXT STEP ENGINE'), 'green', `
+      <div class="content-label">${_L('res.learn_next', 'LEARN NEXT')}</div>
       ${(path.next_steps||[]).map((s,i) => `
         <div class="practice-item">
           <span class="practice-num" style="color:var(--green-light)">0${i+1}</span>
@@ -6295,24 +6296,24 @@ function renderTabContent(tab, data) {
   else if (tab === 'definitions') {
     const defs = data.definitions || [];
 
-    html += block('📖', 'VOCABULARY / DEFINITIONS LAYER', 'gold', `
-      <div class="content-label">CEFR-AWARE DEFINITIONS</div>
-      <div class="content-text" style="margin-bottom:1.2rem;">Key vocabulary items drawn from your topic — with learner-friendly meanings and example sentences.</div>
-      ${defs.length === 0 ? '<div class="content-text">No definitions available for this topic.</div>' :
+    html += block('📖', _L('res.defs_layer', 'VOCABULARY / DEFINITIONS LAYER'), 'gold', `
+      <div class="content-label">${_L('res.cefr_defs', 'CEFR-AWARE DEFINITIONS')}</div>
+      <div class="content-text" style="margin-bottom:1.2rem;">${_L('res.defs_intro', 'Key vocabulary items drawn from your topic — with learner-friendly meanings and example sentences.')}</div>
+      ${defs.length === 0 ? '<div class="content-text">'+_L('res.no_defs', 'No definitions available for this topic.')+'</div>' :
         defs.map((d, i) => `
           <div class="intelligence-block def-card" style="margin-bottom:0.8rem;border:1px solid var(--border);padding:0;animation-delay:${(i*0.07).toFixed(2)}s;">
             <div style="padding:0.9rem 1.2rem;">
               <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
                 <span style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--gold);letter-spacing:2px;">${d.word || ''}</span>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--white-dim);text-transform:uppercase;">Word ${i+1}</span>
-                ${'speechSynthesis' in window ? `<button onclick="speakWord('${encodeURIComponent(d.word || '')}')" title="Pronounce" style="background:none;border:none;cursor:pointer;font-size:15px;padding:0 2px;opacity:0.7;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>` : ''}
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--white-dim);text-transform:uppercase;">${_L('res.word', 'Word')} ${i+1}</span>
+                ${'speechSynthesis' in window ? `<button onclick="speakWord('${encodeURIComponent(d.word || '')}')" title="${_t('res.pronounce', 'Pronounce')}" style="background:none;border:none;cursor:pointer;font-size:15px;padding:0 2px;opacity:0.7;line-height:1;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔊</button>` : ''}
               </div>
-              <div class="content-label" style="margin-bottom:4px;">MEANING</div>
+              <div class="content-label" style="margin-bottom:4px;">${_L('res.meaning', 'MEANING')}</div>
               <div class="content-text" style="margin-bottom:10px;">${d.meaning || ''}</div>
-              <div class="content-label" style="margin-bottom:4px;">EXAMPLE</div>
+              <div class="content-label" style="margin-bottom:4px;">${_L('res.example', 'EXAMPLE')}</div>
               <div class="example-block green-accent" style="font-style:italic;">"${highlightWord(d.example, d.word)}"</div>
               ${d.translation ? `
-              <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">TRANSLATION</div>
+              <div class="content-label" style="margin-bottom:4px;margin-top:10px;color:var(--gold-dim);">${_L('res.translation', 'TRANSLATION')}</div>
               <div class="content-text" style="color:var(--gold-dim);font-size:14px;direction:auto;unicode-bidi:plaintext;text-align:start;">${d.translation}</div>` : ''}
               ${window.NIRONDict ? NIRONDict.slot({ word: d.word, meaning: d.meaning, example: d.example, translation: d.translation, cefr: (data.diagnosis && data.diagnosis.cefr_level) || '' }, false) : ''}
             </div>
@@ -6805,8 +6806,36 @@ function _applyI18n() {
     if (tl) tl.textContent = document.body.classList.contains('light-mode') ? _t('nav.dark', 'Dark') : _t('nav.light', 'Light');
     var fb = document.getElementById('focus-btn');
     if (fb) fb.textContent = document.body.classList.contains('focus-mode') ? '✕ ' + _t('nav.exit', 'Exit') : '⊞ ' + _t('nav.focus', 'Focus');
+    var gb = document.getElementById('generate-btn');
+    if (gb && !gb.disabled) { gb.textContent = '✦   ' + _t('in.generate', 'GENERATE INTELLIGENCE'); _mark(gb); }
+    // A visible result is re-rendered from the stored data (same call switchTab makes) so its labels follow the language.
+    var oc = document.getElementById('output-content');
+    if (oc && oc.classList.contains('show') && oc.querySelector('.intelligence-block') && window._lastNironData && typeof renderTabContent === 'function') renderTabContent(activeTab, window._lastNironData);
   } catch (e) {}
 }
+
+// ── Step 3 helpers ──
+var _STAGE_KEYS = { 'Recognition': 'stage.recognition', 'Controlled': 'stage.controlled', 'Semi-Controlled': 'stage.semi', 'Free Production': 'stage.free', 'IELTS Application': 'stage.ielts' };
+var _TYPE_KEYS  = { 'Grammar Structure': 'res.type_grammar', 'Lexical Item': 'res.type_lexical' };
+function _lang() { return (window.NIRON_I18N && NIRON_I18N.getLang) ? NIRON_I18N.getLang() : 'en'; }
+// Text set from JS: lang drives font, letter-joining and Turkish casing (removed again for English).
+function _mark(el) {
+  if (!el) return;
+  var l = _lang();
+  if (l === 'en') { if (el.hasAttribute('data-i18n-lang')) { el.removeAttribute('lang'); el.removeAttribute('data-i18n-lang'); } }
+  else { el.setAttribute('lang', l); el.setAttribute('data-i18n-lang', '1'); }
+}
+// Label for HTML templates: English returns the plain text (markup identical to before);
+// FA/TR return a lang-marked span, with isolated RTL only for Persian strings that embed Latin words.
+function _L(key, fallback) {
+  var txt = _t(key, fallback), l = _lang();
+  if (l === 'en' || txt === fallback) return txt;
+  var safe = String(txt).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  return '<span data-i18n="' + key + '" lang="' + l + '" data-i18n-lang="1"' + ((l === 'fa' && /[A-Za-z]/.test(txt)) ? ' dir="rtl"' : '') + '>' + safe + '</span>';
+}
+// Fixed schema names (progression stages, input type) are translated by exact value; anything else is left as is.
+function _Lmap(map, v) { return (v && Object.prototype.hasOwnProperty.call(map, v)) ? _L(map[v], v) : v; }
+function _loaderMsg(i) { return _t('load.' + i, _loadingMessages[i]); }
 
 // Wrappers kept for existing inline handlers and the command palette.
 function setMobLang(btn, lang) { setLang(lang); }
